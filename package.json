@@ -1,0 +1,16 @@
+{
+  "name": "conda",
+  "version": "1.0.0",
+  "description": "Conda Programming language, created for LMU Compilers Course",
+  "main": "conda.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ohm-js": "^17.1.0"
+  }
+}
