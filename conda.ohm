@@ -1,0 +1,73 @@
+Conda{
+    Program = Stmt+
+
+    Stmt = id "=" Exp ";"                       --assign
+            | print Exp ";"                     --print
+            | while Exp Block
+            | IfStmt
+            | break ";"
+
+    IfStmt = if Exp Block (else (Block | IfStmt))?  --if
+    Params = "("ListOf<id, ",">")"
+    Block  = "{" Stmt+"}"
+
+    // Operators : precedence [lowest to highest]: [Exp to Primary]
+    Exp         = Exp0 "??" Exp0                         --unwrap
+                | Exp0
+                | ("-"|"!") Primary                      --unary
+    
+    Exp0        = Exp "||" Disjunct                      --binary
+                | Disjunct
+                
+    Disjunct    = Disjunct "&&" Conjunct                 --binary
+                | Conjunct
+
+    //Non-associative Relational Operators
+    Conjunct    = Comp ("<="| "<" | "==" | "!=" | ">=" | ">" ) Comp 	--binary 
+                | Comp
+    
+    Comp        = Exp ("+" | "-") Term                   --additive
+                | Term
+    Term        = Term ("*" | "/" | "%") Factor          --multiplicative
+                | Factor
+    Factor      = Primary "**" Factor                    --binary
+                | Primary
+    Primary     = id "(" ListOf<Exp, ","> ")"            --call
+                | floatlit                               --float
+                | intlit                                 --int
+                | strlit                                 --string
+                | id                                     --id
+                | "(" Exp ")"                            --parens
+
+    // KEYWORDS
+    print = "print" ~idchar
+    true = "true" ~idchar
+    false = "false" ~idchar
+    int = "int" ~idchar
+    float = "float" ~idchar
+    str = "str" ~idchar
+    while = "while" ~idchar
+    if    = "if" ~idchar
+    else  = "else" ~idchar
+    break = "break" ~idchar
+
+    keyword   = print | true | false | while | if | else | break
+
+    idchar    = alnum | "_"
+    id        = ~keyword letter idchar*
+    
+    strlitdbl = "\"" chardbl* "\""
+    strlitsngl= "'" charsgl* "'"
+
+    strlit = (strlitdbl | strlitsngl)
+    floatlit     = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
+    intlit = digit+
+
+    chardbl = "\\n" 					    --newlineescape
+    		 |~"\"" ~"\n" any				--regular
+             
+    charsgl = "\\n" 						--newlineescape
+    		 |~"'" ~"\n" any				--regular
+    
+    space    += "//" (~"\n" any)*                      --comment
+}
