@@ -1,0 +1,53 @@
+
+AstroPlusPlus{
+  Program     = Statement+
+  // inclusion of while, conditional, and break statements
+  Statement   = id "=" Exp ";"                         --assignment
+              | print Exp ";"                          --print
+              | while Exp Block                        --while
+              | IfStatement
+              | Block ";"                               --block
+             
+   
+  // defining the grammar rules for if-else statements and blocks
+  IfStatement = if Exp Block (else (Block | IfStatement))?  --if
+  Block  = "{" Statement* "}"
+  
+  WhileBlock  = "{" WhileStatement* "}"
+  WhileStatement = Statement
+                 | break ";"                           --break
+
+ 
+  // Inclusion of relational operators
+  Exp         = Comp ("<="| "<" | "==" | "!=" | ">=" | ">" ) Comp   --binary
+              | Comp
+  Comp        = Exp ("+" | "-") Term                   --binary
+              | Term
+  Term        = Term ("*" | "/" | "%") Factor          --binary
+              | Factor
+  Factor      = Primary "**" Factor                    --binary
+              | "-" Primary                            --negation
+              | Primary
+  Primary     = id "(" ListOf<Exp, ","> ")"            --call
+              | numeral                                --num
+              | id                                     --id
+              | "(" Exp ")"                            --parens
+
+
+  numeral     = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
+ 
+  // KEYWORDS
+  print = "print" ~idchar
+  while = "while" ~idchar
+  if    = "if" ~idchar
+  else  = "else" ~idchar
+  break = "break" ~idchar
+ 
+  keyword   = print | while | if | else | break
+  idchar    = letter | digit | "_"
+  id        = ~keyword letter idchar*
+  space    += "//" (~"\n" any)*                      --comment
+}
+
+
+
