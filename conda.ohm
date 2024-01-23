@@ -7,7 +7,7 @@ Conda{
             | IfStmt
             | break ";"
 
-    IfStmt = if Exp Block (else (Block | IfStmt))?  --if
+    IfStmt = if Exp Block (else (Block | IfStmt))?       --if
     Params = "("ListOf<id, ",">")"
     Block  = "{" Stmt+"}"
 
@@ -16,6 +16,7 @@ Conda{
                 | Exp0
                 | ("-"|"!") Primary                      --unary
     
+    // Logical Operators
     Exp0        = Exp "||" Disjunct                      --binary
                 | Disjunct
                 
@@ -23,7 +24,7 @@ Conda{
                 | Conjunct
 
     //Non-associative Relational Operators
-    Conjunct    = Comp ("<="| "<" | "==" | "!=" | ">=" | ">" ) Comp 	--binary 
+    Conjunct    = Comp ("<="|"<"|"=="|"!="|">="|">") Comp --binary 
                 | Comp
     
     Comp        = Exp ("+" | "-") Term                   --additive
@@ -40,16 +41,16 @@ Conda{
                 | "(" Exp ")"                            --parens
 
     // KEYWORDS
-    print = "print" ~idchar
-    true = "true" ~idchar
-    false = "false" ~idchar
-    int = "int" ~idchar
-    float = "float" ~idchar
-    str = "str" ~idchar
-    while = "while" ~idchar
-    if    = "if" ~idchar
-    else  = "else" ~idchar
-    break = "break" ~idchar
+    print   = "print" ~idchar
+    true    = "true" ~idchar
+    false   = "false" ~idchar
+    int     = "int" ~idchar
+    float   = "float" ~idchar
+    str     = "str" ~idchar
+    while   = "while" ~idchar
+    if      = "if" ~idchar
+    else    = "else" ~idchar
+    break   = "break" ~idchar
 
     keyword   = print | true | false | while | if | else | break
 
