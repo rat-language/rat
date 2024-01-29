@@ -37,19 +37,22 @@ print(i);
 }
 }
 
+```javascript
 function fizzBuzz(n) {
-for (let i = 1; i <= n; i++) {
-let output = '';
-if (i % 3 === 0) {
-output += 'Fizz';
+    for (let i = 1; i <= n; i++) {
+    let output = '';
+    if (i % 3 === 0) {
+    output += 'Fizz';
+    }
+    if (i % 5 === 0) {
+    output += 'Buzz';
+    }
+    console.log(output || i);
+    }
 }
-if (i % 5 === 0) {
-output += 'Buzz';
-}
-console.log(output || i);
-}
-}
+```
 
+```rat
 int factorial(n:int){
 var value:int = 1;
 var i:int = 1;
@@ -59,7 +62,9 @@ i = i + 1;
 }
 return value;
 }
+```
 
+```javascript
 function factorial(n) {
 let result = 1;
 for (let i = 2; i <= n; i++) {
@@ -67,7 +72,9 @@ result \*= i;
 }
 return result;
 }
+```
 
+```rat
 int fib(n:int){
 // returns the nth value of the fibonacci sequence
 var a:int = 0;
@@ -85,17 +92,20 @@ b = c;
 }
 return b;
 }
+```
 
+```javascript
 function fibonacci(n) {
-let a = 0, b = 1, c;
-if (n === 0) return a;
-for (let i = 2; i <= n; i++) {
-c = a + b;
-a = b;
-b = c;
-}
+    let a = 0, b = 1, c;
+    if (n === 0) return a;
+    for (let i = 2; i <= n; i++) {
+        c = a + b;
+        a = b;
+        b = c;
+    }
 return b;
 }
+```
 
 bool prime(n:int){
 if (n <= 1) {
