@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Alex Alvarez, Sam Prosser, Riley Kehoe, Chris Beaudoin, Carter Esparza",
   "license": "ISC",
   "dependencies": {
     "ohm-js": "^17.1.0"
