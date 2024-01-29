@@ -1,7 +1,6 @@
 //to do
 // continue implementing functionality
-// make the language to be 'Rat' rather than 'Conda'
-Conda{
+Rat{
     Program = Stmt+
 
     Stmt = id "=" Exp ";"                       --assign

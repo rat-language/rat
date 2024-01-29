@@ -1,0 +1,11 @@
+def factorial(n:int){
+  var value:int = 1;
+  var i:int = 1;
+  while(i <= n){
+    value = value * i;
+    i = i + 1;
+  }
+  return value;
+}
+
+print(factorial(5));
