@@ -35,8 +35,7 @@ notThreeEndingInOO {
     Program = sequence
     sequence = ~notallowed letter*
     notallowed = letter allo allo end
-    allo = "o"
-    | "O"
+    allo = caseInsensitive<"o">
 }
 
 
