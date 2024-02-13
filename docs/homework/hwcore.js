@@ -46,9 +46,8 @@ const masterCardGrammar = ohm.grammar(`masterCard {
 const notThreeEndingGrammar = ohm.grammar(`
 notThreeEndingInOO {
   Program = sequence
-  sequence = ~notallowed uni*
-  uni = any
-  notallowed = any allo allo ~any
+  sequence = ~notallowed letter*
+  notallowed = letter allo allo ~any
   allo = "o"
   | "O"
 }
