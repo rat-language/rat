@@ -32,7 +32,7 @@ masterCard {
 
 
 notThreeEndingInOO {
-    Program = sequence
+    program = sequence
     sequence = ~notallowed letter*
     notallowed = letter allo allo end
     allo = caseInsensitive<"o">
