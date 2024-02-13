@@ -18,11 +18,11 @@ visa {
 masterCard {
     program = masterCard
     masterCard = fiftys fourteend --fourteen
-               | twothousands twelved --twelve
+    | twothousands twelved --twelve
     fourteend = digit digit digit digit digit digit digit digit digit digit digit digit digit digit
     twelved = digit digit digit digit digit digit digit digit digit digit digit digit
     fiftys = "5" "1".."5"
-    twothousands = "2" "2" "2" "1".."9"                 //2221-2229
+    twothousands = "2" "2" "2" "1".."9"     //2221-2229
     | "2" "2" "3".."9" digit     			//2230-2299
     | "2" "3".."6" digit digit   			//2300-2699
     | "2" "7" "0" "0".."9"          		//2700-2709
@@ -34,11 +34,10 @@ masterCard {
 notThreeEndingInOO {
     Program = sequence
     sequence = ~notallowed letter*
-    notallowed = letter allo allo ~any
+    notallowed = letter allo allo end
     allo = "o"
     | "O"
 }
-
 
 
 divisibleBy16 {
