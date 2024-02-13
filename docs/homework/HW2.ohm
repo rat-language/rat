@@ -68,3 +68,14 @@ NotPy {
     | "python"~any
     | "pycharm"~any
 }
+
+eightthruthirtytwo {
+    ok = range
+    range = "8" end --eight
+    | "9" end       --nine
+    | "1" digit end --tenthroughnineteen
+    | "2" digit end --twentythroughtwentynine
+    | "3" "0" end   --thirty
+    | "3" "1" end   --thirtytwo
+    | "3" "2" end   --thirtythree
+}
