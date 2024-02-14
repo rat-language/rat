@@ -31,34 +31,32 @@ const masterCardGrammar = ohm.grammar(`masterCard {
   program = mastercardnum
   mastercardnum = fiftys fourteend --fourteen
              | twothousands twelved --twelve
-  fourteend = digit digit digit digit digit digit digit digit digit digit digit digit digit digit
+  fourteend = twelved digit digit
   twelved = digit digit digit digit digit digit digit digit digit digit digit digit
   fiftys = "5" "1".."5"
-  twothousands = "2" "2" "2" "1".."9"                 //2221-2229
-              | "2" "2" "3".."9" digit     			//2230-2299
+  twothousands = "222" "1".."9"                 //2221-2229
+              | "223".."9" digit     			//2230-2299
               | "2" "3".."6" digit digit   			//2300-2699
-              | "2" "7" "0" "0".."9"          		//2700-2709
-              | "2" "7" "1" "0".."9"         			//2710-2719
-              | "2" "7" "2" "0"                       //2720
+              | "270" digit          		//2700-2709
+              | "271" digit         			//2710-2719
+              | "2720"                       //2720
 }
 `);
 
 const notThreeEndingGrammar = ohm.grammar(`
 notThreeEndingInOO {
-  Program = sequence
-  sequence = ~notallowed uni*
-  uni = any
-  notallowed = any allo allo ~any
-  allo = "o"
-  | "O"
+  program = validstring
+  validstring = ~badsequence any+
+  badsequence = any badletters ~any
+  badletters = "oo" | "oO" | "Oo" | "OO"
 }
 `);
 const divisibleBy16Grammar = ohm.grammar(`
 divisibleBy16 {
   divisby16 = multiplebin "0" "0" "0" "0" "0"* --fourplus
-  | "0" "0" "0" "0" --four
-  | "0" "0" "0" --three
-  | "0" "0" --two
+  | "0000" --four
+  | "000" --three
+  | "00" --two
   | "0" --one
   bin = "0001"
   | "0011"
