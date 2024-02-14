@@ -105,7 +105,7 @@
   },
   "devDependencies": {
     "c8": "^9.1.0",
-    "mocha": "^10.2.0"
+    "mocha": "^10.3.0"
   },
   "scripts": {
     "test": "c8 mocha"

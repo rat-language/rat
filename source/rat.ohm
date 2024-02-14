@@ -1,76 +1,179 @@
-//to do
-// continue implementing functionality
-Rat{
-    Program = Stmt+
+/*
+---
+Things I'd change:
+- What does 'of' do???
+- I'd like to remove 'as' keyword
+- add universal 'None'
 
-    Stmt = id "=" Exp ";"                       --assign
-            | print Exp ";"                     --print
-            | while Exp Block
-            | IfStmt
-            | break ";"
+FOR LOOPS:
+for x in iterableObject{
+	# do something
+}
 
-    IfStmt = if Exp Block (else (Block | IfStmt))?       --if
-    Params = "("ListOf<id, ",">")"
-    Block  = "{" Stmt+"}"
+RANGE EXPRESSIONS
+for i in 1...100{
+}
+[1,100]
 
-    // Operators : precedence [lowest to highest]: [Exp to Primary]
-    Exp         = Exp0 "??" Exp0                         --unwrap
-                | Exp0
-                | ("-"|"!") Primary                      --unary
+for i in 1..<100{
+}
+[1,100)
+
+if I get a round to it:
+- switch case
+- I think a do-while loop [repeat-until syntax]
+
+*/
+Small {
+	Program = Stmt+
     
-    // Logical Operators
-    Exp0        = Exp "||" Disjunct                      --binary
-                | Disjunct
-                
-    Disjunct    = Disjunct "&&" Conjunct                 --binary
-                | Conjunct
-
-    //Non-associative Relational Operators
-    Conjunct    = Comp ("<="|"<"|"=="|"!="|">="|">") Comp --binary 
-                | Comp
+    // here, we define valid statements
+    Stmt = print "("Exp ")" ";"							            --print
+    		 | var id ":" Type "=" Exp ";"						    --vardec
+             | const id ":" Type "=" Exp ";"						    --constdec
+             | id "=" Exp ";" 									    --assign
+             | while Exp Block										--while
+             | ForStmt                                              --for
+             | ForRngStmt										--forRange
+             | IfStmt
+             | pass ";"												--pass
+             | break ";"							 			    --break
+             | return Exp ";"									    --return
+             | try Block (timeout Block)? catch Params Block	    --try
+             | FuncDecl
+   	
     
-    Comp        = Exp ("+" | "-") Term                   --additive
-                | Term
-    Term        = Term ("*" | "/" | "%") Factor          --multiplicative
-                | Factor
-    Factor      = Primary "**" Factor                    --binary
-                | Primary
-    Primary     = id "(" ListOf<Exp, ","> ")"            --call
-                | floatlit                               --float
-                | intlit                                 --int
-                | strlit                                 --string
-                | id                                     --id
-                | "(" Exp ")"                            --parens
-
-    // KEYWORDS
-    print   = "print" ~idchar
-    true    = "true" ~idchar
-    false   = "false" ~idchar
-    int     = "int" ~idchar
-    float   = "float" ~idchar
-    str     = "str" ~idchar
-    while   = "while" ~idchar
-    if      = "if" ~idchar
-    else    = "else" ~idchar
-    break   = "break" ~idchar
-
-    keyword   = print | true | false | while | if | else | break
-
-    idchar    = alnum | "_"
-    id        = ~keyword letter idchar*
     
-    strlitdbl = "\"" chardbl* "\""
-    strlitsngl= "'" charsgl* "'"
+    FuncDecl = Type id Params Block					--funcdecl
+    IfStmt = if Exp Block (else ( Block | IfStmt ))?	            --if
+    // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
+    ForStmt  = for id in id Block
+    // while we generally statically type our language, in cases like this, where we iterate through a 
+    // range of numbers, we will assume that the id is going to be an integer
+    ForRngStmt = for id in (inclusiveRng | exclusiveRng) Block
+    Params = "("ListOf<Param, ",">")"
+    Param = id ":" Type
+    Args = "("ListOf<Exp, ",">")"
+    Block = "{" Stmt* "}"
+    
+    // implementing operator precedence:
+    // We make some atomic expression, and little by little add onto it with different kinds of expressions.
+    // Note that this 'Exp' right below, is of lowest precedence, Primarys are of highest precedence
+    // Another thing, we named some of the layers in this properly (i.e. Disjunct, conjunct, Factor, etc.) 
+    // When we got to some more abstract operators like coalescing, ??, we just named them by levels
+    // i.e. Exp has less precedence than Exp0 which has less precedence than Exp1, and so on...
+    
+    Exp = Exp0 "??" Exp0 														--unwrap
+        | Exp0
+        | ("-"|"!") Primary													    --unary
+        | await ("<<" Exp  ">>" )? ( one | all )? Exp 					        --await
+    
+    Exp0 = Exp "||" Disjunct --binary
+    	 | Disjunct
+            
+    Disjunct = Disjunct "&&" Conjunct											--binary
+    		 | Conjunct
+    // Non-associative relational operators               
+	Conjunct = Comp ( "<=" | "<" | "==" | "!=" | ">=" | ">" ) Comp 	            --binary
+    		 | Comp
+            
+	Comp = Comp ( "+" | "-" ) Term											    --additive
+    	       | Term
+    
+    // ^above^ implementing left associativity to evaluate expression from left to right
+    Term = Term ( "*" | "/" | "%" ) Factor  								    --multiplicative
+		      | Factor
+    // uniquely for factors, we do a Right associativity
+    Factor = Primary "**" Factor											    --binary
+           | Primary
 
-    strlit = (strlitdbl | strlitsngl)
-    floatlit     = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
+	// possible assignables to variables
+	Primary = strlit
+            | floatlit
+            | intlit
+            | true
+            | false
+            | some Exp 						  			    --wrapped
+            | no Type								        --emptyoptional
+            | Primary "[" Exp"]"							--lookup
+            | id Args 							   			        --call
+            | id
+            | Type "(" Exp ")"							  --typeconversion
+            | "(" Exp ")"   						                --parens
+            | "["ListOf<Exp, ",">"]" 		  				  --arraylit
+            | "{" ListOf<Binding,",">"}"				    --dictionarylit
+                  
+    //key:value pairs for dictionaries
+	Binding = Exp ":" Exp
+    
+    op = "**" | "*" | "/" | "%" |"+" | "-"
+
+    //KEYWORDS:
+    Type = Type "?"								    --optional
+         | Type "^"									--promise
+         | int | float | bool | string | anything 
+         |"[" Type "]" 								--array
+         | "[" Type":"Type"]"				        --dictionary
+    
+    print   = "print" ~alnum
+    true    = "true" ~alnum
+    false   = "false" ~alnum
+    let     = "let" ~alnum
+    int     = "int" ~alnum
+    in  = "in" ~alnum
+    float   = "float" ~alnum
+    const = "const" ~alnum
+    global = "global" ~alnum
+    var = "var" ~alnum
+    bool    = "bool" ~alnum
+    string  = "str" ~alnum
+    while   = "while" ~alnum
+    for     = "for" ~alnum
+    if   	= "if" ~alnum
+    else    = "else" ~alnum
+    break   = "break" ~alnum
+    return  = "return" ~alnum
+    some    = "some" ~alnum
+    no      = "no" ~alnum
+    of      = "of" ~alnum
+    anything= "anything" ~alnum
+    as      = "as"  ~alnum
+    pass = "pass" ~alnum
+    await   = "await" ~alnum
+	try     = "try" ~alnum
+    catch   = "catch" ~alnum
+    one     = "one" ~alnum
+    void = "void" ~alnum
+    all     = "all" ~alnum
+    timeout = "timeout" ~alnum
+    
+    // await used for asynchronous functions that perform a call that is promised to return a value
+    // await one - used for having an array of promise types, will return value when one promise is fulfilled
+    // await all - will return an array of promise strings.  
+    
+    // in asynchronous functions, we can choose to timeout the function if it takes to long to return something
+
+    //distinguishes keywords
+    keyword = print | true | false | let | int | float | string | bool | pass
+            | while | for | if | else |else | return | some | no | of | void
+            | anything | as | await | try | catch | one | all | timeout
+	
+    //allows you to name your variables
+    id = ~keyword letter alnum*
+    
+    inclusiveRng = digit+ "..." digit+
+    exclusiveRng = digit+ "..<" digit+
+    
+    strlit = "\"" char* "\""
     intlit = digit+
-
-    chardbl = "\\n" 					    --newlineescape
-    		 |~"\"" ~"\n" any				--regular
-             
-    charsgl = "\\n" 						--newlineescape
-    		 |~"'" ~"\n" any				--regular
+    floatlit = digit+ "." digit+ (("E"|"e") ("+"|"-")? digit+)?
     
-    space    += "//" (~"\n" any)*                      --comment
+    //valid characters in a string
+    char = "\\n" 			    --newlineescape
+         |"\\t"
+         |"\\\\"
+         |"\\\""
+         |~"\"" ~"\n" ~"\\" any		--regular
+         |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}" --usecape
+    space += "#" (~"\n" any)*	    --comment
 }

@@ -8,17 +8,17 @@ canadianPostalCode {
 }
 
 visa {
-    program = visa
-    visa = "4" fifteend --fifteen
-    | "4" twelved --twelve
+    program = visanum
+    visanum = "4" fifteend --fifteen
+    	 | "4" twelved --twelve
     twelved = digit digit digit digit digit digit digit digit digit digit digit digit
     fifteend = digit digit digit digit digit digit digit digit digit digit digit digit digit digit digit
 }
 
 masterCard {
-    program = masterCard
-    masterCard = fiftys fourteend --fourteen
-    | twothousands twelved --twelve
+    program = mastercardnum
+    mastercardnum = fiftys fourteend --fourteen
+               | twothousands twelved --twelve
     fourteend = digit digit digit digit digit digit digit digit digit digit digit digit digit digit
     twelved = digit digit digit digit digit digit digit digit digit digit digit digit
     fiftys = "5" "1".."5"
