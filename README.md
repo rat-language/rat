@@ -15,17 +15,17 @@ As a Statically Typed language, we aim to take Python to the next level. By enfo
 
 Each example will be posted in Rat followed by its JavaScript equivalent.
 
-### helloWorld.rat
+**helloWorld.rat**
 ```rat
 print("Hello, World");
 ```
 
-### helloWorld.js
+**helloWorld.js**
 ```javascript
 console.log("Hello, World");
 ```
 
-### fizzBuzz.rat
+**fizzBuzz.rat**
 ```rat
 void fizzbuzz(n:int){
   for i in 0...n {
@@ -42,7 +42,7 @@ void fizzbuzz(n:int){
 fizzbuzz(16);
 ```
 
-### fizzBuzz.js
+**fizzBuzz.js**
 ```javascript
 function fizzBuzz(n) {
   for (let i = 1; i <= n; i++) {
@@ -58,7 +58,7 @@ function fizzBuzz(n) {
 }
 ```
 
-### factorial.rat
+**factorial.rat**
 ```rat
 int factorial(n:int){
     var value:int = 1;
@@ -71,7 +71,7 @@ int factorial(n:int){
 }
 ```
 
-### factorial.js
+**factorial.js**
 ```javascript
 function factorial(n) {
     let result = 1;
@@ -84,7 +84,7 @@ function factorial(n) {
 }
 ```
 
-### fibonacci.rat
+**fibonacci.rat**
 ```rat
 int fib(n:int){
     # returns the nth value of the fibonacci sequence
@@ -104,7 +104,7 @@ int fib(n:int){
 }
 ```
 
-### fibonacci.js
+**fibonacci.js**
 ```javascript
 function fibonacci(n) {
   let a = 0,
@@ -119,7 +119,8 @@ function fibonacci(n) {
   return b;
 }
 ```
-### prime.rat
+
+**prime.rat**
 ```rat
 bool prime(n:int){
     if (n <= 1) { return false; }
@@ -136,7 +137,7 @@ bool prime(n:int){
 }
 ```
 
-### prime.js
+**prime.js**
 ```javascript
 function isPrime(number) {
   if (number <= 1) return false;
