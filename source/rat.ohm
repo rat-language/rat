@@ -1,3 +1,4 @@
+//rat.ohm
 /*
 ---
 Things I'd change:
@@ -24,7 +25,7 @@ if I get a round to it:
 - I think a do-while loop [repeat-until syntax]
 
 */
-Small {
+Rat {
 	Program = Stmt+
     
     // here, we define valid statements
@@ -41,9 +42,8 @@ Small {
              | return Exp ";"									    --return
              | try Block (timeout Block)? catch Params Block	    --try
              | FuncDecl
-   	
-    
-    
+
+
     FuncDecl = Type id Params Block					--funcdecl
     IfStmt = if Exp Block (else ( Block | IfStmt ))?	            --if
     // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
@@ -70,7 +70,6 @@ Small {
     
     Exp0 = Exp "||" Disjunct --binary
     	 | Disjunct
-            
     Disjunct = Disjunct "&&" Conjunct											--binary
     		 | Conjunct
     // Non-associative relational operators               
@@ -108,23 +107,23 @@ Small {
     
     op = "**" | "*" | "/" | "%" |"+" | "-"
 
-    //KEYWORDS:
     Type = Type "?"								    --optional
          | Type "^"									--promise
          | int | float | bool | string | anything 
          |"[" Type "]" 								--array
          | "[" Type":"Type"]"				        --dictionary
     
+    //KEYWORDS:
     print   = "print" ~alnum
     true    = "true" ~alnum
     false   = "false" ~alnum
     let     = "let" ~alnum
     int     = "int" ~alnum
-    in  = "in" ~alnum
+    in      = "in" ~alnum
     float   = "float" ~alnum
-    const = "const" ~alnum
-    global = "global" ~alnum
-    var = "var" ~alnum
+    const   = "const" ~alnum
+    global  = "global" ~alnum
+    var     = "var" ~alnum
     bool    = "bool" ~alnum
     string  = "str" ~alnum
     while   = "while" ~alnum
@@ -138,12 +137,12 @@ Small {
     of      = "of" ~alnum
     anything= "anything" ~alnum
     as      = "as"  ~alnum
-    pass = "pass" ~alnum
+    pass    = "pass" ~alnum
     await   = "await" ~alnum
 	try     = "try" ~alnum
     catch   = "catch" ~alnum
     one     = "one" ~alnum
-    void = "void" ~alnum
+    void    = "void" ~alnum
     all     = "all" ~alnum
     timeout = "timeout" ~alnum
     

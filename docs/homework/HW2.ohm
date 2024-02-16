@@ -111,8 +111,45 @@ palindromes2358 {
   paltwo = "a" "a" 
   	   | "b" "b" 
        | "c" "c"
-  
   char = "a" | "b" | "c"
 }
 
 
+Problem2 {
+    Program = Funcdec* Exp
+    Funcdec = func id "(" ListOf<id, ","> ")" Body
+    Body = NonemptyListOf<Exp, ";"> endchar
+    
+    Exp = Exp1 if Exp1 else Exp  			--conditional
+    		| Exp1
+    Exp1 = Exp1 ("+" | "-") Exp2 				--additive
+    | Exp2 
+    Exp2 = Exp2 ("" | "/" | "%") Exp3 		--multiplicative
+    | Exp3
+    Exp3 = "-"? Exp4                        --negation
+    Exp4 = Exp5 "!"?                        --factorial
+    Exp5 = num | strlit | Call | id | Parens
+    
+    func = "func" ~idchar
+    endchar = "end" ~idchar
+    if = "if" ~idchar
+    else = "else" ~idchar
+    keyword = func | endchar | if | else
+
+    id = ~keyword (letter|"@") idchar*
+    idchar = alnum | "_" | "@" | "$"
+    
+    num = digit+ ("." digit+)? (("e" | "E") ("+" | "-")? digit+)?
+    strlit = "\"" char* "\""
+    char = "\\n" 			    --newlineescape
+         	|"\\\\"		--doublebackslash
+         	|"\\'"				--backslashsingle
+         	|"\\\""			     --backslashdouble
+         	|"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}" --usecape
+    	 	| ~"\"" any
+    Parens = "(" Exp ")"
+    Call = id "[" Args "]"
+    Args = ListOf<Exp, ",">
+    space += "--" (~"\n" any)*	    --comment
+
+}

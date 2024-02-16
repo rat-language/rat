@@ -46,38 +46,43 @@ const testFixture = {
     good: ["0", "00", "000", "00000", "00000", "000000", "00000000", "1101000000"],
     bad: ["1", "00000000100", "1000000001", "dog0000000"],
   },
+  
   eightThroughThirtyTwo: {
     good: Array(25)
       .fill(0)
       .map((x, i) => i + 8),
     bad: ["1", "0", "00003", "dog", "", "361", "90", "7", "-11"],
   },
+  
   notPythonPycharmPyc: {
     good: ["", "pythons", "pycs", "PYC", "apycharm", "zpyc", "dog", "pythonpyc"],
     bad: ["python", "pycharm", "pyc"],
   },
-  // restrictedFloats: {
-  //   good: ["1e0", "235e9", "1.0e1", "1.0e+122", "55e20"],
-  //   bad: ["3.5E9999", "2.355e-9991", "1e2210"],
-  // },
-  // palindromes2358: {
-  //   good: [
-  //     "aa",
-  //     "bb",
-  //     "cc",
-  //     "aaa",
-  //     "aba",
-  //     "aca",
-  //     "bab",
-  //     "bbb",
-  //     "ababa",
-  //     "abcba",
-  //     "aaaaaaaa",
-  //     "abaaaaba",
-  //     "cbcbbcbc",
-  //   ],
-  //   bad: ["", "a", "ab", "abc", "abbbb", "cbcbcbcb"],
-  // },
+  
+  restrictedFloats: {
+    good: ["1e0", "235e9", "1.0e1", "1.0e+122", "55e20"],
+    bad: ["3.5E9999", "2.355e-9991", "1e2210"],
+  },
+
+  palindromes2358: {
+    good: [
+      "aa",
+      "bb",
+      "cc",
+      "aaa",
+      "aba",
+      "aca",
+      "bab",
+      "bbb",
+      "ababa",
+      "abcba",
+      "aaaaaaaa",
+      "abaaaaba",
+      "cbcbbcbc",
+    ],
+    bad: ["", "a", "ab", "abc", "abbbb", "cbcbcbcb"],
+  },
+  
 }
 
 for (let name of Object.keys(testFixture)) {
