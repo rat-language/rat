@@ -43,7 +43,6 @@ Rat {
              | try Block (timeout Block)? catch Params Block	    --try
              | FuncDecl
 
-
     FuncDecl = Type id Params Block					--funcdecl
     IfStmt = if Exp Block (else ( Block | IfStmt ))?	            --if
     // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
@@ -61,8 +60,7 @@ Rat {
     // Note that this 'Exp' right below, is of lowest precedence, Primarys are of highest precedence
     // Another thing, we named some of the layers in this properly (i.e. Disjunct, conjunct, Factor, etc.) 
     // When we got to some more abstract operators like coalescing, ??, we just named them by levels
-    // i.e. Exp has less precedence than Exp0 which has less precedence than Exp1, and so on...
-    
+    // i.e. Exp has less precedence than Exp0 which has less precedence than Exp1, and so on...    
     Exp = Exp0 "??" Exp0 														--unwrap
         | Exp0
         | ("-"|"!") Primary													    --unary
@@ -75,7 +73,7 @@ Rat {
     // Non-associative relational operators               
 	Conjunct = Comp ( "<=" | "<" | "==" | "!=" | ">=" | ">" ) Comp 	            --binary
     		 | Comp
-            
+
 	Comp = Comp ( "+" | "-" ) Term											    --additive
     	       | Term
     
