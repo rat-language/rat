@@ -5,7 +5,7 @@ import compile from "./compiler.js"
 const help = `rat compiler
 
 Syntax: rat <filename> <outputType>
-
+d
 Prints to stdout according to <outputType>, which must be one of:
 
   parsed     a message that the program was matched ok by the grammar
