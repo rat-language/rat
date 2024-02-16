@@ -84,6 +84,19 @@ notPythonPycharmPyc {
 }
 `);
 
+const eightThroughThirtyTwoGrammar = ohm.grammar(`
+eightthruthirtytwo {
+  ok = range
+  range = "8" end --eight
+  | "9" end       --nine
+  | "1" digit end --tenthroughnineteen
+  | "2" digit end --twentythroughtwentynine
+  | "3" "0" end   --thirty
+  | "3" "1" end   --thirtytwo
+  | "3" "2" end   --thirtythree
+}
+`);
+
 // Add more grammars as needed
 
 // Organize the grammars in an object for easy access
@@ -93,7 +106,8 @@ const grammar = {
   masterCard: masterCardGrammar,
   notThreeEndingInOO : notThreeEndingGrammar,
   divisibleBy16: divisibleBy16Grammar,
-  notPythonPycharmPyc: notPythonPycharmPycGrammar, 
+  notPythonPycharmPyc: notPythonPycharmPycGrammar,
+  eightThroughThirtyTwo: eightThroughThirtyTwoGrammar,
   // Add other grammars here
 };
 

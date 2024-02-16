@@ -46,12 +46,12 @@ const testFixture = {
     good: ["0", "00", "000", "00000", "00000", "000000", "00000000", "1101000000"],
     bad: ["1", "00000000100", "1000000001", "dog0000000"],
   },
-  // eightThroughThirtyTwo: {
-  //   good: Array(25)
-  //     .fill(0)
-  //     .map((x, i) => i + 8),
-  //   bad: ["1", "0", "00003", "dog", "", "361", "90", "7", "-11"],
-  // },
+  eightThroughThirtyTwo: {
+    good: Array(25)
+      .fill(0)
+      .map((x, i) => i + 8),
+    bad: ["1", "0", "00003", "dog", "", "361", "90", "7", "-11"],
+  },
   notPythonPycharmPyc: {
     good: ["", "pythons", "pycs", "PYC", "apycharm", "zpyc", "dog", "pythonpyc"],
     bad: ["python", "pycharm", "pyc"],

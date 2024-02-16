@@ -61,13 +61,6 @@ eightThroughThirtyTwo {
     twenties = "2" "0".."9"
 }
 
-NotPy {
-    valid = ~notvalid any*
-    notvalid = "pyc"~any
-    | "python"~any
-    | "pycharm"~any
-}
-
 eightthruthirtytwo {
     ok = range
     range = "8" end --eight
@@ -78,3 +71,48 @@ eightthruthirtytwo {
     | "3" "1" end   --thirtytwo
     | "3" "2" end   --thirtythree
 }
+
+NotPy {
+    valid = ~notvalid any*
+    notvalid = "pyc"~any
+    | "python"~any
+    | "pycharm"~any
+}
+
+restrictedFloats {
+    program = float
+    float = integer dec? exponent
+    integer = digit+
+    dec = "." digit*
+    exponent = "e" sign? digit digit? digit?
+    sign = "+" | "-"
+}
+
+palindromes2358 {
+  Palindrome  = pal8 | pal5 | pal3 | pal2 
+  pal8 = "a" pal6 "a"
+        | "b" pal6 "b"
+        | "c" pal6 "c"
+  pal6 = "a" pal4 "a"
+        | "b" pal4 "b"
+        | "c" pal4 "c"
+  pal5 = "a" pal3 "a"
+        | "b" pal3 "b"
+        | "c" pal3 "c"
+  pal4 = "a" paltwo "a"
+        | "b" paltwo "b"
+        | "c" paltwo "c"
+  pal3 = "a" char? "a"
+  	   | "b" char? "b"
+       | "c" char? "c"
+  pal2 = "a" "a" "a"? 		--a
+  	   | "b" "b" "b"?		--b
+       | "c" "c" "c"? 		--c
+  paltwo = "a" "a" 
+  	   | "b" "b" 
+       | "c" "c"
+  
+  char = "a" | "b" | "c"
+}
+
+
