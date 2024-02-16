@@ -1,7 +1,5 @@
 var i:int = 0;
-
-// BAD: let i:string = "error";
 while (i <= 10){
-  print (i);
-  i = i + 1;
+  print(i);
+  i += 1;
 }

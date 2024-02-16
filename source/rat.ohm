@@ -16,6 +16,7 @@ Rat {
         | LhsExp op? "=" Exp ";" 									    --assign
         | while Exp Block										--while
         | ForStmt                                              --for
+        | Exp
         | IfStmt
         | pass ";"												--pass
         | BrkStmt

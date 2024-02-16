@@ -1,22 +1,13 @@
-
 void fizzbuzz(n:int){
-  var i:int = 0
-  for (i = 0; i <= n; i++){
+  for i in 0...n {
+  	var fbnum:str = "";
     if ((i % 3==0) || (i % 5 == 0)){
-      if (i % 3 == 0){
-        print("Fizz", end="");
-      }
-      if (i % 5==0){
-        print("Buzz", end="");
-      } 
-    print("");
-  }
-  else{
-    print(i);
-    }
-  }
+      if (i % 3 == 0){ fbnum += "Fizz";}
+      if (i % 5==0){ fbnum += "Buzz";}
+  	}else{fbnum = str(i);}
+    print(fbnum);
+ }
 }
 
-
-fizzbuzz(16)
-// prints fizzbuzz up to 16 in this case
+# prints fizzbuzz up to 16 in this case
+fizzbuzz(16);
