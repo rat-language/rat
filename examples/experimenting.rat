@@ -1,0 +1,20 @@
+# Doing simple syntax experiments for rat parser
+print("testing some rat language");
+var x : int = 8;
+var i : int = 0;
+const y : int = 10;
+
+while(i < 4){
+  
+}
+
+
+
+
+
+
+
+
+
+var z : int = x + y;        # z = 22
+z = z + 1;                  # z = 23

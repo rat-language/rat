@@ -26,6 +26,7 @@ if I get a round to it:
 
 */
 Rat {
+    // Unsure whether we should change to Stmt* for non-empty files as most programming languages will still do empty files
 	Program = Stmt+
     
     // here, we define valid statements
