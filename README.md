@@ -50,7 +50,7 @@ var z:{str:float} = {"six":6.0, "seven":7.0};
 
 **(2.7) EXPRESSIONS:**
 
-![### 3 Formal Syntax](/src/rat.ohm)
+### [3 Formal Syntax](/src/rat.ohm)
 
 ## Features
 As a statically typed language, we aim to take Python to the next level. By enforcing set types for variables and functions, we offer a better overall performance than Pythonic languages. Further, adapting whitespace with simple, yet elegant bracketing, we leave no room for confusion when designing loops, functions, and statements.
