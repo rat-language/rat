@@ -2,8 +2,8 @@ void fizzbuzz(n:int){
   for i in 0...n {
   	var fbnum:str = "";
     if ((i % 3==0) || (i % 5 == 0)){
-      if (i % 3 == 0){ fbnum += "Fizz";}
-      if (i % 5==0){ fbnum += "Buzz";}
+      if (i % 3 == 0){ fbnum += "Fizz"; }
+      if (i % 5==0){ fbnum += "Buzz"; }
   	}else{fbnum = str(i);}
     print(fbnum);
  }

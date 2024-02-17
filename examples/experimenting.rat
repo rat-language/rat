@@ -57,7 +57,7 @@ if x < 4 {
 }
 
 # printing a dictionary
-print({"CA": "Sacramento", "AK":"Juneau"});
+print({ "AZ": "Phoenix", "FL":"Tallahasee" });
 
 # dictionaries
 var m: [int:bool] = {3:false};
@@ -92,7 +92,7 @@ print( f(x)[1][5] );
 
 
 # Indexable Dictionaries
-print ({"CA": "Sacramento", "AK":"Juneau"}["CA"]); 
+print ({ "CA": "Sacramento", "AK":"Juneau" }["CA"]); 
 
 
 var z : int = x + y;        # z = 22
