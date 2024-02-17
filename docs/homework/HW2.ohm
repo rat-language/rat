@@ -102,14 +102,15 @@ palindromes2358 {
   pal3 = "a" char? "a"
       | "b" char? "b"
        | "c" char? "c"
-  pal2 = "a" "a" "a"?   --a
-      | "b" "b" "b"?  --b
-       | "c" "c" "c"?   --c
+  pal2 = "a" "a" "a"?       --a
+      | "b" "b" "b"?        --b
+       | "c" "c" "c"?       --c
   paltwo = "a" "a" 
       | "b" "b" 
        | "c" "c"
   char = "a" | "b" | "c"
 }
+
 PythonStringLit{
 	Program = Stmt+
     Stmt = stringlit
@@ -123,15 +124,15 @@ PythonStringLit{
     longstrlits = "'''" longstringitems* "'''"
     longstrlitd = "\"\"\"" longstringitemd* "\"\"\""
     // top level char
-    char = "\\n" 			    --newlineescape
+    char = "\\n" 			                            --newlineescape
              |"\\t"
              |"\\\\"
     shortstrd = char
-    		        | "\\\""						         --escape
- 			        |~"\"" ~"\n" ~"#" any		--regular
+    		        | "\\\""						    --escape
+ 			        |~"\"" ~"\n" ~"#" any		        --regular
     shortstrs = char
     		       | "\\'"
-	               |~"'" ~"\n" ~"#" any		--regular
+	               |~"'" ~"\n" ~"#" any		            --regular
     longstringitemd = longstringchard
     longstringitems = longstringchars
     longstringchars = char
@@ -147,14 +148,14 @@ Problem2 {
     Funcdec = func id "(" ListOf<id, ","> ")" Body
     Body = NonemptyListOf<Exp, ";"> endchar
     
-    Exp  = Exp1 if Exp1 else Exp            --conditional
+    Exp  = Exp1 if Exp1 else Exp                --conditional
          | Exp1
-    Exp1 = Exp1 ("+" | "-") Exp2            --additive
+    Exp1 = Exp1 ("+"|"-") Exp2                  --additive
          | Exp2 
-    Exp2 = Exp2 ("*" | "/" | "%") Exp3       --multiplicative
+    Exp2 = Exp2 ("*"|"/"|"%") Exp3              --multiplicative
          | Exp3
-    Exp3 = "-"? Exp4                        --negation
-    Exp4 = Exp5 "!"?                        --factorial
+    Exp3 = "-"? Exp4                            --negation
+    Exp4 = Exp5 "!"?                            --factorial
     Exp5 = num | strlit | Call | id | Parens
     
     func = "func" ~idchar

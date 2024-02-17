@@ -131,3 +131,7 @@ dist
 
 # shell scripts
 *.sh
+# Ds stores
+.ds_store
+#py cache
+__pycache__/*

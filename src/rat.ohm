@@ -22,14 +22,19 @@ Rat {
         | RtrnStmt
         | TryStmt
         | FuncDecl
+        | ImportStmt
+        | ImportFrmStmt
     
+    ImportStmt = import id (as id)? ";" 					            --import
+    ImportFrmStmt = import from id "," id ";"			                --importfrom
     LhsExp = id Index*                                                  --indexedvalue
     BrkStmt = break ";"                                                 --break
     PassStmt = pass ";"                                                 --pass
     RtrnStmt = return Exp ";"                                           --return 
     TryStmt = try Block (timeout Block)? catch Params Block
     FuncDecl = (Type|void) id Params Block                              --funcdecl
-
+ 
+	
     IfStmt = if Exp Block (else ( Block | IfStmt ))?                    --if
     // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
     ForStmt  = for id in Iterable Block
@@ -138,6 +143,9 @@ Rat {
     void    = "void" ~idchar
     all     = "all" ~idchar
     timeout = "timeout" ~idchar
+    import = "import" ~idchar
+    as = "as" ~idchar
+    from = "from" ~idchar
 
     // await used for asynchronous functions that perform a call that is promised to return a value
     // await one - used for having an array of promise types, will return value when one promise is fulfilled
@@ -145,8 +153,11 @@ Rat {
     // in asynchronous functions, we can choose to timeout the function if it takes to long to return something
     // distinguishes keywords
 
-    keyword = print | true | false | let | int | float | string | bool | pass
-            | while | for | if | else |else | return | some | no | void | await | one | all | none
+    keyword = print | true | false | let | int
+    			   | float | string | bool | pass
+            	   | while | for | if | else | else | return
+                   | some  | void | await | one | all | none
+                   | import | as | from
 
     //allows you to name your variables
     id = ~keyword (letter| "_") idchar*
