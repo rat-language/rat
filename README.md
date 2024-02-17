@@ -28,24 +28,17 @@ So far, our language supports the following types:
 - `[Type]` array of a specified type
 - `{Type:Type}` dictionary of a specified type
 - `none` Null value types 
-- `` Null value types 
+- `Type?` Optional Type
 
 ```{rat}
 var u:bool = false;
 var v:int = 1;
 var w:float = 2.0;
 var x:str = "three";
-var y:[int] = 
-
+var y:[int] = [4,5];
+var z:{str:float} = {"six":6.0, "seven":7.0};
 ```
 
-the types function<
->, where 
-, representing functions from 
- numeric inputs to a single numeric output.
-Numbers are first-class values, meaning they can be stored in variables, passed to functions, and returned from functions. Functions cannot be: the only thing one can do with a function is call it.
-
-**(2.2) VALUES & TYPES:**
 
 **(2.3) DECLARATION:**
 
@@ -57,9 +50,7 @@ Numbers are first-class values, meaning they can be stored in variables, passed 
 
 **(2.7) EXPRESSIONS:**
 
-### 3 Formal Syntax
-![alt text](/src/rat.ohm)
-
+![### 3 Formal Syntax](/src/rat.ohm)
 
 ## Features
 As a statically typed language, we aim to take Python to the next level. By enforcing set types for variables and functions, we offer a better overall performance than Pythonic languages. Further, adapting whitespace with simple, yet elegant bracketing, we leave no room for confusion when designing loops, functions, and statements.
