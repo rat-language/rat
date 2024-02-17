@@ -1,0 +1,99 @@
+# Doing simple syntax experiments for rat parser
+# I'm just testing these out in the general order I see them on the rat.ohm file
+
+# print statement
+print("testing some rat language");
+
+# testing out the variable declaration
+var x : int = 8;
+var i : int = 0;
+const y : int = 10;
+
+print("x = ");
+
+print(x);
+
+print("y = ");
+print(y);
+
+while(i < 4) {
+  x += 1;
+  i += 1;
+}
+
+var fatrat: [str] = ["f", "a", "t", "r", "a", "t"];
+
+print(x);
+
+i = 0;
+x = 8;
+
+# for loop iterable object
+for letter in fatrat {
+  print(letter);
+}
+
+
+# for loop inclusive range
+for j in 1...10{
+  print(j);
+  if j > 8 {
+    break;
+  }
+}
+
+# for loop exclusive range
+for j in 1..<5{
+  print(j);
+}
+
+# if statement syntax
+if x < 4 {
+  print("x is less than 4");
+} else if x < 7 {
+  print("x is less than 7");
+} else {
+  pass;
+}
+
+# printing a dictionary
+print({"CA": "Sacramento", "AK":"Juneau"});
+
+# dictionaries
+var m: [int:bool] = {3:false};
+
+
+# Implementing Optional Type
+var boss: str? = some "Tina";		# ? indicates optional, some wraps variable in optional
+boss = None;                              # no indicates a null or None type
+
+# new line escapes
+print("Hello \n World");
+
+# printing the index of an iterable object
+var a:[bool] = [true, false, true];
+print (a[1]);
+
+
+# IF YOU HAVE AN OPINION, YOU KNOW WHERE TO FIND ME
+[int] f(x:int) {
+  var f_arr: [int] = [];
+  for i in 0...x {
+  	f_arr += [[]];
+    for j in 0..<7 {
+      f_arr[i] += [i];
+    }
+  }
+  return f_arr;
+}
+
+# For when a function returns an array, and we want to index the array in place.
+print( f(x)[1][5] );
+
+
+# Indexable Dictionaries
+print ({"CA": "Sacramento", "AK":"Juneau"}["CA"]); 
+
+
+var z : int = x + y;        # z = 22
+z = z + 1;                  # z = 23

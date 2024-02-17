@@ -1,0 +1,176 @@
+//rat.ohm
+/*
+Things I'd change:
+- add universal 'None'
+- NEED to add a dot operator
+- Need to fix up the Primary and Iterable types, I see some repition in code, i'm just not ready to change up the ordering of these things.
+- there may be an easier way to implement the 'Call;' Stmt but I'm not too sure yet.
+*/
+Rat {
+    // Unsure whether we should change to Stmt* for non-empty files as most programming languages will still do empty files
+    Program = Stmt*
+    // here, we define valid statements
+    Stmt = print "("Exp ")" ";"							            --print
+        | var id ":" Type "=" Exp ";"						    --vardec
+        | const id ":" Type "=" Exp ";"						--constdec
+        | LhsExp op? "=" Exp ";" 									    --assign
+        | while Exp Block										--while
+        | ForStmt                                              --for
+        | Call ";" 												 --void
+        | IfStmt
+        | pass ";"												--pass
+        | BrkStmt
+        | RtrnStmt
+        | TryStmt
+        | FuncDecl
+
+    
+    LhsExp = id Index* 							--indexedvalue
+    BrkStmt = break ";"							 			    --break
+    RtrnStmt = return Exp ";"									    --return 
+    TryStmt = try Block (timeout Block)? catch Params Block
+    FuncDecl = (Type|void) id Params Block					                --funcdecl
+
+    IfStmt = if Exp Block (else ( Block | IfStmt ))?	            --if
+    // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
+    ForStmt  = for id in Iterable Block
+    // while we generally statically type our language, in cases like this, where we iterate through a 
+    // range of numbers, we will assume that the id is going to be an integer
+
+	Call = id Args
+    Index = "[" Exp "]"
+    Params = "("ListOf<Param, ",">")"
+    Param = id ":" Type
+    Args = "("ListOf<Exp, ",">")"
+    Block = "{" Stmt* "}"    
+    // implementing operator precedence:
+    // We make some atomic expression, and little by little add onto it with different kinds of expressions.
+    // Note that this 'Exp' right below, is of lowest precedence, Primarys are of highest precedence
+    // Another thing, we named some of the layers in this properly (i.e. Disjunct, conjunct, Factor, etc.) 
+    // When we got to some more abstract operators like coalescing, ??, we just named them by levels
+    // i.e. Exp has less precedence than Exp0 which has less precedence than Exp1, and so on...    
+
+    Exp = Exp0 "??" Exp0 														--unwrap
+        | Exp0
+        | ("-"|"!") Primary													    --unary
+        | await ("<<" Exp  ">>" )? ( one | all )? Exp 					        --await
+    Exp0 = Exp "||" Disjunct --binary
+         | Disjunct
+    Disjunct = Disjunct "&&" Conjunct											--binary
+             | Conjunct
+    // Non-associative relational operators               
+    Conjunct = Comp ( "<=" | "<" | "==" | "!=" | ">=" | ">" ) Comp 	            --binary
+             | Comp
+    Comp = Comp ( "+" | "-" ) Term											    --additive
+         | Term
+    // ^above^ implementing left associativity to evaluate expression from left to right
+    Term = Term ( "*" | "/" | "%" ) Factor  								    --multiplicative
+         | Factor
+    // uniquely for factors, we do a Right associativity
+    Factor = Primary "**" Factor											    --binary
+           | Primary
+    // possible assignables to variables
+	// Need to adjust these primaries and the iterable objects. 
+    Primary = strlit | floatlit | intlit | true | false | none
+            | some Exp 						  			    --wrapped
+            | no Type								        --emptyoptional
+            | Iterable Index+				    --lookup
+            | Call						   			    --call
+            | id
+            | TypeConv
+            | Parens
+            | ArrayLit
+            | DictLit
+    
+    TypeConv = Type "(" Exp ")"							  --typeconversion
+    ArrayLit = "["ListOf<Exp, ",">"]" 		  				  --arraylit
+    DictLit = "{" ListOf<Binding,",">"}"				    --dictionarylit
+    Parens = "(" Exp ")"   						                --parens
+
+    Iterable = strlit
+             | Call
+             | id
+             | IterableType "(" Exp ")" 					--iterableTypeConversion
+             | ArrayLit
+             | DictLit
+             | InclusiveRng
+             | ExclusiveRng
+
+    //key:value pairs for dictionaries
+    Binding = Exp ":" Exp
+
+    InclusiveRng = Exp "..." Exp
+    ExclusiveRng = Exp "..<" Exp
+
+    op = "**" | "*" | "/" | "%" |"+" | "-"
+
+    Type = Type "?"								    --optional
+        | Type "^"									--promise
+        | int | float | bool | anything         
+        | IterableType
+
+	IterableType = string
+                          |"[" Type "]" 								--array
+                          | "[" Type":"Type"]"				        --dictionary
+    
+    //KEYWORDS:
+    print   = "print" ~idchar
+    true    = "true" ~idchar
+    false   = "false" ~idchar
+    let     = "let" ~idchar
+    int     = "int" ~idchar
+    in      = "in" ~idchar
+    float   = "float" ~idchar
+    const   = "const" ~idchar
+    global  = "global" ~idchar
+    var     = "var" ~idchar
+    bool    = "bool" ~idchar
+    string  = "str" ~idchar
+    while   = "while" ~idchar
+    for     = "for" ~idchar
+    if   	= "if" ~idchar
+    else    = "else" ~idchar
+    break   = "break" ~idchar
+    return  = "return" ~idchar
+    some    = "some" ~idchar
+    no      = "no" ~idchar
+    none    = "None" ~idchar
+    anything= "anything" ~idchar
+    pass    = "pass" ~idchar
+    await   = "await" ~idchar
+    try     = "try" ~idchar
+    catch   = "catch" ~idchar
+    one     = "one" ~idchar
+    void    = "void" ~idchar
+    all     = "all" ~idchar
+    timeout = "timeout" ~idchar
+
+
+    // await used for asynchronous functions that perform a call that is promised to return a value
+    // await one - used for having an array of promise types, will return value when one promise is fulfilled
+    // await all - will return an array of promise strings.  
+
+    // in asynchronous functions, we can choose to timeout the function if it takes to long to return something
+
+    //distinguishes keywords
+
+    keyword = print | true | false | let | int | float | string | bool | pass
+            | while | for | if | else |else | return | some | no | void | await | one | all | none
+
+    //allows you to name your variables
+    id = ~keyword (letter| "_") idchar*
+    idchar = (alnum|"_")
+
+    strlit = "\"" char* "\""
+    intlit = digit+
+    floatlit = digit+ "." digit+ (("E"|"e") ("+"|"-")? digit+)?
+    //valid characters in a string
+
+    char = "\\n" 			    --newlineescape
+        |"\\t"
+        |"\\\\"
+        |"\\\""
+        |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}" --usecape
+        |~"\"" ~"\n" ~"\\" any		--regular
+    space += "#" (~"\n" any)*	    --comment
+}

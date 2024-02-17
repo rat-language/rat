@@ -1,48 +1,48 @@
 ![alt text](/docs/rat.png)
 
 # RAT
-
-### Why Rat?
+**Authors**: Alex Alvarez, Riley Kehoe, Chris Beaudoin, Sam Prosser, Carter Esparza
+## Why Rat?
 
 mmmm cheeeeeeese...
 Originally, following a decent amount of Pythonic structure, we began thinking of naming our child after some of the great Snake languages. However, having noticed how popular Python is for its legibility, yet its overall lack of exciting performance, we began to brainstorm ways to leave the Snake game behind. Thus birthing RAT. See, being created from a small group of LMU Computer Scientists, we understand our position as the small language in this wide world of Programming. Yet, unlike in the natural world, we are no prey. We are a: **R**eally. **A**wesome. **T**eam.
 
-### Features
+## Features
 
 As a Statically Typed language, we aim to take Python to the next level. By enforcing set types for variables and functions, we offer a better overall performance than Pythonic languages. Further, adapting whitespace with simple, yet elegant bracketing, we leave no room for confusion when designing loops, functions, and statements.
 
-### Examples
+## Examples
 
-Each example will be posted in RAT followed by its JS equivalent.
+Each example will be posted in Rat followed by its JavaScript equivalent.
 
+**helloWorld.rat**
 ```rat
 print("Hello, World");
 ```
 
+**helloWorld.js**
 ```javascript
 console.log("Hello, World");
 ```
 
+**fizzBuzz.rat**
 ```rat
 void fizzbuzz(n:int){
-    var i:int = 0
-    for (i = 0; i <= n; i++){
-        if ((i % 3==0) || (i % 5 == 0)){
-            if (i % 3 == 0){
-                print("Fizz", end="");
-            }
-            if (i % 5==0){
-                print("Buzz", end="");
-            }
-            print("");
-        }
-        else{
-            print(i);
-        }
-    }
+  for i in 0...n {
+  	var fbnum:str = "";
+    if ((i % 3==0) || (i % 5 == 0)){
+      if (i % 3 == 0){ fbnum += "Fizz";}
+      if (i % 5==0){ fbnum += "Buzz";}
+  	}else{fbnum = str(i);}
+    print(fbnum);
+ }
 }
+
+# prints fizzbuzz up to 16 in this case
+fizzbuzz(16);
 ```
 
+**fizzBuzz.js**
 ```javascript
 function fizzBuzz(n) {
   for (let i = 1; i <= n; i++) {
@@ -58,40 +58,44 @@ function fizzBuzz(n) {
 }
 ```
 
+**factorial.rat**
 ```rat
 int factorial(n:int){
     var value:int = 1;
-    var i:int = 1;
-        while(i <= n){
-            value = value \* i;
-            i = i + 1;
+    if (n != 0 && n != 1){
+        for i in 2...n {
+            value *= i;
         }
+    }
     return value;
 }
 ```
 
+**factorial.js**
 ```javascript
 function factorial(n) {
     let result = 1;
-    for (let i = 2; i <= n; i++) {
-        result \*= i;
+    if (n != 0 && n != 1){
+        for (let i = 2; i <= n; i++) {
+            result *= i;
+        }
     }
     return result;
 }
 ```
 
+**fibonacci.rat**
 ```rat
 int fib(n:int){
-    // returns the nth value of the fibonacci sequence
+    # returns the nth value of the fibonacci sequence
     var a:int = 0;
     var b:int = 1;
     var c:int = 0;
-    var i:int = 2;
 
     if (n == 0){
         return a;
     }
-    for (i = 2; i <= n; i++) {
+    for i in 2...n {
         c = a + b;
         a = b;
         b = c;
@@ -100,6 +104,7 @@ int fib(n:int){
 }
 ```
 
+**fibonacci.js**
 ```javascript
 function fibonacci(n) {
   let a = 0,
@@ -115,26 +120,24 @@ function fibonacci(n) {
 }
 ```
 
+**prime.rat**
 ```rat
 bool prime(n:int){
-    if (n <= 1) {
-        return false;
-    }
-    if (n <= 3) {
-        return true;
-    }
-    if (n % 2 == 0) || (n % 3 == 0) {
-        return false;
-    }
-    for (i = 5; i \* i <= n; i += 6) {
-        if ((n % i == 0) || (n % (i + 2)) == 0){
-            return false;
+    if (n <= 1) { return false; }
+    if (n <= 3) { return true; }
+    if (n % 2 == 0) || (n % 3 == 0) { return false; }
+    var i:int = 5;
+    while i*i <= n {
+    	if (n % i==0) || (n % (i+2)==0) {
+        	return false;
         }
+        i += 6;
     }
-return true;
+    return true;
 }
 ```
 
+**prime.js**
 ```javascript
 function isPrime(number) {
   if (number <= 1) return false;

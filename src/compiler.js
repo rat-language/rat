@@ -10,11 +10,20 @@ export default function compile(source, outputType) {
   if (!["parsed", "analyzed", "optimized", "js"].includes(outputType)) {
     throw new Error("Unknown output type")
   }
+  
   const match = parse(source)
-  if (outputType === "parsed") return "Syntax is ok"
+  if (outputType === "parsed"){
+    return "Syntax is ok"
+  }
+  
   const analyzed = analyze(match)
-  if (outputType === "analyzed") return analyzed
+  if (outputType === "analyzed") {
+    return analyzed
+  }
+
   const optimized = optimize(analyzed)
-  if (outputType === "optimized") return optimized
+  if (outputType === "optimized") {
+    return optimized
+  }
   return generate(optimized)
 }
