@@ -81,7 +81,6 @@ const testFixture = {
     ],
     bad: ["", "a", "ab", "abc", "abbbb", "aabbaa", "cbcbcbcb"],
   },
-  
   pythonStringLiterals: {
     good: String.raw`''
       ""

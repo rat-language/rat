@@ -133,36 +133,36 @@ palindromes2358 {
   char = "a" | "b" | "c"
 }
 `)
-const pythonStringLiteralsGrammar =ohm.grammar(`PythonStringLit{
+const pythonStringLiteralsGrammar =ohm.grammar(`
+PythonStringLit{
 	Program = Stmt+
-    Stmt = stringlit
-    stringlit = stringprefix? (longstringlit | stringlitd | stringlits)
-    stringprefix = "r" | "u" | "R" | "U" | "f" | "F"
-                     | "fr" | "Fr" | "fR" | "FR" | "rf" | "rF" | "Rf" | "RF"
-    // short string
-    stringlits = "'" shortstrs* "'"
-               |  "\"" shortstrd* "\""
-    longstringlit = longstrlits | longstrlitd
-    longstrlits = "'''" longstringitems* "'''"
-    longstrlitd = "\"\"\"" longstringitemd* "\"\"\""
-    // top level char
-    char = "\\n" 			    --newlineescape
-             |"\\t"
-             |"\\\\"
-    shortstrd = char
-    		      | "\\\""						         --escape
- 			        |~"\"" ~"\n" any		--regulard
-    shortstrs = char
-    		       | "\\'"
-	             |~"'" ~"\n" any		--regulars
-    longstringitemd = longstringchard
-    longstringitems = longstringchars
-    longstringchars = char
-    						  | "\\\'"
-    						  | ~"'''" any 		--regular
-    longstringchard = char
-    						  | "\\\""
-    						  | ~"\"\"\"" any 		--regular
+  Stmt = stringlit
+  stringlit = stringprefix? (longstringlit | stringlitd | stringlits)
+  stringprefix = "r" | "u" | "R" | "U" | "f" | "F"
+               | "fr" | "Fr" | "fR" | "FR" | "rf" | "rF" | "Rf" | "RF"
+  stringlits = "'" shortstrs* "'"
+              |  "\"" shortstrd* "\""
+  longstringlit = longstrlits | longstrlitd
+  longstrlits = "'''" longstringitems* "'''"
+  longstrlitd = "\"\"\"" longstringitemd* "\"\"\""
+  // top level char
+  char = "\\n" 			    --newlineescape
+            |"\\t"
+            |"\\\\"
+  shortstrd = char
+            | "\\\""						         --escape
+            |~"\"" ~"\n" any		--regulard
+  shortstrs = char
+              | "\\'"
+              |~"'" ~"\n" any		--regulars
+  longstringitemd = longstringchard
+  longstringitems = longstringchars
+  longstringchars = char
+                | "\\\'"
+                | ~"'''" any 		--regular
+  longstringchard = char
+                | "\\\""
+                | ~"\"\"\"" any 		--regular
 }
 `)
 // Add more grammars as needed
