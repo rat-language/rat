@@ -9,13 +9,13 @@ Rat {
     // Unsure whether we should change to Stmt* for non-empty files as most programming languages will still do empty files
     Program = Stmt*
     // here, we define valid statements
-    Stmt = print "("Exp ")" ";"							            --print
-        | var id ":" Type "=" Exp ";"						        --vardec
-        | const id ":" Type "=" Exp ";"						        --constdec
-        | LhsExp op? "=" Exp ";" 									--assign
-        | while Exp Block										    --while
-        | ForStmt                                                   --for
-        | Call ";" 												    --void
+    Stmt = print "("Exp ")" ";"                         --print
+        | var id ":" Type "=" Exp ";"                   --vardec
+        | const id ":" Type "=" Exp ";"                 --constdec
+        | LhsExp op? "=" Exp ";"                        --assign
+        | while Exp Block                               --while
+        | ForStmt                                       --for
+        | Call ";"                                      --void
         | IfStmt
         | PassStmt
         | BrkStmt
@@ -23,20 +23,20 @@ Rat {
         | TryStmt
         | FuncDecl
     
-    LhsExp = id Index* 							                    --indexedvalue
-    BrkStmt = break ";"							 			        --break
-    PassStmt = pass ";"												--pass
-    RtrnStmt = return Exp ";"									    --return 
+    LhsExp = id Index*                                                  --indexedvalue
+    BrkStmt = break ";"                                                 --break
+    PassStmt = pass ";"                                                 --pass
+    RtrnStmt = return Exp ";"                                           --return 
     TryStmt = try Block (timeout Block)? catch Params Block
-    FuncDecl = (Type|void) id Params Block					        --funcdecl
+    FuncDecl = (Type|void) id Params Block                              --funcdecl
 
-    IfStmt = if Exp Block (else ( Block | IfStmt ))?	            --if
+    IfStmt = if Exp Block (else ( Block | IfStmt ))?                    --if
     // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
     ForStmt  = for id in Iterable Block
     // while we generally statically type our language, in cases like this, where we iterate through a 
     // range of numbers, we will assume that the id is going to be an integer
 
-	Call = id Args
+    Call = id Args
     Index = "[" Exp "]"
     Params = "("ListOf<Param, ",">")"
     Param = id ":" Type
@@ -44,24 +44,24 @@ Rat {
     Block = "{" Stmt* "}"
 
     // lowest precedence
-    Exp = Exp0 "??" Exp0 														--unwrap
+    Exp = Exp0 "??" Exp0                                                            --unwrap
         | Exp0
-        | ("-"|"!") Primary													    --unary
-        | await ("<<" Exp  ">>" )? ( one | all )? Exp 					        --await
-    Exp0 = Exp "||" Disjunct                                                    --logicalor
+        | ("-"|"!") Primary                                                         --unary
+        | await ("<<" Exp  ">>" )? ( one | all )? Exp                               --await
+    Exp0 = Exp "||" Disjunct                                                        --logicalor
          | Disjunct
-    Disjunct = Disjunct "&&" Conjunct											--logicaland
+    Disjunct = Disjunct "&&" Conjunct                                               --logicaland
              | Conjunct
     // Non-associative relational operators
-    Conjunct = Comp ( "<=" | "<" | "==" | "!=" | ">=" | ">" ) Comp 	            --comparative
+    Conjunct = Comp ( "<=" | "<" | "==" | "!=" | ">=" | ">" ) Comp                  --comparative
              | Comp
-    Comp = Comp ( "+" | "-" ) Term											    --additive
+    Comp = Comp ( "+" | "-" ) Term                                                  --additive
          | Term
     // ^left associativity
-    Term = Term ( "*" | "/" | "%" ) Factor  								    --multiplicative
+    Term = Term ( "*" | "/" | "%" ) Factor                                          --multiplicative
          | Factor
     // Right associativity + Highest precedence
-    Factor = Primary "**" Factor											    --exponent
+    Factor = Primary "**" Factor                                                    --exponent
            | Primary
     // possible assignables to variables
     Primary = strlit 
@@ -70,24 +70,24 @@ Rat {
             | true 
             | false 
             | none
-            | some Exp 						  			    --wrapped
-            | Iterable Index+				                --lookup
-            | Call						   			        --call
+            | some Exp                                              --wrapped
+            | Iterable Index+                                       --lookup
+            | Call                                                  --call
             | id
             | TypeConv
             | Parens
             | ArrayLit
             | DictLit
     
-    TypeConv = Type "(" Exp ")"							    --typeconversion
-    ArrayLit = "["ListOf<Exp, ",">"]" 		  			    --arraylit
-    DictLit = "{" ListOf<Binding,",">"}"				    --dictionarylit
-    Parens = "(" Exp ")"   						            --parens
+    TypeConv = Type "(" Exp ")"                                     --typeconversion
+    ArrayLit = "["ListOf<Exp, ",">"]"                               --arraylit
+    DictLit = "{" ListOf<Binding,",">"}"                            --dictionarylit
+    Parens = "(" Exp ")"                                            --parens
 
     Iterable = strlit
              | Call
              | id
-             | IterableType "(" Exp ")" 					--iterableTypeConversion
+             | IterableType "(" Exp ")"                             --iterableTypeConversion
              | ArrayLit
              | DictLit
              | InclusiveRng
@@ -99,14 +99,14 @@ Rat {
     ExclusiveRng = Exp "..<" Exp
     op = "**" | "*" | "/" | "%" |"+" | "-"
 
-    Type = Type "?"								    --optional
-         | Type "^"									--promise
+    Type = Type "?"                                                 --optional
+         | Type "^"                                                 --promise
          | int | float | bool | anything
          | IterableType
 
-	IterableType = string
-                 |"[" Type "]" 								--array
-                 | "[" Type":"Type"]"				        --dictionary
+    IterableType = string
+                 |"[" Type "]"                                      --array
+                 | "[" Type":"Type"]"                               --dictionary
     
     //KEYWORDS:
     print   = "print" ~idchar
@@ -123,7 +123,7 @@ Rat {
     string  = "str" ~idchar
     while   = "while" ~idchar
     for     = "for" ~idchar
-    if   	= "if" ~idchar
+    if       = "if" ~idchar
     else    = "else" ~idchar
     break   = "break" ~idchar
     return  = "return" ~idchar
@@ -157,11 +157,11 @@ Rat {
     floatlit = digit+ "." digit+ (("E"|"e") ("+"|"-")? digit+)?
     //valid characters in a string
 
-    char = "\\n" 			    --newlineescape
+    char = "\\n"                                                                --newlineescape
         |"\\t"
         |"\\\\"
         |"\\\""
-        |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}" --usecape
-        |~"\"" ~"\n" ~"\\" any		--regular
-    space += "#" (~"\n" any)*	    --comment
+        |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}"   --usecape
+        |~"\"" ~"\n" ~"\\" any                                                  --regular
+    space += "#" (~"\n" any)*                                                   --comment
 }
