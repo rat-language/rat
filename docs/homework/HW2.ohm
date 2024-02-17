@@ -151,7 +151,7 @@ Problem2 {
          | Exp1
     Exp1 = Exp1 ("+" | "-") Exp2            --additive
          | Exp2 
-    Exp2 = Exp2 ("" | "/" | "%") Exp3       --multiplicative
+    Exp2 = Exp2 ("*" | "/" | "%") Exp3       --multiplicative
          | Exp3
     Exp3 = "-"? Exp4                        --negation
     Exp4 = Exp5 "!"?                        --factorial
@@ -175,7 +175,7 @@ Problem2 {
           |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}" --usecape
        | ~"\"" any
     Parens = "(" Exp ")"
-    Call = id "[" Args "]"
+    Call = id "[" Args* "]"
     Args = ListOf<Exp, ",">
     space += "--" (~"\n" any)*                  --comment
 }
