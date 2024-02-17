@@ -8,7 +8,7 @@ Basis for code from: https://github.com/rtoal/bella/tree/main
 import * as fs from "fs";
 import * as ohm from "ohm-js";
 
-const grammar = ohm.grammar(fs.readFileSync("source/rat.ohm"))
+const grammar = ohm.grammar(fs.readFileSync("src/rat.ohm"))
 
 // Returns the Ohm match if successful, otherwise throws an error
 export default function parse(sourceCode) {

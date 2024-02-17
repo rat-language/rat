@@ -4,19 +4,19 @@ Things I'd change:
 - add universal 'None'
 - NEED to add a dot operator
 - Need to fix up the Primary and Iterable types, I see some repition in code, i'm just not ready to change up the ordering of these things.
+- there may be an easier way to implement the 'Call;' Stmt but I'm not too sure yet.
 */
 Rat {
     // Unsure whether we should change to Stmt* for non-empty files as most programming languages will still do empty files
-    Program = Stmt+
+    Program = Stmt*
     // here, we define valid statements
-
     Stmt = print "("Exp ")" ";"							            --print
         | var id ":" Type "=" Exp ";"						    --vardec
         | const id ":" Type "=" Exp ";"						--constdec
         | LhsExp op? "=" Exp ";" 									    --assign
         | while Exp Block										--while
         | ForStmt                                              --for
-        | Exp
+        | Call ";" 												 --void
         | IfStmt
         | pass ";"												--pass
         | BrkStmt
@@ -24,11 +24,12 @@ Rat {
         | TryStmt
         | FuncDecl
 
+    
     LhsExp = id Index* 							--indexedvalue
     BrkStmt = break ";"							 			    --break
     RtrnStmt = return Exp ";"									    --return 
     TryStmt = try Block (timeout Block)? catch Params Block
-    FuncDecl = Type id Params Block					                --funcdecl
+    FuncDecl = (Type|void) id Params Block					                --funcdecl
 
     IfStmt = if Exp Block (else ( Block | IfStmt ))?	            --if
     // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
@@ -49,59 +50,51 @@ Rat {
     // When we got to some more abstract operators like coalescing, ??, we just named them by levels
     // i.e. Exp has less precedence than Exp0 which has less precedence than Exp1, and so on...    
 
-
-
     Exp = Exp0 "??" Exp0 														--unwrap
         | Exp0
         | ("-"|"!") Primary													    --unary
         | await ("<<" Exp  ">>" )? ( one | all )? Exp 					        --await
     Exp0 = Exp "||" Disjunct --binary
-        | Disjunct
+         | Disjunct
     Disjunct = Disjunct "&&" Conjunct											--binary
-        | Conjunct
+             | Conjunct
     // Non-associative relational operators               
     Conjunct = Comp ( "<=" | "<" | "==" | "!=" | ">=" | ">" ) Comp 	            --binary
-        | Comp
+             | Comp
     Comp = Comp ( "+" | "-" ) Term											    --additive
-                | Term
+         | Term
     // ^above^ implementing left associativity to evaluate expression from left to right
-
     Term = Term ( "*" | "/" | "%" ) Factor  								    --multiplicative
-        | Factor
+         | Factor
     // uniquely for factors, we do a Right associativity
-
     Factor = Primary "**" Factor											    --binary
-            | Primary
+           | Primary
     // possible assignables to variables
-
 	// Need to adjust these primaries and the iterable objects. 
-    Primary = strlit
-            | floatlit
-            | intlit
-            | true
-            | false
+    Primary = strlit | floatlit | intlit | true | false | none
             | some Exp 						  			    --wrapped
             | no Type								        --emptyoptional
             | Iterable Index+				    --lookup
             | Call						   			    --call
             | id
             | TypeConv
-            | "(" Exp ")"   						                --parens
+            | Parens
             | ArrayLit
             | DictLit
     
     TypeConv = Type "(" Exp ")"							  --typeconversion
     ArrayLit = "["ListOf<Exp, ",">"]" 		  				  --arraylit
     DictLit = "{" ListOf<Binding,",">"}"				    --dictionarylit
-    
+    Parens = "(" Exp ")"   						                --parens
+
     Iterable = strlit
-    			   | Call
-                   | id
-                   | IterableType "(" Exp ")" 					--iterableTypeConversion
-                   | ArrayLit
-                   | DictLit
-                   | InclusiveRng
-                   | ExclusiveRng
+             | Call
+             | id
+             | IterableType "(" Exp ")" 					--iterableTypeConversion
+             | ArrayLit
+             | DictLit
+             | InclusiveRng
+             | ExclusiveRng
 
     //key:value pairs for dictionaries
     Binding = Exp ":" Exp
@@ -110,7 +103,6 @@ Rat {
     ExclusiveRng = Exp "..<" Exp
 
     op = "**" | "*" | "/" | "%" |"+" | "-"
-    //KEYWORDS:
 
     Type = Type "?"								    --optional
         | Type "^"									--promise
@@ -121,6 +113,7 @@ Rat {
                           |"[" Type "]" 								--array
                           | "[" Type":"Type"]"				        --dictionary
     
+    //KEYWORDS:
     print   = "print" ~idchar
     true    = "true" ~idchar
     false   = "false" ~idchar
@@ -141,6 +134,7 @@ Rat {
     return  = "return" ~idchar
     some    = "some" ~idchar
     no      = "no" ~idchar
+    none    = "None" ~idchar
     anything= "anything" ~idchar
     pass    = "pass" ~idchar
     await   = "await" ~idchar
@@ -161,8 +155,7 @@ Rat {
     //distinguishes keywords
 
     keyword = print | true | false | let | int | float | string | bool | pass
-            | while | for | if | else |else | return | some | no | void
-            | anything | await | try | catch | one | all | timeout
+            | while | for | if | else |else | return | some | no | void | await | one | all | none
 
     //allows you to name your variables
     id = ~keyword (letter| "_") idchar*
@@ -177,7 +170,7 @@ Rat {
         |"\\t"
         |"\\\\"
         |"\\\""
-        |~"\"" ~"\n" ~"\\" any		--regular
         |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}" --usecape
+        |~"\"" ~"\n" ~"\\" any		--regular
     space += "#" (~"\n" any)*	    --comment
 }

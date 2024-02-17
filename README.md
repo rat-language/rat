@@ -1,7 +1,7 @@
 ![alt text](/docs/rat.png)
 
 # RAT
-
+**Authors**: Alex Alvarez, Riley Kehoe, Chris Beaudoin, Sam Prosser, Carter Esparza
 ## Why Rat?
 
 mmmm cheeeeeeese...
