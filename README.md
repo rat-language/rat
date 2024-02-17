@@ -2,14 +2,26 @@
 
 # RAT
 **Authors**: Alex Alvarez, Riley Kehoe, Chris Beaudoin, Sam Prosser, Carter Esparza
-## Why Rat?
 
-mmmm cheeeeeeese...
-Originally, following a decent amount of Pythonic structure, we began thinking of naming our child after some of the great Snake languages. However, having noticed how popular Python is for its legibility, yet its overall lack of exciting performance, we began to brainstorm ways to leave the Snake game behind. Thus birthing RAT. See, being created from a small group of LMU Computer Scientists, we understand our position as the small language in this wide world of Programming. Yet, unlike in the natural world, we are no prey. We are a: **R**eally. **A**wesome. **T**eam.
+## Language Specification
+
+### 1 Introduction
+Our intentions with the project were to combine the simplified syntax of python with the performance enhancement that comes with statically typed languages.
+The following sections will define the rat programming language
+
+### 2 Language Description
+**i.Programs**\n
+**Programs** written in rat will consist of one or more statements
+```rat
+var i:int = 0;        # variable declaration
+while (i <= 10){      # While statement
+  print(i);           # print statement
+  i += 1;             # augmented assignment statement 
+}
+```
 
 ## Features
-
-As a Statically Typed language, we aim to take Python to the next level. By enforcing set types for variables and functions, we offer a better overall performance than Pythonic languages. Further, adapting whitespace with simple, yet elegant bracketing, we leave no room for confusion when designing loops, functions, and statements.
+As a statically typed language, we aim to take Python to the next level. By enforcing set types for variables and functions, we offer a better overall performance than Pythonic languages. Further, adapting whitespace with simple, yet elegant bracketing, we leave no room for confusion when designing loops, functions, and statements.
 
 ## Examples
 
