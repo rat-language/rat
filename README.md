@@ -95,6 +95,7 @@ As a statically typed language, we aim to take Python to the next level. By enfo
 ## Examples
 Each example will be posted in Rat followed by its JavaScript equivalent.
 
+### Hello World
 **helloWorld.rat**
 ```rat
 print("Hello, World");
@@ -104,7 +105,7 @@ print("Hello, World");
 ```javascript
 console.log("Hello, World");
 ```
-
+### FizzBuzz
 **fizzBuzz.rat**
 ```rat
 void fizzbuzz(n:int){
@@ -137,7 +138,7 @@ function fizzBuzz(n) {
   }
 }
 ```
-
+### Factorial
 **factorial.rat**
 ```rat
 int factorial(n:int){
@@ -163,7 +164,7 @@ function factorial(n) {
     return result;
 }
 ```
-
+### Fibonacci Numbers
 **fibonacci.rat**
 ```rat
 int fib(n:int){
@@ -200,6 +201,7 @@ function fibonacci(n) {
 }
 ```
 
+### Prime Numbers
 **prime.rat**
 ```rat
 bool prime(n:int){
