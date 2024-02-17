@@ -10,7 +10,7 @@ Our intentions with the project were to combine the simplified syntax of python 
 The following sections will define the rat programming language
 
 ### 2 Language Description
-**i.Programs**\n
+**(2.1) PROGRAMS:**
 **Programs** written in rat will consist of one or more statements
 ```rat
 var i:int = 0;        # variable declaration
@@ -19,6 +19,17 @@ while (i <= 10){      # While statement
   i += 1;             # augmented assignment statement 
 }
 ```
+**(2.2) VALUES & TYPES:**
+All values in Bella are instances of a type. The language has the following types:
+
+- the type $number$ of IEEE-754 binary64 values.
+the types function<
+>, where 
+, representing functions from 
+ numeric inputs to a single numeric output.
+Numbers are first-class values, meaning they can be stored in variables, passed to functions, and returned from functions. Functions cannot be: the only thing one can do with a function is call it.
+
+Numbers are written as in JavaScript:
 
 ## Features
 As a statically typed language, we aim to take Python to the next level. By enforcing set types for variables and functions, we offer a better overall performance than Pythonic languages. Further, adapting whitespace with simple, yet elegant bracketing, we leave no room for confusion when designing loops, functions, and statements.
