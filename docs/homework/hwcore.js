@@ -10,11 +10,9 @@ import fs from 'fs';
 const canadianPostalCodeGrammar = ohm.grammar(`
 canadianPostalCode {
   program = postalCode
-  postalCode = firstPart char " " secondPart
-  secondPart = digit char digit
-  firstPart = ~"M0" char digit 
-
-  char = "A" | "B" | "C" | "E" | "G" | "H" | "J" | "K" | "L" | "M" | "N" | "P" | "R" | "S" | "T" | "V" | "X" | "Y"
+  postalCode = firstPart char " " digit char digit
+  firstPart = ~"M0" char digit
+  char = ~"D" ~"F" ~"I" ~"O" ~"Q" ~"U" upper
 }
 `);
 
@@ -78,15 +76,16 @@ divisibleBy16 {
 }
 `);
 const notPythonPycharmPycGrammar = ohm.grammar(`
-notPythonPycharmPyc {
-	goodvalues = ~badvalues any*
-  badvalues = "python" ~any | "pycharm" ~any | "pyc" ~any
+NotPy {
+  program = valid
+  valid = ~notvalid any*
+  notvalid = "py" ("charm"|"c"|"thon") end
 }
 `);
 
 const eightThroughThirtyTwoGrammar = ohm.grammar(`
 eightthruthirtytwo {
-  ok = range
+  program = range
   range = "8" end --eight
   | "9" end       --nine
   | "1" digit end --tenthroughnineteen
@@ -97,8 +96,75 @@ eightthruthirtytwo {
 }
 `);
 
-
-
+const restrictedFloatsGrammar = ohm.grammar(`
+restrictedFloats {
+  program = float
+  float = integer dec? exponent
+  integer = digit+
+  dec = "." digit*
+  exponent = "e" sign? digit digit? digit?
+  sign = "+" | "-"
+}
+`);
+const palindromes2358Grammar = ohm.grammar(`
+palindromes2358 {
+  Palindrome  = pal8 | pal5 | pal3 | pal2 
+  pal8 = "a" pal6 "a"
+       | "b" pal6 "b"
+       | "c" pal6 "c"
+  pal6 = "a" pal4 "a"
+       | "b" pal4 "b"
+       | "c" pal4 "c"
+  pal5 = "a" pal3 "a"
+       | "b" pal3 "b"
+       | "c" pal3 "c"
+  pal4 = "a" paltwo "a"
+       | "b" paltwo "b"
+       | "c" paltwo "c"
+  pal3 = "a" char? "a"
+      | "b" char? "b"
+       | "c" char? "c"
+  pal2 = "a" "a" "a"?   --a
+      | "b" "b" "b"?  --b
+       | "c" "c" "c"?   --c
+  paltwo = "a" "a" 
+      | "b" "b" 
+       | "c" "c"
+  char = "a" | "b" | "c"
+}
+`)
+const pythonStringLiteralsGrammar =ohm.grammar(`PythonStringLit{
+	Program = Stmt+
+    Stmt = stringlit
+    stringlit = stringprefix? (longstringlit | stringlitd | stringlits)
+    stringprefix = "r" | "u" | "R" | "U" | "f" | "F"
+                     | "fr" | "Fr" | "fR" | "FR" | "rf" | "rF" | "Rf" | "RF"
+    // short string
+    stringlits = "'" shortstrs* "'"
+               |  "\"" shortstrd* "\""
+    longstringlit = longstrlits | longstrlitd
+    longstrlits = "'''" longstringitems* "'''"
+    longstrlitd = "\"\"\"" longstringitemd* "\"\"\""
+    // top level char
+    char = "\\n" 			    --newlineescape
+             |"\\t"
+             |"\\\\"
+    shortstrd = char
+    		      | "\\\""						         --escape
+ 			        |~"\"" ~"\n" any		--regulard
+    shortstrs = char
+    		       | "\\'"
+	             |~"'" ~"\n" any		--regulars
+    longstringitemd = longstringchard
+    longstringitems = longstringchars
+    longstringchars = char
+    						  | "\\\'"
+    						  | ~"'''" any 		--regular
+    longstringchard = char
+    						  | "\\\""
+    						  | ~"\"\"\"" any 		--regular
+}
+`)
 // Add more grammars as needed
 
 // Organize the grammars in an object for easy access
@@ -110,7 +176,9 @@ const grammar = {
   divisibleBy16: divisibleBy16Grammar,
   notPythonPycharmPyc: notPythonPycharmPycGrammar,
   eightThroughThirtyTwo: eightThroughThirtyTwoGrammar,
-  // Add other grammars here
+  restrictedFloats: restrictedFloatsGrammar,
+  palindromes2358: palindromes2358Grammar,
+  pythonStringLiterals: pythonStringLiteralsGrammar,
 };
 
 // Export the grammar object for use in other modules

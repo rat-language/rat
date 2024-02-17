@@ -1,5 +1,4 @@
 import assert from "assert"
-// import { matches } from "../ohm_exercises.js"
 import { matches } from "./ohm_exercises.js"
 
 const testFixture = {
@@ -80,9 +79,41 @@ const testFixture = {
       "abaaaaba",
       "cbcbbcbc",
     ],
-    bad: ["", "a", "ab", "abc", "abbbb", "cbcbcbcb"],
+    bad: ["", "a", "ab", "abc", "abbbb", "aabbaa", "cbcbcbcb"],
   },
   
+  pythonStringLiterals: {
+    good: String.raw`''
+      ""
+      'hello'
+      "world"
+      'a\'b'
+      "a\"b"
+      '\n'
+      "a\tb"
+      f'\u'
+      """abc"""
+      '''a''"''"'''
+      """abc\xdef"""
+      '''abc\$def'''
+      '''abc\''''`
+      .split("\n")
+      .map((s) => s.trim()),
+    bad: String.raw`
+      'hello"
+      "world'
+      'a'b'
+      "a"b"
+      'a''
+      "x""
+      """"""""
+      frr"abc"
+      'a\'
+      '''abc''''
+      """`
+      .split("\n")
+      .map((s) => s.trim()),
+  },
 }
 
 for (let name of Object.keys(testFixture)) {
