@@ -20,6 +20,7 @@ const syntaxChecks = [
   ["coalescing operator", "var boss:str? = some \"Tina\";\nprint (boss ?? \"No boss here\");"],
   ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
   ["await call", "try {r = await <<500>> foo();} timeout {pass;} catch(e:str) {print(e);}"],
+  ["import statements", "import math;\nimport pandas as pd;\nimport from os, system32;"],
 
 ]
 
@@ -41,12 +42,12 @@ const syntaxErrors = [
 
 describe("The parser", () => {
   for (const [scenario, source] of syntaxChecks) {
-    it(`properly specifies ${scenario}`, () => {
+    it(`Accepts ${scenario}`, () => {
       assert(parse(source).succeeded())
     })
   }
   for (const [scenario, source, errorMessagePattern] of syntaxErrors) {
-    it(`does not permit ${scenario}`, () => {
+    it(`Rejects ${scenario}`, () => {
       assert.throws(() => parse(source), errorMessagePattern)
     })
   }
