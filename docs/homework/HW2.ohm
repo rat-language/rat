@@ -1,3 +1,4 @@
+
 canadianPostalCode {
   program = postalCode
   postalCode = firstPart char " " digit char digit
