@@ -21,10 +21,10 @@ masterCard {
     twelved = digit digit digit digit digit digit digit digit digit digit digit digit
     fiftys = "5" "1".."5"
     twothousands = "2" "2" "2" "1".."9"     //2221-2229
-    | "2" "2" "3".."9" digit                //2230-2299
-    | "2" "3".."6" digit digit              //2300-2699
-    | "2" "7" "0" "0".."9"                  //2700-2709
-    | "2" "7" "1" "0".."9"                  //2710-2719
+    | "2" "2" "3".."9" digit        //2230-2299
+    | "2" "3".."6" digit digit      //2300-2699
+    | "2" "7" "0" "0".."9"            //2700-2709
+    | "2" "7" "1" "0".."9"            //2710-2719
     | "2" "7" "2" "0"                       //2720
 }
 
@@ -102,14 +102,15 @@ palindromes2358 {
   pal3 = "a" char? "a"
       | "b" char? "b"
        | "c" char? "c"
-  pal2 = "a" "a" "a"?   --a
-      | "b" "b" "b"?  --b
-       | "c" "c" "c"?   --c
+  pal2 = "a" "a" "a"?       --a
+      | "b" "b" "b"?        --b
+       | "c" "c" "c"?       --c
   paltwo = "a" "a" 
       | "b" "b" 
        | "c" "c"
   char = "a" | "b" | "c"
 }
+
 PythonStringLit{
 	Program = Stmt+
     Stmt = stringlit
@@ -123,15 +124,15 @@ PythonStringLit{
     longstrlits = "'''" longstringitems* "'''"
     longstrlitd = "\"\"\"" longstringitemd* "\"\"\""
     // top level char
-    char = "\\n" 			    --newlineescape
+    char = "\\n" 			                            --newlineescape
              |"\\t"
              |"\\\\"
     shortstrd = char
-    		        | "\\\""						         --escape
- 			        |~"\"" ~"\n" ~"#" any		--regular
+    		        | "\\\""						    --escape
+ 			        |~"\"" ~"\n" ~"#" any		        --regular
     shortstrs = char
     		       | "\\'"
-	               |~"'" ~"\n" ~"#" any		--regular
+	               |~"'" ~"\n" ~"#" any		            --regular
     longstringitemd = longstringchard
     longstringitems = longstringchars
     longstringchars = char
@@ -142,26 +143,19 @@ PythonStringLit{
     						  | ~"\"\"\"" ~"#" any 		--regular
 }
 
-
-
-
-// Here is a description of a language. Programs in this language are made up of a possibly empty sequence of function declarations, followed by a single expression. Each function declaration starts with the keyword func followed by the function’s name (an identifier), then a parenthesized list of zero or more parameters (also identifiers) separated by commas, then the body, which is a sequence of one or more expressions separated (NOT terminated) by semicolons with the expression sequence terminated with the keyword end. Expressions can be numeric literals, string literals, identifiers, function calls, or can be made up of other expressions with the usual binary arithmetic operators (plus, minus, times, divide) and a unary prefix negation and a unary postfix factorial (!). There’s a conditional expression with the syntax y if x else z. Factorial has the highest precedence, followed by negation, the multiplicative operators, the additive operators, and finally the conditional. Parentheses are used, as in most other languages, to group subexpressions. Numeric literals are non-empty sequences of decimal digits with an optional fractional part and an optional exponent part. String literals delimited with double quotes with the escape sequences \', \", \n, \\, and \u{hhhhhh} where xxxxxx is a sequence of one-to-six hexadecimal digits. Identifiers are non-empty sequences of letters, decimal digits, underscores, at-signs, and dollar signs, beginning with a letter or at-sign, that are not also reserved words. Function calls are formed with an identifier followed by a comma-separated list of expressions bracketed by square brackets. Comments are -- until the end of the line.
-// Write a complete syntactic description of this language in Ohm. (Hint: use the Ohm editor to check your work. When grading, I will copy-paste your submitted solution to BrightSpace into the Ohm editor with my own detailed test suite).
-
-
 Problem2 {
     Program = Funcdec* Exp
     Funcdec = func id "(" ListOf<id, ","> ")" Body
     Body = NonemptyListOf<Exp, ";"> endchar
     
-    Exp  = Exp1 if Exp1 else Exp            --conditional
+    Exp  = Exp1 if Exp1 else Exp                --conditional
          | Exp1
-    Exp1 = Exp1 ("+" | "-") Exp2            --additive
+    Exp1 = Exp1 ("+"|"-") Exp2                  --additive
          | Exp2 
-    Exp2 = Exp2 ("" | "/" | "%") Exp3       --multiplicative
+    Exp2 = Exp2 ("*"|"/"|"%") Exp3              --multiplicative
          | Exp3
-    Exp3 = "-"? Exp4                        --negation
-    Exp4 = Exp5 "!"?                        --factorial
+    Exp3 = "-"? Exp4                            --negation
+    Exp4 = Exp5 "!"?                            --factorial
     Exp5 = num | strlit | Call | id | Parens
     
     func = "func" ~idchar
@@ -182,7 +176,7 @@ Problem2 {
           |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}" --usecape
        | ~"\"" any
     Parens = "(" Exp ")"
-    Call = id "[" Args "]"
+    Call = id "[" Args* "]"
     Args = ListOf<Exp, ",">
     space += "--" (~"\n" any)*                  --comment
 }
