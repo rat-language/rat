@@ -35,4 +35,20 @@
 
 # 3
 
-**
+Yes, a different order to the parameters being passed into the function would in-fact change the output of the given function.
+
+An example of this can be seen with the code block 
+```
+i = 0
+def next():
+    global i
+        i += 1
+    return 1
+
+f(next(), next())
+```
+
+In this code, it can be seen that if the "first next" were called first within the functin (left-to-right), the output would be `f(1, 2)` otherwise, if the second next were called first (right-to-left) the output would be `f(2, 1)`.
+
+
+
