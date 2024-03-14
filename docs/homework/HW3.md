@@ -52,3 +52,44 @@ In this code, it can be seen that if the "first next" were called first within t
 
 
 
+# 4
+The handling for recursive structs can be seen in analyzer.js
+
+```
+    TypeDecl(_struct, id, _left, fields, _right) {
+      const type = core.structType(id.sourceString, [])
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      context.add(id.sourceString, type)
+      type.fields = fields.children.map(field => field.rep())
+      mustHaveDistinctFields(type, { at: id })
+      mustNotBeSelfContaining(type, { at: id })
+      return core.typeDeclaration(type)
+    },
+```
+
+In this section of the analyzer, as soon as the analyzer sees a struct declaration, it inserts this struct type into the context before analyzing the fields.  
+
+This allows for recursive structs as the field types of the struct can also be of the struct type as it is in the context.
+
+For instance, if we declare struct Node, the fields can also be of type Node as this struct exists in the context.
+
+After parsing the fields, they are added to the struct type by this line:
+
+```
+      type.fields = fields.children.map(field => field.rep())
+```
+
+In handling recursion, the analyzer makes sure the recursive structs are defined correctly.  
+
+It does this by:
+1. ensuring field names are distinct
+2. making sure structs are not self containing which would create non-terminating types.  This is ensured by this function:
+
+```
+  function mustNotBeSelfContaining(structType, at) {
+    const containsSelf = includesAsField(structType, structType)
+    must(!containsSelf, "Struct type must not be self-containing", at)
+  }
+  ```
+
+  The difference between recursive structs and self-containing structs is that self containing structs contain instances of itself whereas recursive structs contain references of a struct of the same type.
