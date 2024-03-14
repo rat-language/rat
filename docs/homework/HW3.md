@@ -16,9 +16,10 @@
 - **m**: not a compile time error
 
 ---
+
 # 2
 
- **a. Undefined, NaN:** This output could be given in the scenario that hoisting was applied to the program. x could have been hoisted to the top of the function f() so in the local scope at the beginning, x would be assigned as undefined which then gets printed. In the next line when 2 is added to the previously "undefined" x, the output would becomes NaN.
+ **a. Undefined, NaN:** This output could be given in the scenario that hoisting was applied to the program. x could have been hoisted to the top of the function f() so in the local scope at the beginning, x would be assigned as undefined which then gets printed. In the next line when 2 is added to the previously "undefined" x, the output would becomes NaN. 
 
 
 **b. Error on line 3: x is not declared:** In this case, it shows that hoisting must not have been an option in this function. In this function, it seems that variables in the local scope must be declared before they are used.
@@ -30,5 +31,8 @@
 
 **e. Error on line 4: x used in its own declaration:** This error could be due to the usage of a variable before its declaration and initialization in the local scope, which then leads to an error.
  
+---
 
+# 3
 
+**
