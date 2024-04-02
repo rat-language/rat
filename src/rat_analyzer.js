@@ -231,7 +231,7 @@ export default function analyze(match) {
       return statements.children.map(s => s.rep())
     },
 
-
+    
     //==================== (EXPRESSIONS) ====================//
     Exp_unwrap(exp1, op, exp2) {
       return core.binary(op.sourceString, exp1.rep(), exp2.rep())
@@ -277,43 +277,9 @@ export default function analyze(match) {
 
     // IDK HOW TO DO THIS ONE YET!!!
     // Primary_wrapped(_open, exp, _close) { return exp.rep() },
-
     // Primary_lookup(id) {},
-    
 
-    Exp_ternary(exp1, _questionMark, exp2, _colon, exp3) {
-      return core.conditional(exp1.rep(), exp2.rep(), exp3.rep())
-    },
-
-    Exp1_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
-    },
-
-    Exp2_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
-    },
-
-    Exp3_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
-    },
-
-    Exp4_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
-    },
-
-    Exp5_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
-    },
-
-    Exp6_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
-    },
-
-    Exp7_parens(_open, exp, _close) {
-      return exp.rep()
-    },
-
-    Exp7_call(id, _open, expList, _close) {
+    Primary_call(id, _open, expList, _close) {
       // ids used in calls must have already been declared and must be
       // bound to function entities, not to variable entities.
       const callee = context.lookup(id.sourceString)
@@ -324,7 +290,23 @@ export default function analyze(match) {
       return core.call(callee, args)
     },
 
-    Exp7_id(id) {
+    ArrayLit(_open, expList, _close) {
+      return core.arrayLiteral(expList.asIteration().children.map(exp => exp.rep()))
+    },
+
+    
+    //-------------------- (TYPES) -------------------//
+    TypeConv(type, _open, exp, _close) {
+      return core.typeConversion(type.sourceString, exp.rep())
+    },
+    
+    
+    Parens(_open, exp, _close) {
+      return exp.rep()
+    },
+    
+
+    Primary_id(id) {
       // ids used in expressions must have been already declared and must
       // be bound to variable entities, not function entities.
       const entity = context.lookup(id.sourceString)

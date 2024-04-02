@@ -79,7 +79,7 @@ Rat {
             | some Exp                                              --wrapped
             | Iterable Index+                                       --lookup
             | Call                                                  --call
-            | id
+            | id                                                    --id
             | TypeConv
             | Parens
             | ArrayLit
@@ -129,7 +129,7 @@ Rat {
     string  = "str" ~idchar
     while   = "while" ~idchar
     for     = "for" ~idchar
-    if       = "if" ~idchar
+    if      = "if" ~idchar
     else    = "else" ~idchar
     break   = "break" ~idchar
     return  = "return" ~idchar
@@ -144,9 +144,9 @@ Rat {
     void    = "void" ~idchar
     all     = "all" ~idchar
     timeout = "timeout" ~idchar
-    import = "import" ~idchar
-    as = "as" ~idchar
-    from = "from" ~idchar
+    import  = "import" ~idchar
+    as      = "as" ~idchar
+    from    = "from" ~idchar
 
     // await used for asynchronous functions that perform a call that is promised to return a value
     // await one - used for having an array of promise types, will return value when one promise is fulfilled
@@ -155,10 +155,10 @@ Rat {
     // distinguishes keywords
 
     keyword = print | true | false | let | int
-    			   | float | string | bool | pass
-            	   | while | for | if | else | else | return
-                   | some  | void | await | one | all | none
-                   | import | as | from
+            | float | string | bool | pass
+            | while | for | if | else | else | return
+            | some  | void | await | one | all | none
+            | import | as | from
 
     //allows you to name your variables
     id = ~keyword (letter| "_") idchar*
