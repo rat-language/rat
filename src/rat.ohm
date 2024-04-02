@@ -40,7 +40,7 @@ Rat {
     ForStmt  = for id in Iterable Block
     // while we generally statically type our language, in cases like this, where we iterate through a 
     // range of numbers, we will assume that the id is going to be an integer
-
+    
     Call = id Args
     Index = "[" Exp "]"
     Params = "("ListOf<Param, ",">")"

@@ -5,10 +5,27 @@
 // standard library, as needed.
 import * as core from "./core.js"
 
+
+const INT = core.Type.INT
+const FLOAT = core.Type.FLOAT
+const STRING = core.Type.STRING
+const BOOLEAN = core.Type.BOOLEAN
+const ANY = core.Type.ANY
+const VOID = core.Type.VOID
+
+function must(condition, message, errorLocation) {
+  if (!condition) {
+    const prefix = errorLocation.at.source.getLineAndColumnMessage()
+    throw new Error(`${prefix}${message}`)
+  }
+}
+
 class Context {
   constructor({ parent, locals = {} }) {
     this.parent = parent
     this.locals = new Map(Object.entries(locals))
+    this.withinLoop = false
+    this.function = null
   }
   add(name, entity) {
     this.locals.set(name, entity)
@@ -16,7 +33,72 @@ class Context {
   lookup(name) {
     return this.locals.get(name) || this.parent?.lookup(name)
   }
+  newChildContext(props) {
+    return new Context({ ...this, ...props, parent: this, locals: new Map() })
+  }
+  get(name, expectedType, node) {
+    let entity
+    for (let context = this; context; context = context.parent) {
+      entity = context.locals.get(name)
+      if (entity) break
+    }
+    must(entity, `${name} has not been declared`, node)
+    must(
+      entity.constructor === expectedType,
+      `${name} was expected to be a ${expectedType.name}`,
+      node
+    )
+    return entity
+  }
 }
+
+
+function mustHaveNumericType(e, at) {
+  must([INT, FLOAT].includes(e.type), "Expected a number", at)
+}
+function mustHaveNumericOrStringType(e, at) {
+  must([INT, FLOAT, STRING].includes(e.type), "Expected a number or string", at)
+}
+function mustHaveBooleanType(e, at) {
+  must(e.type === BOOLEAN, "Expected a boolean", at)
+}
+function mustHaveIntegerType(e, at) {
+  must(e.type === INT, "Expected an integer", at)
+}
+function mustBeTheSameType(e1, e2, at) {
+  must(equivalent(e1.type, e2.type), "Operands do not have the same type", at)
+}
+function equivalent(t1, t2) {
+  return (
+    t1 === t2 ||
+    (t1 instanceof core.OptionalType &&
+      t2 instanceof core.OptionalType &&
+      equivalent(t1.baseType, t2.baseType)) ||
+    (t1 instanceof core.ArrayType &&
+      t2 instanceof core.ArrayType &&
+      equivalent(t1.baseType, t2.baseType)) ||
+    (t1.constructor === core.FunctionType &&
+      t2.constructor === core.FunctionType &&
+      equivalent(t1.returnType, t2.returnType) &&
+      t1.paramTypes.length === t2.paramTypes.length &&
+      t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
+  )
+}
+
+function mustNotBeReadOnly(e, at) {
+  check(!e.readOnly, `Cannot assign to constant ${e.name}`, at)
+}
+function mustBeInLoop(context, at) {
+  check(context.inLoop, "Break can only appear in a loop", at)
+}
+
+function mustNotAlreadyBeDeclared(context, name, at) {
+  check(!context.lookup(name), `Identifier ${name} already declared`, at)
+}
+function mustBeInAFunction(context, at) {
+  check(context.function, "Return can only appear in a function", at)
+}
+
 
 export default function analyze(match) {
   // Track the context manually via a simple variable. The initial context
@@ -68,47 +150,38 @@ export default function analyze(match) {
       return core.program(statements.children.map(s => s.rep()))
     },
 
-    Statement_vardec(_let, id, _eq, exp, _semicolon) {
-      // Analyze the initializer *before* adding the variable to the context,
-      // because we don't want the variable to come into scope until after
-      // the declaration. That is, "let x=x;" should be an error (unless x
-      // was already defined in an outer scope.)
-      const initializer = exp.rep()
-      const variable = core.variable(id.sourceString, false)
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
-      context.add(id.sourceString, variable)
-      return core.variableDeclaration(variable, initializer)
+    Stmt_print(_print, _lparen, exp, _rparen, _semicolon) {
+      return core.printStatement(exp.rep())
     },
-    Statement_vardec(_let, id, _eq, exp, _semicolon) {
-      // Analyze the initializer *before* adding the variable to the context,
-      // because we don't want the variable to come into scope until after
-      // the declaration. That is, "let x=x;" should be an error (unless x
-      // was already defined in an outer scope.)
+
+    Stmt_vardec(_var, id, _colon, type, _eq, exp, _semicolon){
+      // TODO: Need to do something else with the 'type'
       const initializer = exp.rep()
       const variable = core.variable(id.sourceString, false)
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      mustNotAlreadyBeDeclared(id.sourceString, {at:id})
+      // TODO: Add type checking
+      // exp must be of type 'type'
       context.add(id.sourceString, variable)
+
       return core.variableDeclaration(variable, initializer)
     },
 
-    Statement_fundec(_fun, id, parameters, _equals, exp, _semicolon) {
-      // Start by adding a new function object to this context. We won't
-      // have the number of params yet; that will come later. But we have
-      // to get the function in the context right way, to allow recursion.
-      const fun = core.fun(id.sourceString)
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
-      context.add(id.sourceString, fun)
-
-      // Add the params and body to the child context, updating the
-      // function object with the parameter count once we have it.
-      context = new Context({ parent: context })
-      const params = parameters.rep()
-      fun.paramCount = params.length
-      const body = exp.rep()
+    FuncDecl(type, id, params, exp, _semicolon) {
+      params = params.asIteration().children
+      const fun = new core.Function(id.sourceString, params.length, true)
+      // Add the function to the context before analyzing the body, because
+      // we want to allow functions to be recursive
+      context.add(id.sourceString, fun, id)
+      context = new Context(context)
+      context.function = fun
+      const paramsRep = params.map((p) => {
+        let variable = new core.Variable(p.sourceString, true)
+        context.add(p.sourceString, variable, p)
+        return variable
+      })
+      const bodyRep = body.rep()
       context = context.parent
-
-      // Now that the function object is created, we can make the declaration.
-      return core.functionDeclaration(fun, params, body)
+      return new core.FunctionDeclaration(fun, paramsRep, bodyRep)
     },
 
     Params(_open, idList, _close) {
@@ -127,9 +200,7 @@ export default function analyze(match) {
       return core.assignment(target, exp.rep())
     },
 
-    Statement_print(_print, exp, _semicolon) {
-      return core.printStatement(exp.rep())
-    },
+    
 
     Statement_while(_while, exp, block) {
       return core.whileStatement(exp.rep(), block.rep())
