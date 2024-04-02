@@ -223,8 +223,6 @@ export default function analyze(match) {
       return core.assignment(target, exp.rep())
     },
 
-    
-
     Statement_while(_while, exp, block) {
       return core.whileStatement(exp.rep(), block.rep())
     },
@@ -233,9 +231,55 @@ export default function analyze(match) {
       return statements.children.map(s => s.rep())
     },
 
+
+    //==================== (EXPRESSIONS) ====================//
+    Exp_unwrap(exp1, op, exp2) {
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
     Exp_unary(op, exp) {
+      // either for negation or for boolean not
       return core.unary(op.sourceString, exp.rep())
     },
+
+    // IDK HOW TO DO THIS ONE YET!!!
+    // Exp_await(_await, exp) {
+    //   return core.await(exp.rep())
+    // }
+
+    Exp0_logicalor(exp1, _or, exp2) {
+      return core.binary("||", exp1.rep(), exp2.rep())
+    },
+
+    Disjunct_logicaland(exp1, _and, exp2) {
+      return core.binary("&&", exp1.rep(), exp2.rep())
+    },
+
+    Conjunct_comparative(exp1, op, exp2) {
+      // "<=" | "<" | "==" | "!=" | ">=" | ">" 
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
+    Comp_additive(exp1, op, exp2) {
+      // plus or minus
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
+    Term_multiplicative(exp1, op, exp2) {
+      // times, divide, or modulo
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
+    Factor_exponent(exp1, _op, exp2) {
+      // exponentiation
+      return core.binary("**", exp1.rep(), exp2.rep())
+    },
+
+    // IDK HOW TO DO THIS ONE YET!!!
+    // Primary_wrapped(_open, exp, _close) { return exp.rep() },
+
+    // Primary_lookup(id) {},
+    
 
     Exp_ternary(exp1, _questionMark, exp2, _colon, exp3) {
       return core.conditional(exp1.rep(), exp2.rep(), exp3.rep())
@@ -296,7 +340,7 @@ export default function analyze(match) {
     false(_) {
       return false
     },
-    
+
     intlit(_digits) {
       // ints will be represented as plain JS bigints
       return BigInt(this.sourceString)
