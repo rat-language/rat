@@ -294,17 +294,18 @@ export default function analyze(match) {
       return core.arrayLiteral(expList.asIteration().children.map(exp => exp.rep()))
     },
 
-    
+    // THIS IS DEFINITELY WRONG BUT WE'LL FIX IT LATER
+    // DictList(_open, keyValList, _close) {
+    //   return core.dictLiteral(keyValList.asIteration().children.map(kv => kv.rep()))
+    // },
     //-------------------- (TYPES) -------------------//
     TypeConv(type, _open, exp, _close) {
       return core.typeConversion(type.sourceString, exp.rep())
     },
     
-    
     Parens(_open, exp, _close) {
       return exp.rep()
     },
-    
 
     Primary_id(id) {
       // ids used in expressions must have been already declared and must
