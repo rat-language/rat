@@ -33,6 +33,9 @@ class Context {
   lookup(name) {
     return this.locals.get(name) || this.parent?.lookup(name)
   }
+  static root() {
+    return new Context({ locals: new Map(Object.entries(core.standardLibrary)) })
+  }
   newChildContext(props) {
     return new Context({ ...this, ...props, parent: this, locals: new Map() })
   }
@@ -68,6 +71,7 @@ function mustHaveIntegerType(e, at) {
 function mustBeTheSameType(e1, e2, at) {
   must(equivalent(e1.type, e2.type), "Operands do not have the same type", at)
 }
+
 function equivalent(t1, t2) {
   return (
     t1 === t2 ||
@@ -150,6 +154,7 @@ export default function analyze(match) {
       return core.program(statements.children.map(s => s.rep()))
     },
 
+    //==================== (VALID STATEMENTS) ====================//
     Stmt_print(_print, _lparen, exp, _rparen, _semicolon) {
       return core.printStatement(exp.rep())
     },
@@ -162,10 +167,28 @@ export default function analyze(match) {
       // TODO: Add type checking
       // exp must be of type 'type'
       context.add(id.sourceString, variable)
+      // Need to make sure this we can both read and write to this variable
 
       return core.variableDeclaration(variable, initializer)
     },
 
+    // ***************** (NEW) ***************** //
+    Stmt_constdec(_const, id, _colon, type, _eq, exp, _semicolon){
+      // TODO: Need to do something else with the 'type'
+      const initializer = exp.rep()
+      const variable = core.variable(id.sourceString, false)
+      mustNotAlreadyBeDeclared(id.sourceString, {at:id})
+      // TODO: Add type checking
+      // exp must be of type 'type'
+      // Need to make sure this is a read only value
+      context.add(id.sourceString, variable)
+
+      return core.variableDeclaration(variable, initializer)
+    },
+    /*
+    IDK how to properly name these statement functions,
+    I'm thinking that I might need to go back and re-write the ohm grammars, for now, I'm naming them the variable names...
+    */
     FuncDecl(type, id, params, exp, _semicolon) {
       params = params.asIteration().children
       const fun = new core.Function(id.sourceString, params.length, true)
@@ -273,14 +296,23 @@ export default function analyze(match) {
     false(_) {
       return false
     },
+    
+    intlit(_digits) {
+      // ints will be represented as plain JS bigints
+      return BigInt(this.sourceString)
+    },
 
-    num(_whole, _point, _fraction, _e, _sign, _exponent) {
+    floatlit(_whole, _point, _fraction, _e, _sign, _exponent) {
+      // floats will be represented as plain JS numbers
       return Number(this.sourceString)
     },
-    
-    str(_open, chars, _close) {
-      return chars.sourceString
-    }
+
+    stringlit(_openQuote, _chars, _closeQuote) {
+      // strings will be represented as plain JS strings, including
+      // the quotation marks
+      return this.sourceString
+    },
+
   })
   return builder(match).rep()
 }

@@ -12,6 +12,10 @@ export function variableDeclaration(variable, initializer) {
   return { kind: "VariableDeclaration", variable, initializer }
 }
 
+export function variable(name, readOnly) {
+  return { kind: "Variable", name, readOnly }
+}
+
 export function constantDeclaration(variable, initializer) {
   // temporary
   return { kind: "ConstantDeclaration", variable, initializer }
@@ -46,9 +50,13 @@ export function conditional(test, consequent, alternate) {
   return { kind: "Conditional", test, consequent, alternate }
 }
 
-export function passStatement() {}
+export function passStatement(_pass, _semicolon) {
+  return { kind: "PassStatement" }
+}
 
-export function breakStatement() {}
+export function breakStatement(_break, _semicolon) {
+  return { kind: "BreakStatement" }
+}
 
 export function returnStatement(expression) {
   return { kind: "ReturnStatement", expression }
@@ -62,6 +70,10 @@ export function tryStatement(body, catchClause, finallyClause) {
 // Must be changed 
 export function functionDeclaration(fun, params, body) {
   return { kind: "FunctionDeclaration", fun, params, body }
+}
+
+export function fun(name, paramCount) {
+  return { kind: "Function", name, paramCount }
 }
 
 // ***************** (NEW) ***************** //
@@ -82,29 +94,40 @@ export function unary(op, operand) {
   return { kind: "UnaryExpression", op, operand }
 }
 
-//-------------------- (TYPES) --------------------//
+//------------------------------- (TYPES) ---------------------------------//
 export function optionalType(baseType) {
   return { kind: "OptionalType", baseType }
+}
+
+export function promiseType(baseType) {
+  return { kind: "PromiseType", baseType }
 }
 
 export function arrayType(baseType) {
   return { kind: "ArrayType", baseType }
 }
 
-
-export function variable(name, readOnly) {
-  return { kind: "Variable", name, readOnly }
+// ***************** (NEW) ***************** //
+export function dictionaryType(keyType, valueType) {
+  return { kind: "DictionaryType", keyType, valueType } 
 }
 
-export function fun(name, paramCount) {
-  return { kind: "Function", name, paramCount }
+export function iterableType(type) {
+  return { kind: "IterableType", type }
 }
 
-export function iterable(type) {
-  return { kind: "Iterable", type }
-}
+export const boolType = { kind: "BoolType" }
+export const intType = { kind: "IntType" }
+export const floatType = { kind: "FloatType" }
+export const stringType = { kind: "StringType" }
+export const voidType = { kind: "VoidType" }
+export const anyType = { kind: "AnyType" }
 
-
+// These local constants are used to simplify the standard library definitions.
+const floatToFloatType = functionType([floatType], floatType)
+const floatFloatToFloatType = functionType([floatType, floatType], floatType)
+const stringToIntsType = functionType([stringType], arrayType(intType))
+const anyToVoidType = functionType([anyType], voidType)
 
 export const standardLibrary = Object.freeze({
   int: Type.INT,

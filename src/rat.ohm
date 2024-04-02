@@ -9,6 +9,7 @@ Rat {
     // Unsure whether we should change to Stmt* for non-empty files as most programming languages will still do empty files
     Program = Stmt*
     // here, we define valid statements
+    //=========== (VALID STATEMENTS) ============== //
     Stmt = print "("Exp ")" ";"                         --print
         | var id ":" Type "=" Exp ";"                   --vardec
         | const id ":" Type "=" Exp ";"                 --constdec
