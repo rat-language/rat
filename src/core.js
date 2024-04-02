@@ -3,13 +3,18 @@ export function program(statements) {
   return { kind: "Program", statements }
 }
 
+//==================== (VALID STATEMENTS) ====================//
+export function printStatement(argument) {
+  return { kind: "PrintStatement", argument }
+}
+
 export function variableDeclaration(variable, initializer) {
   return { kind: "VariableDeclaration", variable, initializer }
 }
 
-// Must be changed 
-export function functionDeclaration(fun, params, body) {
-  return { kind: "FunctionDeclaration", fun, params, body }
+export function constantDeclaration(variable, initializer) {
+  // temporary
+  return { kind: "ConstantDeclaration", variable, initializer }
 }
 
 // Must be changed 
@@ -22,9 +27,13 @@ export function whileStatement(test, body) {
   return { kind: "WhileStatement", test, body }
 }
 
-// NOTE: This can stay the same
-export function printStatement(argument) {
-  return { kind: "PrintStatement", argument }
+// ***************** (NEW) ***************** //
+// export function forRangeStatement(iterator, low, op, high, body) {
+//   return { kind: "ForRangeStatement", iterator, low, op, high, body }
+// }
+
+export function forStatement(init, test, update, body) {
+  return { kind: "WhileStatement", test, body }
 }
 
 // NOTE: This can stay the same
@@ -37,6 +46,33 @@ export function conditional(test, consequent, alternate) {
   return { kind: "Conditional", test, consequent, alternate }
 }
 
+export function passStatement() {}
+
+export function breakStatement() {}
+
+export function returnStatement(expression) {
+  return { kind: "ReturnStatement", expression }
+}
+
+// ***************** (NEW) ***************** //
+export function tryStatement(body, catchClause, finallyClause) {
+  return { kind: "TryStatement", body, catchClause, finallyClause }
+}
+
+// Must be changed 
+export function functionDeclaration(fun, params, body) {
+  return { kind: "FunctionDeclaration", fun, params, body }
+}
+
+// ***************** (NEW) ***************** //
+export function importStatement() {}
+
+// ***************** (NEW) ***************** //
+export function importFromStatement() {}
+
+
+//==========================( EXPRESSIONS )================================//
+
 
 export function binary(op, left, right) {
   return { kind: "BinaryExpression", op, left, right }
@@ -46,6 +82,16 @@ export function unary(op, operand) {
   return { kind: "UnaryExpression", op, operand }
 }
 
+//-------------------- (TYPES) --------------------//
+export function optionalType(baseType) {
+  return { kind: "OptionalType", baseType }
+}
+
+export function arrayType(baseType) {
+  return { kind: "ArrayType", baseType }
+}
+
+
 export function variable(name, readOnly) {
   return { kind: "Variable", name, readOnly }
 }
@@ -53,6 +99,12 @@ export function variable(name, readOnly) {
 export function fun(name, paramCount) {
   return { kind: "Function", name, paramCount }
 }
+
+export function iterable(type) {
+  return { kind: "Iterable", type }
+}
+
+
 
 export const standardLibrary = Object.freeze({
   int: Type.INT,
