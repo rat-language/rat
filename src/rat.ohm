@@ -14,8 +14,8 @@ Rat {
         | (const|var) id ":" Type "=" Exp ";"           --vardec
         | LhsExp op? "=" Exp ";"                        --assign
         | while Exp Block                               --while
-        | ForStmt                                       --for
-        | Call ";"                                      --void
+        | ForStmt
+        | Call ";"                                      --call
         | IfStmt
         | PassStmt
         | BrkStmt
@@ -77,7 +77,7 @@ Rat {
             | none
             | some Exp                                              --wrapped
             | Iterable Index+                                       --lookup
-            | Call                                                  --call
+            | Call
             | id                                                    --id
             | TypeConv
             | Parens
