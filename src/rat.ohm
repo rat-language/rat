@@ -11,8 +11,7 @@ Rat {
     // here, we define valid statements
     //=========== (VALID STATEMENTS) ============== //
     Stmt = print "("Exp ")" ";"                         --print
-        | var id ":" Type "=" Exp ";"                   --vardec
-        | const id ":" Type "=" Exp ";"                 --constdec
+        | (const|var) id ":" Type "=" Exp ";"           --vardec
         | LhsExp op? "=" Exp ";"                        --assign
         | while Exp Block                               --while
         | ForStmt                                       --for
