@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"; 
-import analyze from "../src/analyzer.js";
+import analyze from "../old_src/analyzer.js";
 import parse from "../src/parser.js";
 
 describe("The analyzer", () => {

@@ -9,11 +9,27 @@ export function printStatement(argument) {
 }
 
 export function variableDeclaration(variable, initializer) {
-  return { kind: "VariableDeclaration", variable, initializer }
+  return { kind: "VariableDeclaration", variable, initializer } 
 }
+/*
+var x:int = 42;
 
-export function variable(name, readOnly) {
-  return { kind: "Variable", name, readOnly }
+{
+  kind: "VariableDeclaration",
+  variable: { 
+    kind: "Variable", 
+    name: "x", 
+    readOnly: false 
+  },
+  initializer: { 
+    kind: "IntLiteral", 
+    value: 42
+  }
+}
+*/
+
+export function variable(name, readOnly, type) {
+  return { kind: "Variable", name, readOnly, type }
 }
 
 export function constantDeclaration(variable, initializer) {
