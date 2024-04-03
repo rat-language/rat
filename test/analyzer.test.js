@@ -1,10 +1,10 @@
-import assert from "node:assert/strict"; 
-import analyze from "../old_src/analyzer.js";
+import assert from "node:assert/strict";
+import analyze from "../src/analyzer.js";
 import parse from "../src/parser.js";
 
 describe("The analyzer", () => {
   it("Analyzes a simple program", () => {
-    const source = `var x:int = 12; print(2); print(x);`;
+    const source = `var x: int = 12; print(2); print(x);`;
     const expected = {
       kind: "Program",
       statements: [

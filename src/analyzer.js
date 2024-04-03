@@ -199,10 +199,10 @@ export default function analyze(match) {
       return core.returnStatement(exp.rep())
     },
 
-    //Try
-    Stmt_try(_try, block, timeoutKeyword, block, _catch, _open, params, _close, block) {
-      //TODO
-    },
+    // //Try
+    // Stmt_try(_try, block, timeoutKeyword, block, _catch, _open, params, _close, block) {
+    //   //TODO
+    // },
 
     //Function Declaration
     Stmt_FuncDecl(type, id, parameters, body) {
