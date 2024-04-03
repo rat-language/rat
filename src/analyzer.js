@@ -159,6 +159,7 @@ export default function analyze(match) {
       return core.printStatement(exp.rep())
     },
 
+    //Variable Declaration
     Stmt_vardec(modifier, id, _colon, type, _eq, exp, _semicolon) {
       // TODO: Need to do something else with the 'type'
       const initializer = exp.rep()
@@ -172,10 +173,57 @@ export default function analyze(match) {
       return core.variableDeclaration(variable, initializer)
     },
 
+    //Assignment
+    Stmt_assign(id, _eq, exp, _semicolon) {
+      const target = id.rep()
+      mustNotBeReadOnly(target, { at: id })
+      return core.assignment(target, exp.rep())
+    },
+
+    //While
+    Stmt_while(_while, exp, block) {
+      return core.whileStatement(exp.rep(), block.rep())
+    },
+
+    //For
+    Stmt_for(_for, id, _in, iterable, block) {
+      return core.forStatement(id.sourceString, iterable.rep(), block.rep())
+    },
+
+    //Call
+    Stmt_call(id, args, _semicolon) {
+      return core.call(id.sourceString, args.rep())
+    },
+
+    //If
+    Stmt_if(_if, exp, block, _else, elseBlock) {
+      //TODO
+    },
+
+    //Pass
+    Stmt_pass(_pass, _semicolon) {
+      return core.passStatement()
+    },
+
+    Params(_open, idList, _close) {
+      return idList.asIteration().children.map(id => {
+        const param = core.variable(id.sourceString, true)
+        // All of the parameters have to be unique
+        mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+        context.add(id.sourceString, param)
+        return param
+      })
+    },
+
+    Block(_open, statements, _close) {
+      return statements.children.map(s => s.rep())
+    },
+
     /*
-    IDK how to properly name these statement functions,
-    I'm thinking that I might need to go back and re-write the ohm grammars, for now, I'm naming them the variable names...
-    */
+IDK how to properly name these statement functions,
+I'm thinking that I might need to go back and re-write the ohm grammars, for now, I'm naming them the variable names...
+*/
+    //Function Declaration
     FuncDecl(type, id, params, body) {
       params = params.asIteration().children
       const fun = new core.Function(id.sourceString, params.length, true)
@@ -193,31 +241,6 @@ export default function analyze(match) {
       context = context.parent
       return new core.FunctionDeclaration(fun, paramsRep, bodyRep)
     },
-
-    Params(_open, idList, _close) {
-      return idList.asIteration().children.map(id => {
-        const param = core.variable(id.sourceString, true)
-        // All of the parameters have to be unique
-        mustNotAlreadyBeDeclared(id.sourceString, { at: id })
-        context.add(id.sourceString, param)
-        return param
-      })
-    },
-
-    Statement_assign(id, _eq, exp, _semicolon) {
-      const target = id.rep()
-      mustNotBeReadOnly(target, { at: id })
-      return core.assignment(target, exp.rep())
-    },
-
-    Statement_while(_while, exp, block) {
-      return core.whileStatement(exp.rep(), block.rep())
-    },
-
-    Block(_open, statements, _close) {
-      return statements.children.map(s => s.rep())
-    },
-
 
     //==================== (EXPRESSIONS) ====================//
     Exp_unwrap(exp1, op, exp2) {
