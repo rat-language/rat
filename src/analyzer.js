@@ -13,12 +13,7 @@ const BOOLEAN = core.Type.BOOLEAN
 const ANY = core.Type.ANY
 const VOID = core.Type.VOID
 
-function must(condition, message, errorLocation) {
-  if (!condition) {
-    const prefix = errorLocation.at.source.getLineAndColumnMessage()
-    throw new Error(`${prefix}${message}`)
-  }
-}
+
 
 class Context {
   constructor({ parent, locals = {} }) {
@@ -87,20 +82,6 @@ function equivalent(t1, t2) {
       t1.paramTypes.length === t2.paramTypes.length &&
       t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
   )
-}
-
-function mustNotBeReadOnly(e, at) {
-  check(!e.readOnly, `Cannot assign to constant ${e.name}`, at)
-}
-function mustBeInLoop(context, at) {
-  check(context.withinLoop, "Break can only appear in a loop", at)
-}
-
-function mustNotAlreadyBeDeclared(context, name, at) {
-  check(!context.lookup(name), `Identifier ${name} already declared`, at)
-}
-function mustBeInAFunction(context, at) {
-  check(context.function, "Return can only appear in a function", at)
 }
 
 
@@ -213,7 +194,7 @@ export default function analyze(match) {
 
     //Return
     Stmt_return(_return, exp, _semicolon) {
-      mustBeInAFunction(context, { at: _return })
+      mustBeAFunction(context, { at: _return })
       return core.returnStatement(exp.rep())
     },
 
