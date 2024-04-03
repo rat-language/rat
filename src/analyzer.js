@@ -93,7 +93,7 @@ function mustNotBeReadOnly(e, at) {
   check(!e.readOnly, `Cannot assign to constant ${e.name}`, at)
 }
 function mustBeInLoop(context, at) {
-  check(context.inLoop, "Break can only appear in a loop", at)
+  check(context.withinLoop, "Break can only appear in a loop", at)
 }
 
 function mustNotAlreadyBeDeclared(context, name, at) {
@@ -205,14 +205,54 @@ export default function analyze(match) {
       return core.passStatement()
     },
 
-    Params(_open, idList, _close) {
-      return idList.asIteration().children.map(id => {
-        const param = core.variable(id.sourceString, true)
-        // All of the parameters have to be unique
-        mustNotAlreadyBeDeclared(id.sourceString, { at: id })
-        context.add(id.sourceString, param)
-        return param
-      })
+    //Break
+    Stmt_break(breakKeyword, _semicolon) {
+      mustBeInLoop(context, { at: breakKeyword })
+      return core.breakStatement()
+    },
+
+    //Return
+    Stmt_return(_return, exp, _semicolon) {
+      mustBeInAFunction(context, { at: _return })
+      return core.returnStatement(exp.rep())
+    },
+
+    //Try
+    Stmt_try(_try, block, timeoutKeyword, block, _catch, _open, params, _close, block) {
+      //TODO
+    },
+
+    //Function Declaration
+    Stmt_FuncDecl(type, id, parameters, body) {
+      const fun = new core.Function(id.sourceString, params.length, true)
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      context.add(id.sourceString, fun)
+      // Add the function to the context before analyzing the body, because
+      // we want to allow functions to be recursive
+
+      context = context.newChildContext({ inLoop: false, function: fun })
+      const params = params.rep()
+
+      const paramTypes = params.map(p => p.type)
+      const returnType = type.children?.[0]?.rep() ?? VOID
+      fun.type = new core.FunctionType(paramTypes, returnType)
+
+      const bodyRep = body.rep()
+
+      context = context.parent
+      return new core.functionDeclaration(fun, params, bodyRep)
+    },
+
+    Params(_open, paramList, _close) {
+      // Returns a list of variable nodes
+      return paramList.asIteration().children.map(p => p.rep())
+    },
+
+    Param(id, _colon, type) {
+      const param = core.variable(id.sourceString, false, type.rep())
+      mustNotAlreadyBeDeclared(param.name, { at: id })
+      context.add(param.name, param)
+      return param
     },
 
     Block(_open, statements, _close) {
@@ -223,24 +263,7 @@ export default function analyze(match) {
 IDK how to properly name these statement functions,
 I'm thinking that I might need to go back and re-write the ohm grammars, for now, I'm naming them the variable names...
 */
-    //Function Declaration
-    FuncDecl(type, id, params, body) {
-      params = params.asIteration().children
-      const fun = new core.Function(id.sourceString, params.length, true)
-      // Add the function to the context before analyzing the body, because
-      // we want to allow functions to be recursive
-      context.add(id.sourceString, fun, id)
-      context = new Context(context)
-      context.function = fun
-      const paramsRep = params.map((p) => {
-        let variable = new core.Variable(p.sourceString, true)
-        context.add(p.sourceString, variable, p)
-        return variable
-      })
-      const bodyRep = body.rep()
-      context = context.parent
-      return new core.FunctionDeclaration(fun, paramsRep, bodyRep)
-    },
+
 
     //==================== (EXPRESSIONS) ====================//
     Exp_unwrap(exp1, op, exp2) {
