@@ -159,11 +159,11 @@ export default function analyze(match) {
       return core.printStatement(exp.rep())
     },
 
-    Stmt_vardec(_var, id, _colon, type, _eq, exp, _semicolon){
+    Stmt_vardec(modifier, id, _colon, type, _eq, exp, _semicolon) {
       // TODO: Need to do something else with the 'type'
       const initializer = exp.rep()
       const variable = core.variable(id.sourceString, false)
-      mustNotAlreadyBeDeclared(id.sourceString, {at:id})
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
       // TODO: Add type checking
       // exp must be of type 'type'
       context.add(id.sourceString, variable)
@@ -172,24 +172,11 @@ export default function analyze(match) {
       return core.variableDeclaration(variable, initializer)
     },
 
-    // ***************** (NEW) ***************** //
-    Stmt_constdec(_const, id, _colon, type, _eq, exp, _semicolon){
-      // TODO: Need to do something else with the 'type'
-      const initializer = exp.rep()
-      const variable = core.variable(id.sourceString, false)
-      mustNotAlreadyBeDeclared(id.sourceString, {at:id})
-      // TODO: Add type checking
-      // exp must be of type 'type'
-      // Need to make sure this is a read only value
-      context.add(id.sourceString, variable)
-
-      return core.variableDeclaration(variable, initializer)
-    },
     /*
     IDK how to properly name these statement functions,
     I'm thinking that I might need to go back and re-write the ohm grammars, for now, I'm naming them the variable names...
     */
-    FuncDecl(type, id, params, exp, _semicolon) {
+    FuncDecl(type, id, params, body) {
       params = params.asIteration().children
       const fun = new core.Function(id.sourceString, params.length, true)
       // Add the function to the context before analyzing the body, because
@@ -231,7 +218,7 @@ export default function analyze(match) {
       return statements.children.map(s => s.rep())
     },
 
-    
+
     //==================== (EXPRESSIONS) ====================//
     Exp_unwrap(exp1, op, exp2) {
       return core.binary(op.sourceString, exp1.rep(), exp2.rep())
@@ -302,7 +289,7 @@ export default function analyze(match) {
     TypeConv(type, _open, exp, _close) {
       return core.typeConversion(type.sourceString, exp.rep())
     },
-    
+
     Parens(_open, exp, _close) {
       return exp.rep()
     },
