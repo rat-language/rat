@@ -91,7 +91,7 @@ export default function analyze(match) {
   // as necessary. When needing to descent into a new scope, create a new
   // context with the current context as its parent. When leaving a scope,
   // reset this variable to the parent context.
-  let context = new Context({ locals: core.standardLibrary })
+  let context = Context.root()
 
   // The single gate for error checking. Pass in a condition that must be true.
   // Use errorLocation to give contextual information about the error that will
@@ -144,7 +144,8 @@ export default function analyze(match) {
     Stmt_vardec(modifier, id, _colon, type, _eq, exp, _semicolon) {
       // TODO: Need to do something else with the 'type'
       const initializer = exp.rep()
-      const variable = core.variable(id.sourceString, false)
+      const readOnly = modifier.sourceString === "const"
+      const variable = core.variable(id.sourceString, readOnly, initializer.type)
       mustNotAlreadyBeDeclared(id.sourceString, { at: id })
       // TODO: Add type checking
       // exp must be of type 'type'
