@@ -14,7 +14,9 @@ import generate from "./generator.js"
 export default function compile(sourceCode, outputType) {
   if (outputType === 'parsed') {
     // will return the match object
-    return parse(sourceCode)
+    // uncomment to view match object
+    // return parse(sourceCode)
+    return 'Syntax is OK'
   } else if (outputType === 'analyzed') { 
     return analyze(parse(sourceCode))
   } else if (outputType === 'optimized') {
