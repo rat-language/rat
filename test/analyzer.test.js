@@ -125,7 +125,7 @@ const semanticErrors = [
   ["bad types for length", "print(#false);", /Expected an array/],
   ["bad types for not", 'print(!"hello");', /Expected a boolean/],
   ["bad types for random", "print(random 3);", /Expected an array/],
-  ["non-integer index", "a=[1];print(a[false]);", /Expected an integer/],
+  ["non-integer index", "var a: [int] = [];print(a[false]);", /Expected an integer/],
   // ["no such field", "struct S{} let x=S(); print(x.y);", /No such field/],
   // ["diff type array elements", "print([3,3.0]);", /Not all elements have the same type/],
   // ["shadowing", "let x = 1;\nwhile true {let x = 1;}", /Identifier x already declared/],
