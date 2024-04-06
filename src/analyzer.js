@@ -144,10 +144,10 @@ export default function analyze(match) {
 
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     // what we gotta add to builder:
-    Primary_id(id){
+    Primary_id(id) {
       // 
     },
-    Primary_lookup(iterable, index){
+    Primary_lookup(iterable, index) {
       // corresponds to subscript in carlos
       const [iterableObj, subscript] = [iterable.rep(), index.rep()]
       mustHaveAnArrayType(array, { at: exp1 })
@@ -156,36 +156,31 @@ export default function analyze(match) {
       return core.subscript(array, subscript)
 
     },
-    Primary_wrapped(_some, exp){
+    Primary_wrapped(_some, exp) {
 
     },
-    Iterable_iterableTypeConversion(iterType, _open, exp, _close){
+    Iterable_iterableTypeConversion(iterType, _open, exp, _close) {
       // checkout how he did type conversion
     },
-    IterableType_array(_open, baseType, _close){
+    IterableType_array(_open, baseType, _close) {
       return core.arrayType(baseType.rep());
     },
 
-    IterableType_dictionary(_open, baseType1, _colon, type2, _close){
+    IterableType_dictionary(_open, baseType1, _colon, type2, _close) {
 
     },
 
-    Binding(){},
-    DictLit(){},
-    Type_optional(){},
-    Type_promise(){},
-    
 
+    DictLit() { },
 
-
-    LhsExp(){},
-    IfStmt_if(){},
-    IfStmt_ifshort(){},
-    IfStmt_iflong(){},
-    TryStmt(){},
-    ExclusiveRng(){},
-    InclusiveRng(){},
-    ForStmt(){},
+    LhsExp() { },
+    IfStmt_if() { },
+    IfStmt_ifshort() { },
+    IfStmt_iflong() { },
+    TryStmt() { },
+    ExclusiveRng() { },
+    InclusiveRng() { },
+    ForStmt() { },
 
     Program(statements) {
       return core.program(statements.children.map((s) => s.rep()));
