@@ -79,7 +79,8 @@ Rat {
             | false 
             | none
             | some Exp                                              --wrapped
-            | Iterable Index+                                       --lookup
+            // | Iterable Index+                                       --lookup
+            | Primary ("[" | "?[") Exp "]"                          --subscript
             | Call
             | id                                                    --id
             | TypeConv
