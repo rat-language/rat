@@ -144,38 +144,25 @@ export default function analyze(match) {
 
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     // what we gotta add to builder:
-    Primary_id(id) {
-      // 
-    },
-
+    
     Primary_wrapped(_some, exp) {
 
     },
 
-    Type_array(_open, baseType, _close) {
-      return core.arrayType(baseType.rep());
+    
+
+
+    
+
+    TryStmt(_try, block1, _timeout, block2, _catch, params, block3) {
+
     },
-
-    Type_dictionary(_open, baseType1, _colon, type2, _close) {
-      return core.dictionaryType(baseType1.rep(), type2.rep());
-    },
-
-
-    DictLit(_open, bindings, _close) {
-      return core.dictLiteral(
-        bindings.asIteration().children.map((b) => b.rep())
-      );
-    },
-
-    LhsExp() { },
-    TryStmt() { },
     ExclusiveRng(exp1, _ellipseLt, exp2) {
 
     },
     InclusiveRng(exp1, _ellipse, exp2 ) {
 
     },
-    ForStmt() { },
 
     Program(statements) {
       return core.program(statements.children.map((s) => s.rep()));
@@ -213,13 +200,17 @@ export default function analyze(match) {
     },
 
     //While
-    Stmt_while(_while, exp, block) {
+    LoopStmt_while(_while, exp, block) {
       return core.whileStatement(exp.rep(), block.rep());
     },
 
     //For
-    ForStmt(_for, id, _in, iterable, block) {
-      return core.forStatement(id.sourceString, iterable.rep(), block.rep());
+    LoopStmt_foreach(_for, iterator, _in, iterable, block) {
+      return core.forStatement(iterator.sourceString, iterable.rep(), block.rep());
+    },
+
+    LoopStmt_foreach(_for, iterator, _in, range, block) {
+      return core.forStatement(iterator.sourceString, iterable.rep(), block.rep());
     },
 
     Call(id, args) {
@@ -270,8 +261,6 @@ export default function analyze(match) {
       return core.ifStatement(test, consequent, alternate)
     },
 
-
-
     //Pass
     Stmt_pass(_pass, _semicolon) {
       return core.passStatement();
@@ -288,11 +277,6 @@ export default function analyze(match) {
       mustBeAFunction(context, { at: _return });
       return core.returnStatement(exp.rep());
     },
-
-    // //Try
-    // Stmt_try(_try, block, timeoutKeyword, block, _catch, _open, params, _close, block) {
-    //   //TODO
-    // },
 
     //Function Declaration
     FuncDecl(type, id, parameters, body) {
@@ -315,6 +299,7 @@ export default function analyze(match) {
       return new core.functionDeclaration(fun, params, bodyRep);
     },
 
+  
     Params(_open, paramList, _close) {
       // Returns a list of variable nodes
       return paramList.asIteration().children.map((p) => p.rep());
@@ -331,28 +316,7 @@ export default function analyze(match) {
       return statements.children.map((s) => s.rep());
     },
 
-    Primary_index(exp1, _open, exp2, _close) {
-      const [array, index] = [exp1.rep(), exp2.rep()];
-      mustHaveArrayType(array, { at: exp1 });
-      mustHaveIntegerType(index, { at: exp2 });
-      return core.index(array, index)
-    },
-
-    //Dictionary stuff
-    Binding(key, _colon, value) {
-      return [key.rep(), value.rep()];
-    },
-
-    // LhsExp(id, index) {
-
-    // }
-
-    // arr[2][1] =
-    /*
-IDK how to properly name these statement functions,
-I'm thinking that I might need to go back and re-write the ohm grammars, for now, I'm naming them the variable names...
-*/
-
+  
     //==================== (EXPRESSIONS) ====================//
     Exp_unwrap(exp1, op, exp2) {
       return core.binary(op.sourceString, exp1.rep(), exp2.rep());
@@ -363,7 +327,6 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
       return core.unary(op.sourceString, exp.rep());
     },
 
-    // IDK HOW TO DO THIS ONE YET!!!
     // Exp_await(_await, exp) {
     //   return core.await(exp.rep())
     // }
@@ -395,31 +358,55 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
       // exponentiation
       return core.binary("**", exp1.rep(), exp2.rep());
     },
-
-    // IDK HOW TO DO THIS ONE YET!!!
-    // Primary_wrapped(_open, exp, _close) { return exp.rep() },
-    // Primary_lookup(id) {},
-
-
-
+    
+    Primary_index(exp1, _open, exp2, _close) {
+      const [array, index] = [exp1.rep(), exp2.rep()];
+      mustHaveArrayType(array, { at: exp1 });
+      mustHaveIntegerType(index, { at: exp2 });
+      return core.index(array, index)
+    },
+    
+    Primary_id(id) {
+      // ids used in expressions must have been already declared and must
+      // be bound to variable entities, not function entities.
+      const entity = context.lookup(id.sourceString);
+      mustHaveBeenFound(entity, id.sourceString, { at: id });
+      mustBeAVariable(entity, { at: id });
+      return entity;
+    },
+    
     ArrayLit(_open, expList, _close) {
       return core.arrayLiteral(
         expList.asIteration().children.map((exp) => exp.rep())
       );
     },
 
-    // THIS IS DEFINITELY WRONG BUT WE'LL FIX IT LATER
-    // DictList(_open, keyValList, _close) {
-    //   return core.dictLiteral(keyValList.asIteration().children.map(kv => kv.rep()))
-    // },
-    //-------------------- (TYPES) -------------------//
+    DictLit(_open, bindings, _close) {
+      return core.dictLiteral(
+        bindings.asIteration().children.map((b) => b.rep())
+      );
+    },
 
+    //Dictionary stuff
+    Binding(key, _colon, value) {
+      return [key.rep(), value.rep()];
+    },
+
+    //-------------------- (TYPES) -------------------//
     Type_optional(baseType, _question) {
       return core.optionalType(baseType.rep());
     },
 
     Type_promise(baseType, _promise) {
       return core.promiseType(baseType.rep());
+    },
+
+    Type_array(_open, baseType, _close) {
+      return core.arrayType(baseType.rep());
+    },
+
+    Type_dictionary(_open, baseType1, _colon, type2, _close) {
+      return core.dictionaryType(baseType1.rep(), type2.rep());
     },
 
     Parens(_open, exp, _close) {
@@ -429,15 +416,8 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
     Args(_open, expList, _close) {
       return expList.asIteration().children.map((exp) => exp.rep());
     },
-    Primary_id(id) {
-      // ids used in expressions must have been already declared and must
-      // be bound to variable entities, not function entities.
-      const entity = context.lookup(id.sourceString);
-      mustHaveBeenFound(entity, id.sourceString, { at: id });
-      mustBeAVariable(entity, { at: id });
-      return entity;
-    },
 
+    
     true(_) {
       return true;
     },
