@@ -22,15 +22,12 @@ Rat {
         | return Exp ";"                                --return 
         | TryStmt
         | FuncDecl
-        | ImportStmt
-        | ImportFrmStmt
+        // | ImportStmt
+        // | ImportFrmStmt
     
-    ImportStmt = import id (as id)? ";" 					            --import
-    ImportFrmStmt = import from id "," id ";"			                --importfrom
-    LhsExp = id Index*                                                  --indexedvalue
-    // BrkStmt = 
-    // PassStmt = 
-    // RtrnStmt = 
+    // ImportStmt = import id (as id)? ";" 					            --import
+    // ImportFrmStmt = import from id "," id ";"			                --importfrom
+    LhsExp = id Index*
     TryStmt = try Block (timeout Block)? catch Params Block
     FuncDecl = (Type|void) id Params Block
  
@@ -51,7 +48,7 @@ Rat {
     Index = "[" Exp "]"
     Params = "("ListOf<Param, ",">")"
     Param = id ":" Type
-    Args = "("ListOf<Exp, ",">")"
+    Args = "(" ListOf<Exp, ","> ")"
     Block = "{" Stmt* "}"
 
     // lowest precedence
@@ -92,7 +89,7 @@ Rat {
     
     TypeConv = Type "(" Exp ")"
     ArrayLit = "["ListOf<Exp, ",">"]"
-    DictLit = "{" ListOf<Binding,",">"}"                            --dictionarylit
+    DictLit = "{" ListOf<Binding,",">"}"
     Parens = "(" Exp ")"
 
     Iterable = strlit

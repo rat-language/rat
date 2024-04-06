@@ -135,7 +135,32 @@ export default function analyze(match) {
     );
   }
 
+  /*
+   
+  */
+
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
+    // what we gotta add to builder:
+    Primary_id(){},
+    Primary_lookup(){},
+    Primary_wrapped(){},
+    Iterable(){},
+    Iterable_iterableTypeConversion(){},
+    LhsExp(){},
+    Index(){},
+    Binding(){},
+    DictLit(){},
+    IfStmt_if(){},
+    IfStmt_ifshort(){},
+    IfStmt_iflong(){},
+    Type_optional(){},
+    Type_promise(){},
+    TryStmt(){},
+    IterableType_array(){},
+    IterableType_dictionary(){},
+    ExclusiveRng(){},
+    InclusiveRng(){},
+    ForStmt(){},
     Program(statements) {
       return core.program(statements.children.map((s) => s.rep()));
     },
@@ -181,15 +206,15 @@ export default function analyze(match) {
       return core.forStatement(id.sourceString, iterable.rep(), block.rep());
     },
 
-    Call(id, _open, expList, _close) {
+    Call(id, args) {
       // ids used in calls must have already been declared and must be
       // bound to function entities, not to variable entities.
       const callee = context.lookup(id.sourceString);
       mustHaveBeenFound(callee, id.sourceString, { at: id });
       mustBeAFunction(callee, { at: id });
-      const args = expList.asIteration().children.map((arg) => arg.rep());
-      mustHaveCorrectArgumentCount(args.length, callee.paramCount, { at: id });
-      return core.call(callee, args);
+      const passed = args.rep()
+      mustHaveCorrectArgumentCount(passed.length, callee.paramCount, { at: id });
+      return core.call(callee, passed);
     },
     
     //Call
@@ -261,6 +286,11 @@ export default function analyze(match) {
       return statements.children.map((s) => s.rep());
     },
 
+    // LhsExp(id, index) {
+
+    // }
+
+// arr[2][1] =
     /*
 IDK how to properly name these statement functions,
 I'm thinking that I might need to go back and re-write the ohm grammars, for now, I'm naming them the variable names...
@@ -334,6 +364,9 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
       return exp.rep();
     },
 
+    Args(_open, expList, _close) {
+      return expList.asIteration().children.map((exp) => exp.rep());
+    },
     Primary_id(id) {
       // ids used in expressions must have been already declared and must
       // be bound to variable entities, not function entities.
@@ -361,7 +394,7 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
       return Number(this.sourceString);
     },
 
-    stringlit(_openQuote, _chars, _closeQuote) {
+    strlit(_openQuote, _chars, _closeQuote) {
       // strings will be represented as plain JS strings, including
       // the quotation marks
       return this.sourceString;
