@@ -180,3 +180,6 @@ export const standardLibrary = Object.freeze({
   // ln: new Function("ln", 1, true),
   // hypot: new Function("hypot", 2, true),
 });
+
+// carlos subscript a[1]
+// index: [1]

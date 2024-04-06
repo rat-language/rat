@@ -64,6 +64,8 @@ function mustHaveNumericOrStringType(e, at) {
     at
   );
 }
+
+
 function mustHaveBooleanType(e, at) {
   must(e.type === BOOLEAN, "Expected a boolean", at);
 }
@@ -140,32 +142,46 @@ export default function analyze(match) {
     );
   }
 
-  /*
-   
-  */
-
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     // what we gotta add to builder:
-    Primary_id() { },
-    Primary_lookup() { },
-    Primary_wrapped() { },
-    Iterable() { },
-    Iterable_iterableTypeConversion() { },
-    LhsExp() { },
-    Index() { }, //riley done
-    Binding() { }, //riley done
+    Primary_id(id) {
+      // 
+    },
+    Primary_lookup(iterable, index) {
+      // corresponds to subscript in carlos
+      const [iterableObj, subscript] = [iterable.rep(), index.rep()]
+      mustHaveAnArrayType(array, { at: exp1 })
+
+      mustHaveIntegerType(subscript, { at: exp2 })
+      return core.subscript(array, subscript)
+
+    },
+    Primary_wrapped(_some, exp) {
+
+    },
+    Iterable_iterableTypeConversion(iterType, _open, exp, _close) {
+      // checkout how he did type conversion
+    },
+    IterableType_array(_open, baseType, _close) {
+      return core.arrayType(baseType.rep());
+    },
+
+    IterableType_dictionary(_open, baseType1, _colon, type2, _close) {
+
+    },
+
+
     DictLit() { },
+
+    LhsExp() { },
     IfStmt_if() { },
     IfStmt_ifshort() { },
     IfStmt_iflong() { },
-    Type_optional() { }, //riley 
-    Type_promise() { }, //riley
     TryStmt() { },
-    IterableType_array() { },
-    IterableType_dictionary() { },
     ExclusiveRng() { },
     InclusiveRng() { },
     ForStmt() { },
+
     Program(statements) {
       return core.program(statements.children.map((s) => s.rep()));
     },
@@ -375,6 +391,14 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
     //-------------------- (TYPES) -------------------//
     TypeConv(type, _open, exp, _close) {
       return core.typeConversion(type.sourceString, exp.rep());
+    },
+
+    Type_optional(baseType, _question) {
+      return core.optionalType(baseType.rep());
+    },
+
+    Type_promise(baseType, _promise) {
+      return core.promiseType(baseType.rep());
     },
 
     Parens(_open, exp, _close) {

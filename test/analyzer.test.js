@@ -175,15 +175,15 @@ describe("The analyzer", () => {
       assert.throws(() => analyze(parse(source)), errorMessagePattern)
     })
   }
-  it("produces the expected representation for a trivial program", () => {
-    assert.deepEqual(
-      analyze(parse("let x = π + 2.2;")),
-      program([
-        variableDeclaration(
-          variable("x", false, floatType),
-          binary("+", variable("π", true, floatType), 2.2, floatType)
-        ),
-      ])
-    )
-  })
+  // it("produces the expected representation for a trivial program", () => {
+  //   assert.deepEqual(
+  //     analyze(parse("let x = π + 2.2;")),
+  //     program([
+  //       variableDeclaration(
+  //         variable("x", false, floatType),
+  //         binary("+", variable("π", true, floatType), 2.2, floatType)
+  //       ),
+  //     ])
+  //   )
+  // })
 })

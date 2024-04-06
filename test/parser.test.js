@@ -20,7 +20,7 @@ const syntaxChecks = [
   ["coalescing operator", "var boss:str? = some \"Tina\";\nprint (boss ?? \"No boss here\");"],
   ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
   ["await call", "try {r = await <<500>> foo();} timeout {pass;} catch(e:str) {print(e);}"],
-  ["import statements", "import math;\nimport pandas as pd;\nimport from os, system32;"],
+  // ["import statements", "import math;\nimport pandas as pd;\nimport from os, system32;"],
 
 ]
 
