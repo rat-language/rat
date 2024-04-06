@@ -117,6 +117,10 @@ export function importStatement() {}
 // ***************** (NEW) ***************** //
 export function importFromStatement() {}
 
+export function index(array, index) {
+  return { kind: "IndexExpression", array, index, type: array.type.baseType };
+}
+
 //==========================( EXPRESSIONS )================================//
 
 export function binary(op, left, right) {
