@@ -158,8 +158,8 @@ export default function analyze(match) {
     IfStmt_if() { },
     IfStmt_ifshort() { },
     IfStmt_iflong() { },
-    Type_optional() { }, //riley 
-    Type_promise() { }, //riley
+    Type_optional() { }, //riley done
+    Type_promise() { }, //riley done
     TryStmt() { },
     IterableType_array() { },
     IterableType_dictionary() { },
@@ -375,6 +375,14 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
     //-------------------- (TYPES) -------------------//
     TypeConv(type, _open, exp, _close) {
       return core.typeConversion(type.sourceString, exp.rep());
+    },
+
+    Type_optional(baseType, _question) {
+      return core.optionalType(baseType.rep());
+    },
+
+    Type_promise(baseType, _promise) {
+      return core.promiseType(baseType.rep());
     },
 
     Parens(_open, exp, _close) {
