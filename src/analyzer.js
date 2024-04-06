@@ -174,9 +174,6 @@ export default function analyze(match) {
     DictLit() { },
 
     LhsExp() { },
-    IfStmt_if() { },
-    IfStmt_ifshort() { },
-    IfStmt_iflong() { },
     TryStmt() { },
     ExclusiveRng() { },
     InclusiveRng() { },
