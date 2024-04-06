@@ -34,8 +34,14 @@ Rat {
     TryStmt = try Block (timeout Block)? catch Params Block
     FuncDecl = (Type|void) id Params Block                              --funcdecl
  
+
+ // Change if statement by separating ifStmt and ShortStmt:
+ //IfStmt = if Exp Block else Block
+ //ShortifStmt = if Exp Block
 	
-    IfStmt = if Exp Block (else ( Block | IfStmt ))?                    --if
+    IfStmt = if Exp Block else Block
+    | if Exp Block else IfStmt
+    | if Exp Block
     // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
     ForStmt  = for id in Iterable Block
     // while we generally statically type our language, in cases like this, where we iterate through a 
