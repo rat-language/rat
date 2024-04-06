@@ -52,6 +52,11 @@ class Context {
 function mustHaveNumericType(e, at) {
   must([INT, FLOAT].includes(e.type), "Expected a number", at);
 }
+
+function mustHaveArrayType(e, at) {
+  must(e.type?.kind === "ArrayType", "Expected an array", at);
+}
+
 function mustHaveNumericOrStringType(e, at) {
   must(
     [INT, FLOAT, STRING].includes(e.type),
@@ -141,26 +146,26 @@ export default function analyze(match) {
 
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     // what we gotta add to builder:
-    Primary_id(){},
-    Primary_lookup(){},
-    Primary_wrapped(){},
-    Iterable(){},
-    Iterable_iterableTypeConversion(){},
-    LhsExp(){},
-    Index(){},
-    Binding(){},
-    DictLit(){},
-    IfStmt_if(){},
-    IfStmt_ifshort(){},
-    IfStmt_iflong(){},
-    Type_optional(){},
-    Type_promise(){},
-    TryStmt(){},
-    IterableType_array(){},
-    IterableType_dictionary(){},
-    ExclusiveRng(){},
-    InclusiveRng(){},
-    ForStmt(){},
+    Primary_id() { },
+    Primary_lookup() { },
+    Primary_wrapped() { },
+    Iterable() { },
+    Iterable_iterableTypeConversion() { },
+    LhsExp() { },
+    Index() { }, //riley done
+    Binding() { }, //riley done
+    DictLit() { },
+    IfStmt_if() { },
+    IfStmt_ifshort() { },
+    IfStmt_iflong() { },
+    Type_optional() { }, //riley 
+    Type_promise() { }, //riley
+    TryStmt() { },
+    IterableType_array() { },
+    IterableType_dictionary() { },
+    ExclusiveRng() { },
+    InclusiveRng() { },
+    ForStmt() { },
     Program(statements) {
       return core.program(statements.children.map((s) => s.rep()));
     },
@@ -216,7 +221,7 @@ export default function analyze(match) {
       mustHaveCorrectArgumentCount(passed.length, callee.paramCount, { at: id });
       return core.call(callee, passed);
     },
-    
+
     //Call
     Stmt_call(call, _semicolon) {
       return core.callStatement(call.rep());
@@ -286,11 +291,23 @@ export default function analyze(match) {
       return statements.children.map((s) => s.rep());
     },
 
+    Primary_index(exp1, _open, exp2, _close) {
+      const [array, index] = [exp1.rep(), exp2.rep()];
+      mustHaveArrayType(array, { at: exp1 });
+      mustHaveIntegerType(index, { at: exp2 });
+      return core.index(array, index)
+    },
+
+    //Dictionary stuff
+    Binding(key, _colon, value) {
+      return [key.rep(), value.rep()];
+    },
+
     // LhsExp(id, index) {
 
     // }
 
-// arr[2][1] =
+    // arr[2][1] =
     /*
 IDK how to properly name these statement functions,
 I'm thinking that I might need to go back and re-write the ohm grammars, for now, I'm naming them the variable names...
@@ -343,7 +360,7 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
     // Primary_wrapped(_open, exp, _close) { return exp.rep() },
     // Primary_lookup(id) {},
 
-    
+
 
     ArrayLit(_open, expList, _close) {
       return core.arrayLiteral(
