@@ -181,18 +181,29 @@ export default function analyze(match) {
       return core.forStatement(id.sourceString, iterable.rep(), block.rep());
     },
 
+    Call(id, _open, expList, _close) {
+      // ids used in calls must have already been declared and must be
+      // bound to function entities, not to variable entities.
+      const callee = context.lookup(id.sourceString);
+      mustHaveBeenFound(callee, id.sourceString, { at: id });
+      mustBeAFunction(callee, { at: id });
+      const args = expList.asIteration().children.map((arg) => arg.rep());
+      mustHaveCorrectArgumentCount(args.length, callee.paramCount, { at: id });
+      return core.call(callee, args);
+    },
+    
     //Call
     Stmt_call(call, _semicolon) {
       return core.callStatement(call.rep());
     },
 
-    //If
-    IfStmt(_if, exp, block, _else, elseBlock) {
-      //TODO
-    },
+    // //If
+    // IfStmt(_if, exp, block, _else, elseBlock) {
+    //   //TODO
+    // },
 
     //Pass
-    PassStmt(_pass, _semicolon) {
+    Stmt_pass(_pass, _semicolon) {
       return core.passStatement();
     },
 
@@ -203,7 +214,7 @@ export default function analyze(match) {
     },
 
     //Return
-    RtrnStmt(_return, exp, _semicolon) {
+    Stmt_return(_return, exp, _semicolon) {
       mustBeAFunction(context, { at: _return });
       return core.returnStatement(exp.rep());
     },
@@ -214,7 +225,7 @@ export default function analyze(match) {
     // },
 
     //Function Declaration
-    Stmt_FuncDecl(type, id, parameters, body) {
+    FuncDecl(type, id, parameters, body) {
       const fun = new core.Function(id.sourceString, params.length, true);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, fun);
@@ -302,16 +313,7 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
     // Primary_wrapped(_open, exp, _close) { return exp.rep() },
     // Primary_lookup(id) {},
 
-    Call(id, _open, expList, _close) {
-      // ids used in calls must have already been declared and must be
-      // bound to function entities, not to variable entities.
-      const callee = context.lookup(id.sourceString);
-      mustHaveBeenFound(callee, id.sourceString, { at: id });
-      mustBeAFunction(callee, { at: id });
-      const args = expList.asIteration().children.map((arg) => arg.rep());
-      mustHaveCorrectArgumentCount(args.length, callee.paramCount, { at: id });
-      return core.call(callee, args);
-    },
+    
 
     ArrayLit(_open, expList, _close) {
       return core.arrayLiteral(

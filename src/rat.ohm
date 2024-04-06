@@ -17,9 +17,9 @@ Rat {
         | ForStmt
         | Call ";"                                      --call
         | IfStmt
-        | PassStmt
-        | BrkStmt
-        | RtrnStmt
+        | pass ";"                                      --pass
+        | break ";"                                     --break
+        | return Exp ";"                                --return 
         | TryStmt
         | FuncDecl
         | ImportStmt
@@ -28,20 +28,20 @@ Rat {
     ImportStmt = import id (as id)? ";" 					            --import
     ImportFrmStmt = import from id "," id ";"			                --importfrom
     LhsExp = id Index*                                                  --indexedvalue
-    BrkStmt = break ";"                                                 --break
-    PassStmt = pass ";"                                                 --pass
-    RtrnStmt = return Exp ";"                                           --return 
+    // BrkStmt = 
+    // PassStmt = 
+    // RtrnStmt = 
     TryStmt = try Block (timeout Block)? catch Params Block
-    FuncDecl = (Type|void) id Params Block                              --funcdecl
+    FuncDecl = (Type|void) id Params Block
  
 
  // Change if statement by separating ifStmt and ShortStmt:
  //IfStmt = if Exp Block else Block
  //ShortifStmt = if Exp Block
 	
-    IfStmt = if Exp Block else Block
-    | if Exp Block else IfStmt
-    | if Exp Block
+    IfStmt = if Exp Block                                   --if
+        | if Exp Block else Block                        --ifshort
+        | if Exp Block else IfStmt                       --iflong
     // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
     ForStmt  = for id in Iterable Block
     // while we generally statically type our language, in cases like this, where we iterate through a 
@@ -90,10 +90,10 @@ Rat {
             | ArrayLit
             | DictLit
     
-    TypeConv = Type "(" Exp ")"                                     --typeconversion
+    TypeConv = Type "(" Exp ")"
     ArrayLit = "["ListOf<Exp, ",">"]"                               --arraylit
     DictLit = "{" ListOf<Binding,",">"}"                            --dictionarylit
-    Parens = "(" Exp ")"                                            --parens
+    Parens = "(" Exp ")"
 
     Iterable = strlit
              | Call
