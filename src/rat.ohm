@@ -91,7 +91,7 @@ Rat {
             | DictLit
     
     TypeConv = Type "(" Exp ")"
-    ArrayLit = "["ListOf<Exp, ",">"]"                               --arraylit
+    ArrayLit = "["ListOf<Exp, ",">"]"
     DictLit = "{" ListOf<Binding,",">"}"                            --dictionarylit
     Parens = "(" Exp ")"
 

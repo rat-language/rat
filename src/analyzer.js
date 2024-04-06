@@ -365,7 +365,7 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
       // strings will be represented as plain JS strings, including
       // the quotation marks
       return this.sourceString;
-    },
+    }
   });
   return builder(match).rep();
 }
