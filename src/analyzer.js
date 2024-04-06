@@ -147,36 +147,34 @@ export default function analyze(match) {
     Primary_id(id) {
       // 
     },
-    Primary_lookup(iterable, index) {
-      // corresponds to subscript in carlos
-      const [iterableObj, subscript] = [iterable.rep(), index.rep()]
-      mustHaveAnArrayType(array, { at: exp1 })
 
-      mustHaveIntegerType(subscript, { at: exp2 })
-      return core.subscript(array, subscript)
-
-    },
     Primary_wrapped(_some, exp) {
 
     },
-    Iterable_iterableTypeConversion(iterType, _open, exp, _close) {
-      // checkout how he did type conversion
-    },
-    IterableType_array(_open, baseType, _close) {
+
+    Type_array(_open, baseType, _close) {
       return core.arrayType(baseType.rep());
     },
 
-    IterableType_dictionary(_open, baseType1, _colon, type2, _close) {
-
+    Type_dictionary(_open, baseType1, _colon, type2, _close) {
+      return core.dictionaryType(baseType1.rep(), type2.rep());
     },
 
 
-    DictLit() { },
+    DictLit(_open, bindings, _close) {
+      return core.dictLiteral(
+        bindings.asIteration().children.map((b) => b.rep())
+      );
+    },
 
     LhsExp() { },
     TryStmt() { },
-    ExclusiveRng() { },
-    InclusiveRng() { },
+    ExclusiveRng(exp1, _ellipseLt, exp2) {
+
+    },
+    InclusiveRng(exp1, _ellipse, exp2 ) {
+
+    },
     ForStmt() { },
 
     Program(statements) {
@@ -262,7 +260,7 @@ export default function analyze(match) {
       return core.ifStatement(test, consequent, alternate)
     },
 
-    IfStmt_elsif(_if, exp, block, _else, trailingIfStatement) {
+    IfStmt_elseif(_if, exp, block, _else, trailingIfStatement) {
       const test = exp.rep()
       mustHaveBooleanType(test, { at: exp })
       context = context.newChildContext()
@@ -415,9 +413,6 @@ I'm thinking that I might need to go back and re-write the ohm grammars, for now
     //   return core.dictLiteral(keyValList.asIteration().children.map(kv => kv.rep()))
     // },
     //-------------------- (TYPES) -------------------//
-    TypeConv(type, _open, exp, _close) {
-      return core.typeConversion(type.sourceString, exp.rep());
-    },
 
     Type_optional(baseType, _question) {
       return core.optionalType(baseType.rep());

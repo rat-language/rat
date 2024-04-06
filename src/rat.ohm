@@ -1,9 +1,12 @@
 //rat.ohm
 /*
-Things I'd change:
-- NEED to add a dot operator
-- Need to fix up the Primary and Iterable types, I see some repition in code, i'm just not ready to change up the ordering of these things.
-- there may be an easier way to implement the 'Call;' Stmt but I'm not too sure yet.
+Rat v1.2.0
+Changes:
+- Types no longer keywords (analyzer will handle this)
+- Type conversion will also be handled by analyzer
+- removed 'Iterable' type
+- removed 'as' and 'import' keywords
+- 
 */
 Rat {
     // Unsure whether we should change to Stmt* for non-empty files as most programming languages will still do empty files
@@ -22,25 +25,21 @@ Rat {
         | return Exp ";"                                --return 
         | TryStmt
         | FuncDecl
-        // | ImportStmt
-        // | ImportFrmStmt
-    
-    // ImportStmt = import id (as id)? ";" 					            --import
-    // ImportFrmStmt = import from id "," id ";"			                --importfrom
+
     LhsExp = id Index*
     TryStmt = try Block (timeout Block)? catch Params Block
     FuncDecl = (Type|void) id Params Block
  
 
- // Change if statement by separating ifStmt and ShortStmt:
- //IfStmt = if Exp Block else Block
- //ShortifStmt = if Exp Block
+    // Change if statement by separating ifStmt and ShortStmt:
+    //IfStmt = if Exp Block else Block
+    //ShortifStmt = if Exp Block
 	
     IfStmt = if Exp Block                                --if
         | if Exp Block else Block                        --else
         | if Exp Block else IfStmt                       --elseif
     // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
-    ForStmt  = for id in Iterable Block
+    ForStmt  = for id in (id|InclusiveRng|ExclusiveRng) Block
     // while we generally statically type our language, in cases like this, where we iterate through a 
     // range of numbers, we will assume that the id is going to be an integer
     
@@ -72,35 +71,24 @@ Rat {
     Factor = Primary "**" Factor                                                    --exponent
            | Primary
     // possible assignables to variables
-    Primary = strlit 
-            | floatlit 
+    Primary = floatlit 
             | intlit 
             | true 
             | false 
             | none
-            | some Exp                                              --wrapped
-            // | Iterable Index+                                       --lookup
-            | Primary ("[" | "?[") Exp "]"                          --subscript
-            | Call
-            | id                                                    --id
-            | TypeConv
-            | Parens
             | ArrayLit
             | DictLit
-    
-    TypeConv = Type "(" Exp ")"
+            | some Exp                                              --wrapped
+            | Primary ("[" | "?[") Exp "]"                          --index
+            | Call
+            | id                                                    --id
+            | Parens
+            | strlit
+
     ArrayLit = "["ListOf<Exp, ",">"]"
     DictLit = "{" ListOf<Binding,",">"}"
     Parens = "(" Exp ")"
 
-    Iterable = strlit
-             | Call
-             | id
-             | IterableType "(" Exp ")"                             --iterableTypeConversion
-             | ArrayLit
-             | DictLit
-             | InclusiveRng
-             | ExclusiveRng
 
     //key:value pairs for dictionaries
     Binding = Exp ":" Exp
@@ -108,28 +96,20 @@ Rat {
     ExclusiveRng = Exp "..<" Exp
     op = "**" | "*" | "/" | "%" |"+" | "-"
 
-    Type = Type "?"                                                 --optional
-         | Type "^"                                                 --promise
-         | int | float | bool | anything
-         | IterableType
+    Type = Type "?"                                         --optional
+         | Type "^"                                         --promise
+         |"[" Type "]"                                      --array
+         | "[" Type":"Type"]"                               --dictionary
+         | id                                               --id
 
-    IterableType = string
-                 |"[" Type "]"                                      --array
-                 | "[" Type":"Type"]"                               --dictionary
-    
     //KEYWORDS:
     print   = "print" ~idchar
     true    = "true" ~idchar
     false   = "false" ~idchar
     let     = "let" ~idchar
-    int     = "int" ~idchar
     in      = "in" ~idchar
-    float   = "float" ~idchar
     const   = "const" ~idchar
-    global  = "global" ~idchar
     var     = "var" ~idchar
-    bool    = "bool" ~idchar
-    string  = "str" ~idchar
     while   = "while" ~idchar
     for     = "for" ~idchar
     if      = "if" ~idchar
@@ -147,8 +127,8 @@ Rat {
     void    = "void" ~idchar
     all     = "all" ~idchar
     timeout = "timeout" ~idchar
-    import  = "import" ~idchar
-    as      = "as" ~idchar
+    // import  = "import" ~idchar
+    // as      = "as" ~idchar
     from    = "from" ~idchar
 
     // await used for asynchronous functions that perform a call that is promised to return a value
@@ -157,11 +137,10 @@ Rat {
     // in asynchronous functions, we can choose to timeout the function if it takes to long to return something
     // distinguishes keywords
 
-    keyword = print | true | false | let | int
-            | float | string | bool | pass
+    keyword = print | true | false | let | pass
             | while | for | if | else | else | return
             | some  | void | await | one | all | none
-            | import | as | from
+            | from
 
     //allows you to name your variables
     id = ~keyword (letter| "_") idchar*
