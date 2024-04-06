@@ -144,6 +144,17 @@ export function arrayType(baseType) {
   return { kind: "ArrayType", baseType };
 }
 
+
+//------------------------------- (IF STATEMENTS) ---------------------------------//
+export function shortIfStatement(test, consequent) {
+  return { kind: "ShortIfStatement", test, consequent };
+}
+
+export function ifStatement(test, consequent, alternate) {
+  return { kind: "IfStatement", test, consequent, alternate };
+}
+
+
 // ***************** (NEW) ***************** //
 export function dictionaryType(keyType, valueType) {
   return { kind: "DictionaryType", keyType, valueType };

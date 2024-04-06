@@ -244,9 +244,38 @@ export default function analyze(match) {
     },
 
     // //If
-    // IfStmt(_if, exp, block, _else, elseBlock) {
-    //   //TODO
-    // },
+    IfStmt_if(_if, exp, block) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      context = context.newChildContext()
+      const consequent = block.rep()
+      context = context.parent
+      return core.shortIfStatement(test, consequent)
+    },
+
+    IfStmt_else(_if, exp, block1, _else, block2) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      context = context.newChildContext()
+      const consequent = block1.rep()
+      context = context.parent
+      context = context.newChildContext()
+      const alternate = block2.rep()
+      context = context.parent
+      return core.ifStatement(test, consequent, alternate)
+    },
+
+    IfStmt_elsif(_if, exp, block, _else, trailingIfStatement) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      context = context.newChildContext()
+      const consequent = block.rep()
+      context = context.parent
+      const alternate = trailingIfStatement.rep()
+      return core.ifStatement(test, consequent, alternate)
+    },
+
+
 
     //Pass
     Stmt_pass(_pass, _semicolon) {
