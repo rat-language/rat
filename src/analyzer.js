@@ -212,7 +212,12 @@ export default function analyze(match) {
 
     //While
     LoopStmt_while(_while, exp, block) {
-      return core.whileStatement(exp.rep(), block.rep());
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      context = context.newChildContext({ inLoop: true })
+      const body = block.rep()
+      context = context.parent
+      return core.whileStatement(test, body)
     },
 
     //For
@@ -223,10 +228,10 @@ export default function analyze(match) {
     },
 
     LoopStmt_range(_for, id, _in, exp1, range, exp2, block) {
-      const [low, high] = [exp1.rep(), endpoint]
+      const [low, high] = [exp1.rep(), exp2.rep()]
       mustHaveIntegerType(low, { at: exp1 })
       mustHaveIntegerType(high, { at: exp2 })
-      const endpoint = range === "..<" ? high : high - 1
+      const endpoint = range === "..." ? high : high - 1
       const iterator = core.variable(id.sourceString, false, INT)
       context = context.newChildContext({ inLoop: true })
       context.add(id.sourceString, iterator)
@@ -469,6 +474,7 @@ export default function analyze(match) {
     false(_) {
       return false;
     },
+
 
     strlit(_openQuote, _chars, _closeQuote) {
       // strings will be represented as plain JS strings, including
