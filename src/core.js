@@ -93,6 +93,10 @@ export function tryStatement(body, catchClause, finallyClause) {
   return { kind: "TryStatement", body, catchClause, finallyClause };
 }
 
+export function tryTimeout(tryBlock, timeoutBlock, params, block3) {
+  return { kind: "TryTimeout", tryBlock,};
+}
+
 //==========================( EXPRESSIONS )================================//
 
 export function binary(op, left, right, type) {
