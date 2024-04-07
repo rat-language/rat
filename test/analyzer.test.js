@@ -11,6 +11,7 @@ const semanticChecks = [
   ["??", "print(some 5 ?? 0);"],
   ["nested ??", "print(some 5 ?? 8 ?? 0);"],
   ["relations", 'print( 1 <= 2 && "x" > "y" && 3.5 < 1.2);'],
+  ["long if", "if true {print(1);} else {print(3);}"],
   ["else if", "var x: int = 2; if x == 3 { print (true); } else if x <= 3 {pass;}"],
   
   
@@ -22,13 +23,10 @@ const semanticChecks = [
   // ["initialize with empty optional", "var a: int? = None;"],
   // ["return statement", "bool f() { return true; }"],
   // ["assign optionals", "var a: int? = Int;"],
-  // ["return in nested if", "while false {if true {return(anything);}}"],
   // ["break in nested if", "while false {if true {break;}}"],
-  // ["long if", "if true {print(1);} else {print(3);}"],
-  // ["for over collection", "for i in [2,3,5] {print(1);}"],
+  ["for over collection", "for i in [2,3,5] {print(1);}"],
   // ["for exclusive", "for j 1..<10 {print(j);}"],
   // ["for inclusive", "for i in 1...10 {print(i);}"],
-  // // ["conditionals with ints", "print(true ? 8 : 5);"],
   // // ["conditionals with floats", "print(1<2 ? 8.0 : -5.22);"],
   // // ["conditionals with strings", 'print(1<2 ? "x" : "y");'],
   // ["||", "print(true||1<2||false||!true);"],
@@ -36,8 +34,8 @@ const semanticChecks = [
   // ["bit ops", "print((1&2)|(9^3));"],
   // ["ok to == arrays", "print([1]==[5,8]);"],
   // ["ok to != arrays", "print([1]!=[5,8]);"],
-
-
+  
+  
   //------------( STILL IN CARLOS )-----------------//
   // // ["shifts", "print(1<<3<<5<<8>>2>>0);"],
   // // ["arithmetic", "let x=1;print(2*3+5**-3/2-5%8);"],
@@ -53,21 +51,21 @@ const semanticChecks = [
   // // ["call of assigned functions", "function f(x: int) {}\nlet g=f;g(1);"],
   // // ["type equivalence of nested arrays", "function f(x: [[int]]) {} print(f([[1],[2]]));"],
   // // [
-  // //   "call of assigned function in expression",
-  // //   `function f(x: int, y: boolean): int {}
-  // //   let g = f;
-  // //   print(g(1, true));
-  // //   f = g; // Type check here`,
-  // // ],
-  // // [
+    // //   "call of assigned function in expression",
+    // //   `function f(x: int, y: boolean): int {}
+    // //   let g = f;
+    // //   print(g(1, true));
+    // //   f = g; // Type check here`,
+    // // ],
+    // // [
   // //   "pass a function to a function",
   // //   `function f(x: int, y: (boolean)->void): int { return 1; }
   // //    function g(z: boolean) {}
   // //    f(2, g);`,
   // // ],
   // // [
-  // //   "function return types",
-  // //   `function square(x: int): int { return x * x; }
+    // //   "function return types",
+    // //   `function square(x: int): int { return x * x; }
   // //    function compose(): (int)->int { return square; }`,
   // // ],
   // // ["function assign", "function f() {} let g = f; let h = [g, f]; print(h[0]());"],
@@ -82,6 +80,10 @@ const semanticChecks = [
   // // ["built-in sin", "print(sin(π));"],
   // // ["built-in cos", "print(cos(93.999));"],
   // // ["built-in hypot", "print(hypot(-4.0, 3.00001));"],
+  
+  // ------------( not even in our language lmao sam )-----------------//
+  // ["return in nested if", "bool f() {if true {return false;}}"],
+  // ["conditionals with ints", "print(true ? 8 : 5);"],
 ]
 
 // Programs that are syntactically correct but have semantic errors

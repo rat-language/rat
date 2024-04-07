@@ -28,7 +28,7 @@ Rat {
     FuncDecl = (Type|void) id Params Block
 	
     LoopStmt = while Exp Block 							            --while
-            | for id in id Block									--foreach
+            | for id in Primary Block									--foreach
             | for id in Exp ("..." | "..<") Exp Block               --range
 
     Call = id Args
