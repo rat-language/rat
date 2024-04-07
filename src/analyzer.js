@@ -102,7 +102,7 @@ export default function analyze(match) {
   // appear: this should be an object whose "at" property is a parse tree node.
   // Ohm's getLineAndColumnMessage will be used to prefix the error message.
   
-
+  function mustBeInLoop(context, at) { must(context.withinLoop, "Break statement must be inside a loop", at); }
   function mustNotAlreadyBeDeclared(name, at) { must(!context.locals.has(name), `Identifier ${name} already declared`, at); }
 
   function mustHaveBeenFound(entity, name, at) { must(entity, `Identifier ${name} not declared`, at); }

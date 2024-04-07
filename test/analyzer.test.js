@@ -11,11 +11,12 @@ const semanticChecks = [
   ["??", "print(some 5 ?? 0);"],
   ["nested ??", "print(some 5 ?? 8 ?? 0);"],
   ["relations", 'print( 1 <= 2 && "x" > "y" && 3.5 < 1.2);'],
+  ["else if", "var x: int = 2; if x == 3 { print (true); } else if x <= 3 {pass;}"],
   
   
   //------------( NOT WORKING )-----------------//
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
-  ["initialize with empty array", "var a:[int] = [];"],
+  // ["initialize with empty array", "var a:[int] = [];"],
   // ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
   // ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
   // ["initialize with empty optional", "var a: int? = None;"],
@@ -24,7 +25,6 @@ const semanticChecks = [
   // ["return in nested if", "while false {if true {return(anything);}}"],
   // ["break in nested if", "while false {if true {break;}}"],
   // ["long if", "if true {print(1);} else {print(3);}"],
-  // ["else if", "if x == 3 {print (true);} else if x <= 3 {break;}"],
   // ["for over collection", "for i in [2,3,5] {print(1);}"],
   // ["for exclusive", "for j 1..<10 {print(j);}"],
   // ["for inclusive", "for i in 1...10 {print(i);}"],
