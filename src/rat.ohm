@@ -6,8 +6,8 @@ Changes:
 - Type conversion will also be handled by analyzer
 - removed 'Iterable' type
 - removed 'as' and 'import' keywords
-- 
 */
+
 Rat {
     // Unsure whether we should change to Stmt* for non-empty files as most programming languages will still do empty files
     Program = Stmt*
@@ -25,28 +25,25 @@ Rat {
         | return Exp ";"                                --return 
         | TryStmt
 
-    TryStmt = try Block (timeout Block)? catch Params Block
     FuncDecl = (Type|void) id Params Block
 	
+    LoopStmt = while Exp Block 							            --while
+            | for id in id Block									--foreach
+            | for id in Exp ("..." | "..<") Exp Block               --range
+
+    Call = id Args
+    Args = "(" ListOf<Exp, ","> ")"
+
     IfStmt = if Exp Block                                --if
         | if Exp Block else Block                        --else
         | if Exp Block else IfStmt                       --elseif
-    // depending on whether the '...', '..<' or an identifier of an iterable object is present, will determine the type of the 'id'
-    ForStmt  = for id in (id | InclusiveRng | ExclusiveRng) Block
+        
+    TryStmt = try Block (timeout Block)? catch Params Block
 
-    LoopStmt = while Exp Block 							            --while
-            | for id in id Block									--foreach
-            | for id in (InclusiveRng | ExclusiveRng) Block         --for
-
-    // while we generally statically type our language, in cases like this, where we iterate through a 
-    // range of numbers, we will assume that the id is going to be an integer
-    
-    Call = id Args
-    Index = "[" Exp "]"
     Params = "("ListOf<Param, ",">")"
     Param = id ":" Type
-    Args = "(" ListOf<Exp, ","> ")"
     Block = "{" Stmt* "}"
+
 
     // lowest precedence
     Exp = Exp0 "??" Exp0                                                            --unwrap
@@ -90,8 +87,6 @@ Rat {
 
     //key:value pairs for dictionaries
     Binding = Exp ":" Exp
-    InclusiveRng = Exp "..." Exp
-    ExclusiveRng = Exp "..<" Exp
     op = "**" | "*" | "/" | "%" |"+" | "-"
 
     Type = Type "?"                                         --optional

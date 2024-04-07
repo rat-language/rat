@@ -26,50 +26,38 @@ export function printStatement(argument) {
 export function variableDeclaration(variable, initializer) {
   return { kind: "VariableDeclaration", variable, initializer };
 }
-/*
-var x:int = 42;
-
-{
-  kind: "VariableDeclaration",
-  variable: { 
-    kind: "Variable", 
-    name: "x", 
-    readOnly: false 
-  },
-  initializer: { 
-    kind: "IntLiteral", 
-    value: 42
-  }
-}
-*/
 
 export function variable(name, readOnly, type) {
   return { kind: "Variable", name, readOnly, type };
 }
 
-export function constantDeclaration(variable, initializer) {
-  // temporary
-  return { kind: "ConstantDeclaration", variable, initializer };
+// FunDecl
+export function functionDeclaration(fun, params, body) {
+  return { kind: "FunctionDeclaration", fun, params, body };
 }
 
-// Must be changed
+export function fun(name, paramCount) {
+  return { kind: "Function", name, paramCount };
+}
+
+// Stmt_assign
 export function assignment(target, source) {
   return { kind: "Assignment", target, source };
 }
 
-// NOTE: This can stay the same
+// LoopStmt
 export function whileStatement(test, body) {
   return { kind: "WhileStatement", test, body };
 }
 
-// ***************** (NEW) ***************** //
-// export function forRangeStatement(iterator, low, op, high, body) {
-//   return { kind: "ForRangeStatement", iterator, low, op, high, body }
-// }
-
-export function forStatement(init, test, update, body) {
-  return { kind: "WhileStatement", test, body };
+export function forRangeStatement(iterator, low, op, high, body) {
+  return { kind: "ForRangeStatement", iterator, low, op, high, body }
 }
+
+export function forStatement(iterator, collection, body) {
+  return { kind: "ForStatement", iterator, collection, body }
+}
+
 
 export function callStatement(call) {
   return { kind: "CallStatement", call };
@@ -80,9 +68,13 @@ export function call(callee, args) {
   return { kind: "Call", callee, args };
 }
 
-// Note: This can stay the same
-export function conditional(test, consequent, alternate) {
-  return { kind: "Conditional", test, consequent, alternate };
+//IfStmt
+export function shortIfStatement(test, consequent) {
+  return { kind: "ShortIfStatement", test, consequent };
+}
+
+export function ifStatement(test, consequent, alternate) {
+  return { kind: "IfStatement", test, consequent, alternate };
 }
 
 export function passStatement(_pass, _semicolon) {
@@ -97,41 +89,29 @@ export function returnStatement(expression) {
   return { kind: "ReturnStatement", expression };
 }
 
-// ***************** (NEW) ***************** //
 export function tryStatement(body, catchClause, finallyClause) {
   return { kind: "TryStatement", body, catchClause, finallyClause };
 }
 
-// Must be changed
-export function functionDeclaration(fun, params, body) {
-  return { kind: "FunctionDeclaration", fun, params, body };
-}
-
-export function fun(name, paramCount) {
-  return { kind: "Function", name, paramCount };
-}
-
-// ***************** (NEW) ***************** //
-export function importStatement() {}
-
-// ***************** (NEW) ***************** //
-export function importFromStatement() {}
-
-export function index(array, index) {
-  return { kind: "IndexExpression", array, index, type: array.type.baseType };
-}
-
 //==========================( EXPRESSIONS )================================//
 
-export function binary(op, left, right) {
-  return { kind: "BinaryExpression", op, left, right };
+export function binary(op, left, right, type) {
+  return { kind: "BinaryExpression", op, left, right, type };
 }
 
 export function unary(op, operand) {
   return { kind: "UnaryExpression", op, operand };
 }
 
+export function index(array, index) {
+  return { kind: "IndexExpression", array, index, type: array.type.baseType };
+}
+
 //------------------------------- (TYPES) ---------------------------------//
+export function functionType(paramTypes, returnType) {
+  return { kind: "FunctionType", paramTypes, returnType }
+}
+
 export function optionalType(baseType) {
   return { kind: "OptionalType", baseType };
 }
@@ -144,25 +124,10 @@ export function arrayType(baseType) {
   return { kind: "ArrayType", baseType };
 }
 
-
-//------------------------------- (IF STATEMENTS) ---------------------------------//
-export function shortIfStatement(test, consequent) {
-  return { kind: "ShortIfStatement", test, consequent };
-}
-
-export function ifStatement(test, consequent, alternate) {
-  return { kind: "IfStatement", test, consequent, alternate };
-}
-
-
-// ***************** (NEW) ***************** //
 export function dictionaryType(keyType, valueType) {
   return { kind: "DictionaryType", keyType, valueType };
 }
 
-export function iterableType(type) {
-  return { kind: "IterableType", type };
-}
 
 export const boolType = { kind: "BoolType" };
 export const intType = { kind: "IntType" };

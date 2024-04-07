@@ -19,20 +19,14 @@ class Context {
     this.withinLoop = false;
     this.function = null;
   }
-  add(name, entity) {
-    this.locals.set(name, entity);
-  }
-  lookup(name) {
-    return this.locals.get(name) || this.parent?.lookup(name);
-  }
-  static root() {
-    return new Context({
-      locals: new Map(Object.entries(core.standardLibrary)),
-    });
-  }
-  newChildContext(props) {
-    return new Context({ ...this, ...props, parent: this, locals: new Map() });
-  }
+  add(name, entity) { this.locals.set(name, entity); }
+
+  lookup(name) { return this.locals.get(name) || this.parent?.lookup(name); }
+  
+  static root() { return new Context({ locals: new Map(Object.entries(core.standardLibrary))});}
+  
+  newChildContext(props) { return new Context({ ...this, ...props, parent: this, locals: new Map() }); }
+  
   get(name, expectedType, node) {
     let entity;
     for (let context = this; context; context = context.parent) {
@@ -49,12 +43,12 @@ class Context {
   }
 }
 
-function mustHaveNumericType(e, at) {
-  must([INT, FLOAT].includes(e.type), "Expected a number", at);
-}
+function mustHaveNumericType(e, at) { must([INT, FLOAT].includes(e.type), "Expected a number", at); }
 
-function mustHaveArrayType(e, at) {
-  must(e.type?.kind === "ArrayType", "Expected an array", at);
+function mustHaveArrayType(e, at) { must(e.type?.kind === "ArrayType", "Expected an array", at); }
+
+function mustHaveIterableType(e, at) {
+  must((e.type?.kind === "ArrayType" | e.type?.kind === "DictType" | e.type?.kind === STRING), "Expected an array", at);
 }
 
 function mustHaveNumericOrStringType(e, at) {
@@ -65,16 +59,11 @@ function mustHaveNumericOrStringType(e, at) {
   );
 }
 
+function mustHaveBooleanType(e, at) { must(e.type === BOOLEAN, "Expected a boolean", at); }
 
-function mustHaveBooleanType(e, at) {
-  must(e.type === BOOLEAN, "Expected a boolean", at);
-}
-function mustHaveIntegerType(e, at) {
-  must(e.type === INT, "Expected an integer", at);
-}
-function mustBeTheSameType(e1, e2, at) {
-  must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
-}
+function mustHaveIntegerType(e, at) { must(e.type === INT, "Expected an integer", at); }
+
+function mustBeTheSameType(e1, e2, at) { must(equivalent(e1.type, e2.type), "Operands do not have the same type", at); }
 
 function equivalent(t1, t2) {
   return (
@@ -112,26 +101,15 @@ export default function analyze(match) {
     }
   }
 
-  function mustNotAlreadyBeDeclared(name, at) {
-    must(!context.locals.has(name), `Identifier ${name} already declared`, at);
-  }
+  function mustNotAlreadyBeDeclared(name, at) { must(!context.locals.has(name), `Identifier ${name} already declared`, at); }
 
-  function mustHaveBeenFound(entity, name, at) {
-    must(entity, `Identifier ${name} not declared`, at);
-  }
+  function mustHaveBeenFound(entity, name, at) { must(entity, `Identifier ${name} not declared`, at); }
 
-  function mustBeAVariable(entity, at) {
-    // Bella has two kinds of entities: variables and functions.
-    must(entity?.kind === "Variable", `Functions can not appear here`, at);
-  }
+  function mustBeAVariable(entity, at) { must(entity?.kind === "Variable", `Functions can not appear here`, at); }
 
-  function mustBeAFunction(entity, at) {
-    must(entity?.kind === "Function", `${entity.name} is not a function`, at);
-  }
+  function mustBeAFunction(entity, at) { must(entity?.kind === "Function", `${entity.name} is not a function`, at); }
 
-  function mustNotBeReadOnly(entity, at) {
-    must(!entity.readOnly, `${entity.name} is read only`, at);
-  }
+  function mustNotBeReadOnly(entity, at) { must(!entity.readOnly, `${entity.name} is read only`, at); }
 
   function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
     const equalCount = argCount === paramCount;
@@ -142,28 +120,7 @@ export default function analyze(match) {
     );
   }
 
-  const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
-    // what we gotta add to builder:
-    
-    Primary_wrapped(_some, exp) {
-
-    },
-
-    
-
-
-    
-
-    TryStmt(_try, block1, _timeout, block2, _catch, params, block3) {
-
-    },
-    ExclusiveRng(exp1, _ellipseLt, exp2) {
-
-    },
-    InclusiveRng(exp1, _ellipse, exp2 ) {
-
-    },
-
+  const builder = match.matcher.grammar.createSemantics().addOperation("rep", {    
     Program(statements) {
       return core.program(statements.children.map((s) => s.rep()));
     },
@@ -183,6 +140,7 @@ export default function analyze(match) {
         readOnly,
         initializer.type
       );
+
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       // TODO: Add type checking
       // exp must be of type 'type'
@@ -198,6 +156,48 @@ export default function analyze(match) {
       mustNotBeReadOnly(target, { at: id });
       return core.assignment(target, exp.rep());
     },
+    
+    //Call
+    Stmt_call(call, _semicolon) {
+      return core.callStatement(call.rep());
+    },
+
+    //Pass
+    Stmt_pass(_pass, _semicolon) {
+      return core.passStatement();
+    },
+    //Break
+    Stmt_break(breakKeyword, _semicolon) {
+      mustBeInLoop(context, { at: breakKeyword });
+      return core.breakStatement();
+    },
+    //Return
+    Stmt_return(_return, exp, _semicolon) {
+      return core.returnStatement(exp.rep());
+    },
+
+    //Function Declaration
+    FuncDecl(type, id, parameters, block) {
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      
+      const fun = new core.fun(id.sourceString, params.length);
+      context.add(id.sourceString, fun);
+      // Add the function to the context before analyzing the body, because
+      // we want to allow functions to be recursive
+
+      context = context.newChildContext({ inLoop: false, function: fun });
+      const params = parameters.rep();
+      // console.log(params)
+
+      const paramTypes = params.map(param => param.type);
+      const returnType = type.children?.[0]?.rep() ?? VOID;
+      fun.type = new core.functionType(paramTypes, returnType);
+
+      const bodyRep = block.rep();
+
+      context = context.parent;
+      return new core.functionDeclaration(fun, params, bodyRep);
+    },
 
     //While
     LoopStmt_while(_while, exp, block) {
@@ -205,11 +205,13 @@ export default function analyze(match) {
     },
 
     //For
-    LoopStmt_foreach(_for, iterator, _in, iterable, block) {
+    LoopStmt_foreach(_for, iterator, _in, exp, block) {
+      const iterable = exp.rep()
+      mustHaveIterableType(iterable, { at: exp });
       return core.forStatement(iterator.sourceString, iterable.rep(), block.rep());
     },
 
-    LoopStmt_foreach(_for, iterator, _in, range, block) {
+    LoopStmt_range(_for, iterator, _in, range, block) {
       return core.forStatement(iterator.sourceString, iterable.rep(), block.rep());
     },
 
@@ -224,9 +226,8 @@ export default function analyze(match) {
       return core.call(callee, passed);
     },
 
-    //Call
-    Stmt_call(call, _semicolon) {
-      return core.callStatement(call.rep());
+    Args(_open, expList, _close) {
+      return expList.asIteration().children.map((exp) => exp.rep());
     },
 
     // //If
@@ -261,50 +262,15 @@ export default function analyze(match) {
       return core.ifStatement(test, consequent, alternate)
     },
 
-    //Pass
-    Stmt_pass(_pass, _semicolon) {
-      return core.passStatement();
+    TryStmt(_try, block1, _timeout, block2, _catch, params, block3) {
+
     },
-
-    //Break
-    Stmt_break(breakKeyword, _semicolon) {
-      mustBeInLoop(context, { at: breakKeyword });
-      return core.breakStatement();
-    },
-
-    //Return
-    Stmt_return(_return, exp, _semicolon) {
-      mustBeAFunction(context, { at: _return });
-      return core.returnStatement(exp.rep());
-    },
-
-    //Function Declaration
-    FuncDecl(type, id, parameters, body) {
-      const fun = new core.Function(id.sourceString, params.length, true);
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-      context.add(id.sourceString, fun);
-      // Add the function to the context before analyzing the body, because
-      // we want to allow functions to be recursive
-
-      context = context.newChildContext({ inLoop: false, function: fun });
-      const params = params.rep();
-
-      const paramTypes = params.map((p) => p.type);
-      const returnType = type.children?.[0]?.rep() ?? VOID;
-      fun.type = new core.FunctionType(paramTypes, returnType);
-
-      const bodyRep = body.rep();
-
-      context = context.parent;
-      return new core.functionDeclaration(fun, params, bodyRep);
-    },
-
-  
+    
     Params(_open, paramList, _close) {
       // Returns a list of variable nodes
       return paramList.asIteration().children.map((p) => p.rep());
     },
-
+    
     Param(id, _colon, type) {
       const param = core.variable(id.sourceString, false, type.rep());
       mustNotAlreadyBeDeclared(param.name, { at: id });
@@ -315,57 +281,88 @@ export default function analyze(match) {
     Block(_open, statements, _close) {
       return statements.children.map((s) => s.rep());
     },
-
-  
     //==================== (EXPRESSIONS) ====================//
+    
     Exp_unwrap(exp1, op, exp2) {
       return core.binary(op.sourceString, exp1.rep(), exp2.rep());
     },
-
+    
     Exp_unary(op, exp) {
       // either for negation or for boolean not
       return core.unary(op.sourceString, exp.rep());
     },
-
+    
     // Exp_await(_await, exp) {
     //   return core.await(exp.rep())
     // }
-
+    
     Exp0_logicalor(exp1, _or, exp2) {
-      return core.binary("||", exp1.rep(), exp2.rep());
+      let left = exp1.rep()
+      mustHaveBooleanType(left, { at: exp1 })
+      for (let e of exp2.children) {
+        let right = e.rep()
+        mustHaveBooleanType(right, { at: e })
+        left = core.binary("||", left, right, BOOLEAN)
+      }
+      
+      return left
     },
-
-    Disjunct_logicaland(exp1, _and, exp2) {
-      return core.binary("&&", exp1.rep(), exp2.rep());
+    
+    Disjunct_logicaland(exp, _and, exps) {
+      let left = exp.rep()
+      mustHaveBooleanType(left, { at: exp })
+      for (let e of exps.children) {
+        let right = e.rep()
+        mustHaveBooleanType(right, { at: e })
+        left = core.binary("&&", left, right, BOOLEAN)
+      }
+      return left
     },
-
+    
     Conjunct_comparative(exp1, op, exp2) {
-      // "<=" | "<" | "==" | "!=" | ">=" | ">"
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep());
-    },
+      const [left, op, right] = [exp1.rep(), relop.sourceString, exp2.rep()]
 
+      if (["<", "<=", ">", ">="].includes(op)) {
+        mustHaveNumericOrStringType(left, { at: exp1 });
+      }
+      mustBeTheSameType(left, right, { at: op });
+
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep(), BOOLEAN);
+    },
+    
     Comp_additive(exp1, op, exp2) {
       // plus or minus
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep());
+      const [left, op, right] = [exp1.rep(), addOp.sourceString, exp2.rep()]
+      if (op === "+") {
+        mustHaveNumericOrStringType(left, { at: exp1 })
+      } else {
+        mustHaveNumericType(left, { at: exp1 })
+      }
+      mustBothHaveTheSameType(left, right, { at: addOp })
+      return core.binary(op, left, right, left.type) 
     },
-
+    
     Term_multiplicative(exp1, op, exp2) {
       // times, divide, or modulo
       return core.binary(op.sourceString, exp1.rep(), exp2.rep());
     },
-
+    
     Factor_exponent(exp1, _op, exp2) {
       // exponentiation
       return core.binary("**", exp1.rep(), exp2.rep());
     },
-    
+
+    Primary_wrapped(_some, exp) {
+
+    },
+
     Primary_index(exp1, _open, exp2, _close) {
       const [array, index] = [exp1.rep(), exp2.rep()];
       mustHaveArrayType(array, { at: exp1 });
       mustHaveIntegerType(index, { at: exp2 });
       return core.index(array, index)
     },
-    
+
     Primary_id(id) {
       // ids used in expressions must have been already declared and must
       // be bound to variable entities, not function entities.
@@ -374,24 +371,27 @@ export default function analyze(match) {
       mustBeAVariable(entity, { at: id });
       return entity;
     },
-    
+
     ArrayLit(_open, expList, _close) {
       return core.arrayLiteral(
         expList.asIteration().children.map((exp) => exp.rep())
       );
     },
-
+    
     DictLit(_open, bindings, _close) {
       return core.dictLiteral(
         bindings.asIteration().children.map((b) => b.rep())
       );
     },
-
+    
+    Parens(_open, exp, _close) {
+      return exp.rep();
+    },
     //Dictionary stuff
     Binding(key, _colon, value) {
       return [key.rep(), value.rep()];
     },
-
+    
     //-------------------- (TYPES) -------------------//
     Type_optional(baseType, _question) {
       return core.optionalType(baseType.rep());
@@ -409,14 +409,9 @@ export default function analyze(match) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
     },
 
-    Parens(_open, exp, _close) {
-      return exp.rep();
+    Type_id(_id){
+      return context.lookup(this.sourceString);
     },
-
-    Args(_open, expList, _close) {
-      return expList.asIteration().children.map((exp) => exp.rep());
-    },
-
     
     true(_) {
       return true;
@@ -424,6 +419,12 @@ export default function analyze(match) {
 
     false(_) {
       return false;
+    },
+
+    strlit(_openQuote, _chars, _closeQuote) {
+      // strings will be represented as plain JS strings, including
+      // the quotation marks
+      return this.sourceString;
     },
 
     intlit(_digits) {
@@ -435,12 +436,6 @@ export default function analyze(match) {
       // floats will be represented as plain JS numbers
       return Number(this.sourceString);
     },
-
-    strlit(_openQuote, _chars, _closeQuote) {
-      // strings will be represented as plain JS strings, including
-      // the quotation marks
-      return this.sourceString;
-    }
   });
   return builder(match).rep();
 }
