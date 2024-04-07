@@ -93,9 +93,6 @@ export function tryStatement(body, catchClause, finallyClause) {
   return { kind: "TryStatement", body, catchClause, finallyClause };
 }
 
-export function tryTimeout(tryBlock, timeoutBlock, params, block3) {
-  return { kind: "TryTimeout", tryBlock,};
-}
 
 //==========================( EXPRESSIONS )================================//
 
@@ -131,6 +128,15 @@ export function arrayType(baseType) {
 export function dictionaryType(keyType, valueType) {
   return { kind: "DictionaryType", keyType, valueType };
 }
+
+export function arrayLiteral(elements) {
+  return { kind: "ArrayLiteral", elements, type: arrayType(elements[0].type) };
+}
+
+export function emptyArrayLiteral() {
+  return { kind: "EmptyArray" }
+}
+
 
 
 export const boolType = { kind: "BoolType" };
