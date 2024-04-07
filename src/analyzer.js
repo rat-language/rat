@@ -22,11 +22,11 @@ class Context {
   add(name, entity) { this.locals.set(name, entity); }
 
   lookup(name) { return this.locals.get(name) || this.parent?.lookup(name); }
-  
-  static root() { return new Context({ locals: new Map(Object.entries(core.standardLibrary))});}
-  
+
+  static root() { return new Context({ locals: new Map(Object.entries(core.standardLibrary)) }); }
+
   newChildContext(props) { return new Context({ ...this, ...props, parent: this, locals: new Map() }); }
-  
+
   get(name, expectedType, node) {
     let entity;
     for (let context = this; context; context = context.parent) {
@@ -120,7 +120,7 @@ export default function analyze(match) {
     );
   }
 
-  const builder = match.matcher.grammar.createSemantics().addOperation("rep", {    
+  const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     Program(statements) {
       return core.program(statements.children.map((s) => s.rep()));
     },
@@ -156,7 +156,7 @@ export default function analyze(match) {
       mustNotBeReadOnly(target, { at: id });
       return core.assignment(target, exp.rep());
     },
-    
+
     //Call
     Stmt_call(call, _semicolon) {
       return core.callStatement(call.rep());
@@ -179,7 +179,7 @@ export default function analyze(match) {
     //Function Declaration
     FuncDecl(type, id, parameters, block) {
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-      
+
       const fun = new core.fun(id.sourceString, params.length);
       context.add(id.sourceString, fun);
       // Add the function to the context before analyzing the body, because
@@ -262,15 +262,34 @@ export default function analyze(match) {
       return core.ifStatement(test, consequent, alternate)
     },
 
-    TryStmt(_try, block1, _timeout, block2, _catch, params, block3) {
-
+    TryStmt_catch(_try, block1, _catch, block2, parameters, block3) {
+      context = context.newChildContext()
+      const tryBlock = block1.rep()
+      context = context.parent
+      context = context.newChildContext()
+      const catchBlock = block2.rep()
+      context = context.parent
+      const params = parameters.rep()
+      return core.tryStatement(tryBlock, catchBlock, params, block3.rep())
     },
-    
+
+    TryStmt_timeout(_try, block1, _timeout, block2, _catch, parameters, block3) {
+      context = context.newChildContext()
+      const tryBlock = block1.rep()
+      context = context.parent
+      context = context.newChildContext()
+      const timeoutBlock = block2.rep()
+      context = context.parent
+      const params = parameters.rep()
+      return core.tryStatement(tryBlock, timeoutBlock, params, block3.rep())
+    },
+
+
     Params(_open, paramList, _close) {
       // Returns a list of variable nodes
       return paramList.asIteration().children.map((p) => p.rep());
     },
-    
+
     Param(id, _colon, type) {
       const param = core.variable(id.sourceString, false, type.rep());
       mustNotAlreadyBeDeclared(param.name, { at: id });
@@ -282,20 +301,20 @@ export default function analyze(match) {
       return statements.children.map((s) => s.rep());
     },
     //==================== (EXPRESSIONS) ====================//
-    
+
     Exp_unwrap(exp1, op, exp2) {
       return core.binary(op.sourceString, exp1.rep(), exp2.rep());
     },
-    
+
     Exp_unary(op, exp) {
       // either for negation or for boolean not
       return core.unary(op.sourceString, exp.rep());
     },
-    
+
     // Exp_await(_await, exp) {
     //   return core.await(exp.rep())
     // }
-    
+
     Exp0_logicalor(exp1, _or, exp2) {
       let left = exp1.rep()
       mustHaveBooleanType(left, { at: exp1 })
@@ -304,10 +323,10 @@ export default function analyze(match) {
         mustHaveBooleanType(right, { at: e })
         left = core.binary("||", left, right, BOOLEAN)
       }
-      
+
       return left
     },
-    
+
     Disjunct_logicaland(exp, _and, exps) {
       let left = exp.rep()
       mustHaveBooleanType(left, { at: exp })
@@ -318,7 +337,7 @@ export default function analyze(match) {
       }
       return left
     },
-    
+
     Conjunct_comparative(exp1, op, exp2) {
       const [left, op, right] = [exp1.rep(), relop.sourceString, exp2.rep()]
 
@@ -329,7 +348,7 @@ export default function analyze(match) {
 
       return core.binary(op.sourceString, exp1.rep(), exp2.rep(), BOOLEAN);
     },
-    
+
     Comp_additive(exp1, op, exp2) {
       // plus or minus
       const [left, op, right] = [exp1.rep(), addOp.sourceString, exp2.rep()]
@@ -339,14 +358,14 @@ export default function analyze(match) {
         mustHaveNumericType(left, { at: exp1 })
       }
       mustBothHaveTheSameType(left, right, { at: addOp })
-      return core.binary(op, left, right, left.type) 
+      return core.binary(op, left, right, left.type)
     },
-    
+
     Term_multiplicative(exp1, op, exp2) {
       // times, divide, or modulo
       return core.binary(op.sourceString, exp1.rep(), exp2.rep());
     },
-    
+
     Factor_exponent(exp1, _op, exp2) {
       // exponentiation
       return core.binary("**", exp1.rep(), exp2.rep());
@@ -377,13 +396,13 @@ export default function analyze(match) {
         expList.asIteration().children.map((exp) => exp.rep())
       );
     },
-    
+
     DictLit(_open, bindings, _close) {
       return core.dictLiteral(
         bindings.asIteration().children.map((b) => b.rep())
       );
     },
-    
+
     Parens(_open, exp, _close) {
       return exp.rep();
     },
@@ -391,7 +410,7 @@ export default function analyze(match) {
     Binding(key, _colon, value) {
       return [key.rep(), value.rep()];
     },
-    
+
     //-------------------- (TYPES) -------------------//
     Type_optional(baseType, _question) {
       return core.optionalType(baseType.rep());
@@ -409,10 +428,10 @@ export default function analyze(match) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
     },
 
-    Type_id(_id){
+    Type_id(_id) {
       return context.lookup(this.sourceString);
     },
-    
+
     true(_) {
       return true;
     },
