@@ -50,6 +50,14 @@ class Context {
   }
 }
 
+function mustAllHaveSameType(expressions, at) {
+  must(
+    expressions.slice(1).every(e => equivalent(e.type, expressions[0].type)),
+    "Not all elements have the same type",
+    at
+  )
+}
+
 function mustHaveNumericType(e, at) { must([INT, FLOAT].includes(e.type), "Expected a number", at); }
 
 function mustHaveArrayType(e, at) { must(e.type?.kind === "ArrayType", "Expected an array", at); }
@@ -349,7 +357,7 @@ export default function analyze(match) {
       }
       return left
     },
-    
+
     Conjunct_comparative(exp1, relOp, exp2) {
       const [left, op, right] = [exp1.rep(), relOp.sourceString, exp2.rep()]
 
@@ -360,7 +368,7 @@ export default function analyze(match) {
 
       return core.binary(op.sourceString, exp1.rep(), exp2.rep(), BOOLEAN);
     },
-    
+
     Comp_additive(exp1, addOp, exp2) {
       // plus or minus
       const [left, op, right] = [exp1.rep(), addOp.sourceString, exp2.rep()]
@@ -372,14 +380,14 @@ export default function analyze(match) {
       mustBothHaveTheSameType(left, right, { at: addOp })
       return core.binary(op, left, right, left.type)
     },
-    
+
     Term_multiplicative(exp1, mulOp, exp2) {
       const [left, op, right] = [exp1.rep(), mulOp.sourceString, exp2.rep()]
       mustHaveNumericType(left, { at: exp1 })
       mustBothHaveTheSameType(left, right, { at: mulOp })
       return core.binary(op, left, right, left.type)
     },
-    
+
     Factor_exponent(exp1, powerOp, exp2) {
       // exponentiation
       const [left, op, right] = [exp1.rep(), powerOp.sourceString, exp2.rep()]
@@ -408,10 +416,14 @@ export default function analyze(match) {
       return entity;
     },
 
-    ArrayLit(_open, expList, _close) {
-      return core.arrayLiteral(
-        expList.asIteration().children.map((exp) => exp.rep())
-      );
+    ArrayLit_array(_open, expList, _close) {
+      const elements = expList.asIteration().children.map((exp) => exp.rep());
+      mustAllHaveSameType(elements, { at: expList });
+      return core.arrayLiteral(elements);
+    },
+
+    ArrayLit_emptyarray(_open, _close) {
+      return core.emptyArrayLiteral();
     },
 
     DictLit(_open, bindings, _close) {
@@ -427,7 +439,7 @@ export default function analyze(match) {
     Binding(key, _colon, value) {
       return [key.rep(), value.rep()];
     },
-
+    // arr1 = [Int]()
     //-------------------- (TYPES) -------------------//
     Type_optional(baseType, _question) {
       return core.optionalType(baseType.rep());

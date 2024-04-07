@@ -79,7 +79,10 @@ Rat {
             | Parens
             | strlit
 
-    ArrayLit = "["ListOf<Exp, ",">"]"
+    ArrayLit = "[" "]"                                              --emptyarray
+            | "[" NonemptyListOf<Exp, ",">"]"                       --array
+
+
     DictLit = "{" ListOf<Binding,",">"}"
     Parens = "(" Exp ")"
 
