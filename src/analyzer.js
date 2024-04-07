@@ -11,6 +11,7 @@ const STRING = core.Type.STRING;
 const BOOLEAN = core.Type.BOOLEAN;
 const ANY = core.Type.ANY;
 const VOID = core.Type.VOID;
+const NONE = core.Type.VOID;
 
 function must(condition, message, errorLocation) {
   if (!condition) {
@@ -484,6 +485,11 @@ export default function analyze(match) {
       // floats will be represented as plain JS numbers
       return Number(this.sourceString);
     },
+
+    _terminal() {
+      return this.sourceString;
+    },
+
   });
   return builder(match).rep();
 }

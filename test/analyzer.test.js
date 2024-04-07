@@ -16,13 +16,13 @@ const semanticChecks = [
   ["initialize with empty array", "var a:[int] = [];"],
   ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
   ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
+  ["assign optionals", "var a: int? = None;"],
   
   
   //------------( NOT WORKING )-----------------//
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
   ["initialize with empty optional", "var a: int? = None;"],
   ["return statement", "bool f() { return true; }"],
-  ["assign optionals", "var a: int? = Int;"],
   ["break in nested if", "while false {if true {break;}}"],
   // ["for over collection", "for i in [2,3,5] {print(1);}"],
   ["for exclusive", "for j in 1..<10 {print(j);}"],
