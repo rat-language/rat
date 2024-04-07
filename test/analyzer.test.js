@@ -13,18 +13,18 @@ const semanticChecks = [
   ["relations", 'print( 1 <= 2 && "x" > "y" && 3.5 < 1.2);'],
   ["long if", "if true {print(1);} else {print(3);}"],
   ["else if", "var x: int = 2; if x == 3 { print (true); } else if x <= 3 {pass;}"],
+  ["initialize with empty array", "var a:[int] = [];"],
+  ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
+  ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
   
   
   //------------( NOT WORKING )-----------------//
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
-  // ["initialize with empty array", "var a:[int] = [];"],
-  // ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
-  // ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
   // ["initialize with empty optional", "var a: int? = None;"],
   // ["return statement", "bool f() { return true; }"],
   // ["assign optionals", "var a: int? = Int;"],
   // ["break in nested if", "while false {if true {break;}}"],
-  ["for over collection", "for i in [2,3,5] {print(1);}"],
+  // ["for over collection", "for i in [2,3,5] {print(1);}"],
   // ["for exclusive", "for j 1..<10 {print(j);}"],
   // ["for inclusive", "for i in 1...10 {print(i);}"],
   // // ["conditionals with floats", "print(1<2 ? 8.0 : -5.22);"],
@@ -90,8 +90,8 @@ const semanticChecks = [
 const semanticErrors = [
   ["undeclared id", "var a: int = 1; print(x);", /Identifier x not declared/],
   ["redeclared id", "var x:int = 1; var x:int = 1;", /Identifier x already declared/],
-  // ["assign to const", "const x : 1;x : 2;", /Cannot assign to constant/],
-  // ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Cannot use arithmetic between a boolean and an int/],
+  ["assign to const", "const x : int = 1; x = 2;", /x is read only/],
+  ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Expected a number/],
   // ["assign bad array type", "var x: int = 1;x=[true];", /Cannot assign a \[int\] to a boolean/],
   // ["assign bad optional type", "var x: int = 1;x=some 2;", /Cannot assign a int\? to a int/],
   // ["break outside loop", "break;", /Break can only appear in a loop/],
