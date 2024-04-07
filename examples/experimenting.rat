@@ -97,3 +97,22 @@ print ({ "CA": "Sacramento", "AK":"Juneau" }["CA"]);
 
 var z : int = x + y;        # z = 22
 z = z + 1;                  # z = 23
+
+try {
+  # r awaits for 500 ms before quitting
+  r = await <<500>> foo();
+} timeout {
+  # if timeout occurs (more than 500 ms), run this block
+  print("ran out of time");
+} catch(e:str) {
+  # if a different error occurs, do this instead
+  print(e);
+}
+
+
+try {
+  r = await foo();
+} catch(e:str) {
+  # if a different error occurs, do this instead
+  print(e);
+}

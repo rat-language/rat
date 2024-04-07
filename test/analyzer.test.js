@@ -10,12 +10,12 @@ const semanticChecks = [
   ["increment and decrement", "var x: int = 10; x -= 1; x += 1;"],
   ["??", "print(some 5 ?? 0);"],
   ["nested ??", "print(some 5 ?? 8 ?? 0);"],
-  ["relations", 'print(1<=2 && "x">"y" && 3.5<1.2);'],
+  ["relations", 'print( 1 <= 2 && "x" > "y" && 3.5 < 1.2);'],
   
   
   //------------( NOT WORKING )-----------------//
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
-  // ["initialize with empty array", "var a:[int] = [];"],
+  ["initialize with empty array", "var a:[int] = [];"],
   // ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
   // ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
   // ["initialize with empty optional", "var a: int? = None;"],
@@ -86,8 +86,8 @@ const semanticChecks = [
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
-  ["undeclared id", "var a: int = 1, print(x);", /Identifier x not declared/],
-  ["redeclared id", "var x = 1; var x = 1;", /Identifier x already declared/],
+  ["undeclared id", "var a: int = 1; print(x);", /Identifier x not declared/],
+  ["redeclared id", "var x:int = 1; var x:int = 1;", /Identifier x already declared/],
   // ["assign to const", "const x : 1;x : 2;", /Cannot assign to constant/],
   // ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Cannot use arithmetic between a boolean and an int/],
   // ["assign bad array type", "var x: int = 1;x=[true];", /Cannot assign a \[int\] to a boolean/],

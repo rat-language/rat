@@ -12,6 +12,13 @@ const BOOLEAN = core.Type.BOOLEAN;
 const ANY = core.Type.ANY;
 const VOID = core.Type.VOID;
 
+function must(condition, message, errorLocation) {
+  if (!condition) {
+    const prefix = errorLocation.at.source.getLineAndColumnMessage();
+    throw new Error(`${prefix}${message}`);
+  }
+}
+
 class Context {
   constructor({ parent, locals = {} }) {
     this.parent = parent;
@@ -94,12 +101,7 @@ export default function analyze(match) {
   // Use errorLocation to give contextual information about the error that will
   // appear: this should be an object whose "at" property is a parse tree node.
   // Ohm's getLineAndColumnMessage will be used to prefix the error message.
-  function must(condition, message, errorLocation) {
-    if (!condition) {
-      const prefix = errorLocation.at.source.getLineAndColumnMessage();
-      throw new Error(`${prefix}${message}`);
-    }
-  }
+  
 
   function mustNotAlreadyBeDeclared(name, at) { must(!context.locals.has(name), `Identifier ${name} already declared`, at); }
 
@@ -271,14 +273,15 @@ export default function analyze(match) {
       return core.ifStatement(test, consequent, alternate)
     },
 
-    TryStmt_catch(_try, block1, _catch, block2, parameters, block3) {
+    TryStmt_catch(_try, block1, _catch, parameters, block2) {
       context = context.newChildContext()
       const tryBlock = block1.rep()
       context = context.parent
       context = context.newChildContext()
+      const params = parameters.rep()
+      // context.add(pa)
       const catchBlock = block2.rep()
       context = context.parent
-      const params = parameters.rep()
       return core.tryStatement(tryBlock, catchBlock, params, block3.rep())
     },
 

@@ -38,8 +38,8 @@ Rat {
         | if Exp Block else Block                        --else
         | if Exp Block else IfStmt                       --elseif
         
-    TryStmt = try Block catch Params Block              --catch
-        | try Block timeout Block catch Params Block    --timeout
+    TryStmt = try Block timeout Block catch Params Block    --timeout
+            | try Block catch Params Block              --catch
 
     Params = "("ListOf<Param, ",">")"
     Param = id ":" Type
