@@ -211,8 +211,17 @@ export default function analyze(match) {
       return core.forStatement(iterator.sourceString, iterable.rep(), block.rep());
     },
 
-    LoopStmt_range(_for, iterator, _in, range, block) {
-      return core.forStatement(iterator.sourceString, iterable.rep(), block.rep());
+    LoopStmt_range(_for, id, _in, exp1, range, exp2, block) {
+      const [low, high] = [exp1.rep(), endpoint]
+      mustHaveIntegerType(low, { at: exp1 })
+      mustHaveIntegerType(high, { at: exp2 })
+      const endpoint = range === "..<" ? high : high - 1
+      const iterator = core.variable(id.sourceString, false, INT)
+      context = context.newChildContext({ inLoop: true })
+      context.add(id.sourceString, iterator)
+      const body = block.rep()
+      context = context.parent
+      return core.forRangeStatement(iterator, low, range, endpoint, body)
     },
 
     Call(id, args) {
@@ -268,14 +277,14 @@ export default function analyze(match) {
     
     Params(_open, paramList, _close) {
       // Returns a list of variable nodes
-      return paramList.asIteration().children.map((p) => p.rep());
+      return paramList.asIteration().children.map((p) => p.rep())
     },
     
     Param(id, _colon, type) {
-      const param = core.variable(id.sourceString, false, type.rep());
-      mustNotAlreadyBeDeclared(param.name, { at: id });
-      context.add(param.name, param);
-      return param;
+      const param = core.variable(id.sourceString, false, type.rep())
+      mustNotAlreadyBeDeclared(param.name, { at: id })
+      context.add(param.name, param)
+      return param
     },
 
     Block(_open, statements, _close) {
@@ -319,18 +328,18 @@ export default function analyze(match) {
       return left
     },
     
-    Conjunct_comparative(exp1, op, exp2) {
-      const [left, op, right] = [exp1.rep(), relop.sourceString, exp2.rep()]
+    Conjunct_comparative(exp1, relOp, exp2) {
+      const [left, op, right] = [exp1.rep(), relOp.sourceString, exp2.rep()]
 
       if (["<", "<=", ">", ">="].includes(op)) {
         mustHaveNumericOrStringType(left, { at: exp1 });
       }
-      mustBeTheSameType(left, right, { at: op });
+      mustBeTheSameType(left, right, { at: relOp });
 
       return core.binary(op.sourceString, exp1.rep(), exp2.rep(), BOOLEAN);
     },
     
-    Comp_additive(exp1, op, exp2) {
+    Comp_additive(exp1, addOp, exp2) {
       // plus or minus
       const [left, op, right] = [exp1.rep(), addOp.sourceString, exp2.rep()]
       if (op === "+") {
@@ -342,14 +351,19 @@ export default function analyze(match) {
       return core.binary(op, left, right, left.type) 
     },
     
-    Term_multiplicative(exp1, op, exp2) {
-      // times, divide, or modulo
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep());
+    Term_multiplicative(exp1, mulOp, exp2) {
+      const [left, op, right] = [exp1.rep(), mulOp.sourceString, exp2.rep()]
+      mustHaveNumericType(left, { at: exp1 })
+      mustBothHaveTheSameType(left, right, { at: mulOp })
+      return core.binary(op, left, right, left.type)
     },
     
-    Factor_exponent(exp1, _op, exp2) {
+    Factor_exponent(exp1, powerOp, exp2) {
       // exponentiation
-      return core.binary("**", exp1.rep(), exp2.rep());
+      const [left, op, right] = [exp1.rep(), powerOp.sourceString, exp2.rep()]
+      mustHaveNumericType(left, { at: exp1 })
+      mustBothHaveTheSameType(left, right, { at: powerOp })
+      return core.binary(op, left, right, left.type)
     },
 
     Primary_wrapped(_some, exp) {
