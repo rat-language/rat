@@ -342,7 +342,7 @@ export default function analyze(match) {
         type = BOOLEAN
       } else if (op === "some") {
         type = core.optionalType(operand.type)
-      } 
+      }
       return core.unary(op, operand, type)
     },
 
@@ -358,7 +358,6 @@ export default function analyze(match) {
         mustHaveBooleanType(right, { at: e })
         left = core.binary("||", left, right, BOOLEAN)
       }
-
       return left
     },
 

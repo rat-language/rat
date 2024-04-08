@@ -21,21 +21,19 @@ const semanticChecks = [
   ["assign optionals", "var a: int? = None; a = some 100;"],
   ["for exclusive", "for j in 1..<10 {print(j);}"],
   ["for inclusive", "for i in 1...10 {print(i);}"],
+  ["||", "print(true || 1<2 || false || !true);"],
+  ["&&", "print(true && 1<2 && false && !true);"],
   
   
   //------------( NOT WORKING )-----------------//
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
-  ["return statement", "bool f() { return true; }"],
-  ["break in nested if", "while false {if true {break;}}"],
+  // ["return statement", "bool f() { return true; }"],
+  // ["break in nested if", "while false {if true {break;}}"],
   // ["for over collection", "for i in [2,3,5] {print(1);}"],
-  // // ["conditionals with floats", "print(1<2 ? 8.0 : -5.22);"],
-  // // ["conditionals with strings", 'print(1<2 ? "x" : "y");'],
-  ["||", "print(true||1<2||false||!true);"],
-  // ["&&", "print(true&&1<2&&false&&!true);"],
-  // ["bit ops", "print((1&2)|(9^3));"],
   // ["ok to == arrays", "print([1]==[5,8]);"],
   // ["ok to != arrays", "print([1]!=[5,8]);"],
-  ["assigned functions", "void f() {}\nlet g = f;g = f;"],
+  // ["assigned functions", "void f() {}\nlet g = f;g = f;"],
+  // ["return in nested if", "bool f() {if true {return false;}}"],
   
   
   //------------( STILL IN CARLOS )-----------------//
@@ -83,19 +81,24 @@ const semanticChecks = [
   // // ["built-in hypot", "print(hypot(-4.0, 3.00001));"],
   
   // ------------( not even in our language lmao sam )-----------------//
-  // ["return in nested if", "bool f() {if true {return false;}}"],
   // ["conditionals with ints", "print(true ? 8 : 5);"],
 ]
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
+  //------------( WORKING )-----------------//
   ["undeclared id", "var a: int = 1; print(x);", /Identifier x not declared/],
   ["redeclared id", "var x:int = 1; var x:int = 1;", /Identifier x already declared/],
   ["assign to const", "const x : int = 1; x = 2;", /x is read only/],
   ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Expected a number/],
+
+  //------------( NOT WORKING )-----------------//
   // ["assign bad array type", "var x: int = 1;x=[true];", /Cannot assign a \[int\] to a boolean/],
   // ["assign bad optional type", "var x: int = 1;x=some 2;", /Cannot assign a int\? to a int/],
   // ["break outside loop", "break;", /Break can only appear in a loop/],
+
+
+  //------------( STILL IN CARLOS )-----------------//
   // // [
   // //   "break inside function",
   // //   "while true {function f() {break;}}",

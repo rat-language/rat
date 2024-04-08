@@ -34,8 +34,8 @@ Rat {
     Call = id Args
     Args = "(" ListOf<Exp, ","> ")"
 
-    IfStmt = if Exp Block else IfStmt                       --elseif
-        | if Exp Block else Block                        --else
+    IfStmt = if Exp Block else Block                        --else
+        | if Exp Block else IfStmt                       --elseif
         | if Exp Block                                --if
     TryStmt = try Block timeout Block catch Params Block    --timeout
             | try Block catch Params Block              --catch

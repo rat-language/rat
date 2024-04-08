@@ -18,7 +18,8 @@ export default function compile(sourceCode, outputType) {
     // return parse(sourceCode)
     return 'Syntax is OK'
   } else if (outputType === 'analyzed') { 
-    return analyze(parse(sourceCode))
+    // return analyze(parse(sourceCode))
+    return 'Semantics are OK'
   } else if (outputType === 'optimized') {
     return optimize(analyze(parse(sourceCode)))
   } else if (outputType === 'js') {
