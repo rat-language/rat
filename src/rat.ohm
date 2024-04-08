@@ -9,7 +9,6 @@ Changes:
 */
 
 Rat {
-    // Unsure whether we should change to Stmt* for non-empty files as most programming languages will still do empty files
     Program     = Stmt*
     
     // here, we define valid statements
@@ -56,15 +55,15 @@ Rat {
     // Non-associative relational operators
     Conjunct    = Comp ( "<=" | "<" | "==" | "!=" | ">=" | ">" ) Comp   --comparative
                 | Comp
-    Comp        = Comp ( "+" | "-" ) Term                                                  --additive
+    Comp        = Comp ( "+" | "-" ) Term                               --additive
                 | Term
     // ^left associativity
-    Term        = Term ( "*" | "/" | "%" ) Factor                                          --multiplicative
+    Term        = Term ( "*" | "/" | "%" ) Factor                       --multiplicative
                 | Factor
     // Right associativity + Highest precedence
-    Factor      = Primary "**" Factor                                                    --exponent
+    Factor      = Primary "**" Factor                                   --exponent
                 | Primary
-                | ("-" | "!" | some ) Primary                                            --unary
+                | ("-" | "!" | some ) Primary                           --unary
     // possible assignables to variables
     Primary     = true 
                 | false
@@ -121,7 +120,7 @@ Rat {
     all         = "all" ~idchar
     timeout     = "timeout" ~idchar
     from        = "from" ~idchar
-
+    
     // await used for asynchronous functions that perform a call that is promised to return a value
     // await one - used for having an array of promise types, will return value when one promise is fulfilled
     // await all - will return an array of promise strings.  
