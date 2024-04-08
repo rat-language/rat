@@ -120,14 +120,14 @@ Rat {
     all         = "all" ~idchar
     timeout     = "timeout" ~idchar
     from        = "from" ~idchar
-    
+
     // await used for asynchronous functions that perform a call that is promised to return a value
     // await one - used for having an array of promise types, will return value when one promise is fulfilled
     // await all - will return an array of promise strings.  
     // in asynchronous functions, we can choose to timeout the function if it takes to long to return something
     // distinguishes keywords
 
-    keyword     = print | true | false | let | pass
+    keyword     = print | true | false | pass
                 | while | for | if | else | else | return
                 | some  | void | await | one | all | none
                 | from

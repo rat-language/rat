@@ -118,7 +118,7 @@ const semanticErrors = [
   // // ["non-integer repeat", 'repeat "1" {}', /Expected an integer/],
   // ["non-integer low range", "for i in true...2 ", /Expected an integer in range min/],
   // ["non-integer high range", "for i in 1..<false {}", /Expected an integer in range max/],
-  // ["unwrap non-optional", "print(1??2);", /Expected an optional/],
+  ["unwrap non-optional", "print(1??2);", /Expected an optional/],
   // ["bad types for ||", "print(false||1);", /Expected a boolean/],
   // ["bad types for &&", "print(false&&1);", /Expected a boolean/],
   // ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
