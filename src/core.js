@@ -77,7 +77,9 @@ export function ifStatement(test, consequent, alternate) {
   return { kind: "IfStatement", test, consequent, alternate };
 }
 
-export function passStatement(_pass, _semicolon) { return { kind: "PassStatement" }; }
+export function passStatement(_pass, _semicolon) { 
+  return { kind: "PassStatement" }; 
+}
 
 export function breakStatement(_break, _semicolon) {
   return { kind: "BreakStatement" };

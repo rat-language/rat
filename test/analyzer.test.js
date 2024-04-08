@@ -18,6 +18,9 @@ const semanticChecks = [
   ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
   ["assign optionals", "var a: int? = None;"],
   ["initialize with empty optional", "var a: int? = None;"],
+  ["assign optionals", "var a: int? = None; a = some 100;"],
+  ["for exclusive", "for j in 1..<10 {print(j);}"],
+  ["for inclusive", "for i in 1...10 {print(i);}"],
   
   
   //------------( NOT WORKING )-----------------//
@@ -25,8 +28,6 @@ const semanticChecks = [
   ["return statement", "bool f() { return true; }"],
   ["break in nested if", "while false {if true {break;}}"],
   // ["for over collection", "for i in [2,3,5] {print(1);}"],
-  ["for exclusive", "for j in 1..<10 {print(j);}"],
-  ["for inclusive", "for i in 1...10 {print(i);}"],
   // // ["conditionals with floats", "print(1<2 ? 8.0 : -5.22);"],
   // // ["conditionals with strings", 'print(1<2 ? "x" : "y");'],
   // ["||", "print(true||1<2||false||!true);"],
@@ -34,6 +35,7 @@ const semanticChecks = [
   // ["bit ops", "print((1&2)|(9^3));"],
   // ["ok to == arrays", "print([1]==[5,8]);"],
   // ["ok to != arrays", "print([1]!=[5,8]);"],
+  // ["assigned functions", "void f() {}\nlet g = f;g = f;"],
   
   
   //------------( STILL IN CARLOS )-----------------//
@@ -47,7 +49,6 @@ const semanticChecks = [
   // // ["variables", "let x=[[[[1]]]]; print(x[0][0][0][0]+2);"],
   // // ["nested structs", "struct T{y:int} struct S{z: T} let x=S(T(1)); print(x.z.y);"],
   // // ["subscript exp", "let a=[1,2];print(a[0]);"],
-  // // ["assigned functions", "function f() {}\nlet g = f;g = f;"],
   // // ["call of assigned functions", "function f(x: int) {}\nlet g=f;g(1);"],
   // // ["type equivalence of nested arrays", "function f(x: [[int]]) {} print(f([[1],[2]]));"],
   // // [
