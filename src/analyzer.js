@@ -110,7 +110,7 @@ export default function analyze(match) {
   // Use errorLocation to give contextual information about the error that will
   // appear: this should be an object whose "at" property is a parse tree node.
   // Ohm's getLineAndColumnMessage will be used to prefix the error message.
-  
+
   function mustBeInLoop(context, at) { must(context.withinLoop, "Break statement must be inside a loop", at); }
   function mustNotAlreadyBeDeclared(name, at) { must(!context.locals.has(name), `Identifier ${name} already declared`, at); }
 
@@ -231,13 +231,12 @@ export default function analyze(match) {
       const [low, high] = [exp1.rep(), exp2.rep()]
       mustHaveIntegerType(low, { at: exp1 })
       mustHaveIntegerType(high, { at: exp2 })
-      const endpoint = range === "..." ? high : high - 1
-      const iterator = core.variable(id.sourceString, false, INT)
+      const iterator = core.variable(id.sourceString, INT, true)
       context = context.newChildContext({ inLoop: true })
       context.add(id.sourceString, iterator)
       const body = block.rep()
       context = context.parent
-      return core.forRangeStatement(iterator, low, range, endpoint, body)
+      return core.forRangeStatement(iterator, low, range.sourceString, high, body)
     },
 
     Call(id, args) {
