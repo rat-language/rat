@@ -30,12 +30,12 @@ const semanticChecks = [
   // ["for over collection", "for i in [2,3,5] {print(1);}"],
   // // ["conditionals with floats", "print(1<2 ? 8.0 : -5.22);"],
   // // ["conditionals with strings", 'print(1<2 ? "x" : "y");'],
-  // ["||", "print(true||1<2||false||!true);"],
+  ["||", "print(true||1<2||false||!true);"],
   // ["&&", "print(true&&1<2&&false&&!true);"],
   // ["bit ops", "print((1&2)|(9^3));"],
   // ["ok to == arrays", "print([1]==[5,8]);"],
   // ["ok to != arrays", "print([1]!=[5,8]);"],
-  // ["assigned functions", "void f() {}\nlet g = f;g = f;"],
+  ["assigned functions", "void f() {}\nlet g = f;g = f;"],
   
   
   //------------( STILL IN CARLOS )-----------------//

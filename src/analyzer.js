@@ -219,7 +219,7 @@ export default function analyze(match) {
       context = context.parent
       return core.whileStatement(test, body)
     },
-
+    
     //For
     LoopStmt_foreach(_for, iterator, _in, exp, block) {
       const iterable = exp.rep()
@@ -331,9 +331,19 @@ export default function analyze(match) {
       return core.binary(op.sourceString, exp1.rep(), exp2.rep());
     },
 
-    Exp_unary(op, exp) {
-      // either for negation or for boolean not
-      return core.unary(op.sourceString, exp.rep());
+    Factor_unary(unaryOp, exp) {
+      const [op, operand] = [unaryOp.sourceString, exp.rep()]
+      let type
+      if (op === "-") {
+        mustHaveNumericType(operand, { at: exp })
+        type = operand.type
+      } else if (op === "!") {
+        mustHaveBooleanType(operand, { at: exp })
+        type = BOOLEAN
+      } else if (op === "some") {
+        type = core.optionalType(operand.type)
+      } 
+      return core.unary(op, operand, type)
     },
 
     // Exp_await(_await, exp) {
@@ -401,9 +411,9 @@ export default function analyze(match) {
       return core.binary(op, left, right, left.type)
     },
 
-    Primary_wrapped(_some, exp) {
+    // Primary_wrapped(_some, exp) {
 
-    },
+    // },
 
     Primary_index(exp1, _open, exp2, _close) {
       const [array, index] = [exp1.rep(), exp2.rep()];

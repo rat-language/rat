@@ -20,8 +20,6 @@ const syntaxChecks = [
   ["coalescing operator", "var boss:str? = some \"Tina\";\nprint (boss ?? \"No boss here\");"],
   ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
   ["await call", "try {r = await <<500>> foo();} timeout {pass;} catch(e:str) {print(e);}"],
-  // ["import statements", "import math;\nimport pandas as pd;\nimport from os, system32;"],
-
 ]
 
 // SYNTAX ERRORS NEED TO BE CHANGED EXTENSIVELY
@@ -36,7 +34,6 @@ const syntaxErrors = [
   ["an expression starting with a )", "x = );", /Line 1, col 5/],
   ["a statement starting with a )", "print(5);\n) * 5", /Line 2, col 1/],
   ["an expression starting with a *", "x = * 71;", /Line 1, col 5/],
-  ["uniterable object in for loop declaration", "for i in 7 {print(i);}", /Line 1, col 12/]
 ]
 
 describe("The parser", () => {

@@ -100,8 +100,8 @@ export function binary(op, left, right, type) {
   return { kind: "BinaryExpression", op, left, right, type };
 }
 
-export function unary(op, operand) {
-  return { kind: "UnaryExpression", op, operand };
+export function unary(op, operand, type) {
+  return { kind: "UnaryExpression", op, operand, type};
 }
 
 export function index(array, index) {

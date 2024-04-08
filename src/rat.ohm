@@ -45,9 +45,9 @@ Rat {
     Block = "{" Stmt* "}"
 
     // lowest precedence
-    Exp = Exp0 "??" Exp0                                                            --unwrap
+    Exp = Exp0 "??" Exp                                                            --unwrap
         | Exp0
-        | ("-"|"!") Primary                                                         --unary
+        // | ("-"|"!" | "some") Primary                                                         --unary
         | await ("<<" Exp  ">>" )? ( one | all )? Exp                               --await
     Exp0 = Exp "||" Disjunct                                                        --logicalor
          | Disjunct
@@ -64,20 +64,20 @@ Rat {
     // Right associativity + Highest precedence
     Factor = Primary "**" Factor                                                    --exponent
            | Primary
+           | ("-" | "!" | some ) Primary                                            --unary
     // possible assignables to variables
-    Primary = floatlit 
+    Primary = true 
+            | false
+            | floatlit 
             | intlit 
-            | true 
-            | false 
             | none
-            | ArrayLit
-            | DictLit
-            | some Exp                                              --wrapped
             | Primary ("[" | "?[") Exp "]"                          --index
             | Call
+            | ArrayLit
+            | DictLit
+            | strlit
             | id                                                    --id
             | Parens
-            | strlit
 
     ArrayLit = "[" "]"                                              --emptyarray
             | "[" NonemptyListOf<Exp, ",">"]"                       --array
