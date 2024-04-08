@@ -10,118 +10,117 @@ Changes:
 
 Rat {
     // Unsure whether we should change to Stmt* for non-empty files as most programming languages will still do empty files
-    Program = Stmt*
+    Program     = Stmt*
+    
     // here, we define valid statements
     //=========== (VALID STATEMENTS) ============== //
-    Stmt = print "("Exp ")" ";"                         --print
-        | (const|var) id ":" Type "=" Exp ";"           --vardec
-        | FuncDecl
-        | Primary op? "=" Exp ";"                        --assign
-        | LoopStmt
-        | Call ";"                                      --call
-        | IfStmt
-        | pass ";"                                      --pass
-        | break ";"                                     --break
-        | return Exp ";"                                --return 
-        | TryStmt
+    Stmt        = print "("Exp ")" ";"                                  --print
+                | (const|var) id ":" Type "=" Exp ";"                   --vardec
+                | FuncDecl
+                | Primary op? "=" Exp ";"                               --assign
+                | LoopStmt
+                | Call ";"                                              --call
+                | IfStmt
+                | pass ";"                                              --pass
+                | break ";"                                             --break
+                | return Exp ";"                                        --return 
+                | TryStmt
 
-    FuncDecl = (Type|void) id Params Block
+    FuncDecl    = (Type|void) id Params Block
 	
-    LoopStmt = while Exp Block 							            --while
-            | for id in Primary Block									--foreach
-            | for id in Exp ("..." | "..<") Exp Block               --range
+    LoopStmt    = while Exp Block 							            --while
+                | for id in Primary Block						        --foreach
+                | for id in Exp ("..." | "..<") Exp Block               --range
 
-    Call = id Args
-    Args = "(" ListOf<Exp, ","> ")"
+    Call        = id Args
+    Args        = "(" ListOf<Exp, ","> ")"
 
-    IfStmt = if Exp Block else Block                        --else
-        | if Exp Block else IfStmt                       --elseif
-        | if Exp Block                                --if
-    TryStmt = try Block timeout Block catch Params Block    --timeout
-            | try Block catch Params Block              --catch
+    IfStmt      = if Exp Block else Block                               --else
+                | if Exp Block else IfStmt                              --elseif
+                | if Exp Block                                          --if
+    TryStmt     = try Block timeout Block catch Params Block            --timeout
+                | try Block catch Params Block                          --catch
 
-    Params = "("ListOf<Param, ",">")"
-    Param = id ":" Type
-    Block = "{" Stmt* "}"
+    Params      = "("ListOf<Param, ",">")"
+    Param       = id ":" Type
+    Block       = "{" Stmt* "}"
 
     // lowest precedence
-    Exp = Exp0 "??" Exp                                                            --unwrap
-        | Exp0
-        // | ("-"|"!" | "some") Primary                                                         --unary
-        | await ("<<" Exp  ">>" )? ( one | all )? Exp                               --await
-    Exp0 = Exp "||" Disjunct                                                        --logicalor
-         | Disjunct
-    Disjunct = Disjunct "&&" Conjunct                                               --logicaland
-             | Conjunct
+    Exp         = Exp0 "??" Exp                                         --unwrap
+                | Exp0
+                | await ("<<" Exp  ">>" )? ( one | all )? Exp           --await
+    Exp0        = Exp "||" Disjunct                                     --logicalor
+                | Disjunct
+    Disjunct    = Disjunct "&&" Conjunct                                --logicaland
+                | Conjunct
     // Non-associative relational operators
-    Conjunct = Comp ( "<=" | "<" | "==" | "!=" | ">=" | ">" ) Comp                  --comparative
-             | Comp
-    Comp = Comp ( "+" | "-" ) Term                                                  --additive
-         | Term
+    Conjunct    = Comp ( "<=" | "<" | "==" | "!=" | ">=" | ">" ) Comp   --comparative
+                | Comp
+    Comp        = Comp ( "+" | "-" ) Term                                                  --additive
+                | Term
     // ^left associativity
-    Term = Term ( "*" | "/" | "%" ) Factor                                          --multiplicative
-         | Factor
+    Term        = Term ( "*" | "/" | "%" ) Factor                                          --multiplicative
+                | Factor
     // Right associativity + Highest precedence
-    Factor = Primary "**" Factor                                                    --exponent
-           | Primary
-           | ("-" | "!" | some ) Primary                                            --unary
+    Factor      = Primary "**" Factor                                                    --exponent
+                | Primary
+                | ("-" | "!" | some ) Primary                                            --unary
     // possible assignables to variables
-    Primary = true 
-            | false
-            | floatlit 
-            | intlit 
-            | none
-            | Primary ("[" | "?[") Exp "]"                          --index
-            | Call
-            | ArrayLit
-            | DictLit
-            | strlit
-            | id                                                    --id
-            | Parens
+    Primary     = true 
+                | false
+                | floatlit 
+                | intlit 
+                | none
+                | Primary ("[" | "?[") Exp "]"                          --index
+                | Call
+                | ArrayLit
+                | DictLit
+                | strlit
+                | id                                                    --id
+                | Parens
 
-    ArrayLit = "[" "]"                                              --emptyarray
-            | "[" NonemptyListOf<Exp, ",">"]"                       --array
+    ArrayLit    = "[" "]"                                               --emptyarray
+                | "[" NonemptyListOf<Exp, ",">"]"                       --array
 
 
-    DictLit = "{" ListOf<Binding,",">"}"
-    Parens = "(" Exp ")"
+    DictLit     = "{" ListOf<Binding,",">"}"
+    Parens      = "(" Exp ")"
 
     //key:value pairs for dictionaries
-    Binding = Exp ":" Exp
-    op = "**" | "*" | "/" | "%" |"+" | "-"
+    Binding     = Exp ":" Exp
+    op          = "**" | "*" | "/" | "%" |"+" | "-"
 
-    Type = Type "?"                                         --optional
-         | Type "^"                                         --promise
-         |"[" Type "]"                                      --array
-         | "[" Type":"Type"]"                               --dictionary
-         | id                                               --id
+    Type        = Type "?"                                              --optional
+                | Type "^"                                              --promise
+                |"[" Type "]"                                           --array
+                | "[" Type":"Type"]"                                    --dictionary
+                | id                                                    --id
 
     //KEYWORDS:
-    print   = "print" ~idchar
-    true    = "true" ~idchar
-    false   = "false" ~idchar
-    let     = "let" ~idchar
-    in      = "in" ~idchar
-    const   = "const" ~idchar
-    var     = "var" ~idchar
-    while   = "while" ~idchar
-    for     = "for" ~idchar
-    if      = "if" ~idchar
-    else    = "else" ~idchar
-    break   = "break" ~idchar
-    return  = "return" ~idchar
-    some    = "some" ~idchar
-    none    = "None" ~idchar
-    anything= "anything" ~idchar
-    pass    = "pass" ~idchar
-    await   = "await" ~idchar
-    try     = "try" ~idchar
-    catch   = "catch" ~idchar
-    one     = "one" ~idchar
-    void    = "void" ~idchar
-    all     = "all" ~idchar
-    timeout = "timeout" ~idchar
-    from    = "from" ~idchar
+    print       = "print" ~idchar
+    true        = "true" ~idchar
+    false       = "false" ~idchar
+    in          = "in" ~idchar
+    const       = "const" ~idchar
+    var         = "var" ~idchar
+    while       = "while" ~idchar
+    for         = "for" ~idchar
+    if          = "if" ~idchar
+    else        = "else" ~idchar
+    break       = "break" ~idchar
+    return      = "return" ~idchar
+    some        = "some" ~idchar
+    none        = "None" ~idchar
+    anything    = "anything" ~idchar
+    pass        = "pass" ~idchar
+    await       = "await" ~idchar
+    try         = "try" ~idchar
+    catch       = "catch" ~idchar
+    one         = "one" ~idchar
+    void        = "void" ~idchar
+    all         = "all" ~idchar
+    timeout     = "timeout" ~idchar
+    from        = "from" ~idchar
 
     // await used for asynchronous functions that perform a call that is promised to return a value
     // await one - used for having an array of promise types, will return value when one promise is fulfilled
@@ -129,25 +128,25 @@ Rat {
     // in asynchronous functions, we can choose to timeout the function if it takes to long to return something
     // distinguishes keywords
 
-    keyword = print | true | false | let | pass
-            | while | for | if | else | else | return
-            | some  | void | await | one | all | none
-            | from
+    keyword     = print | true | false | let | pass
+                | while | for | if | else | else | return
+                | some  | void | await | one | all | none
+                | from
 
     //allows you to name your variables
-    id = ~keyword (letter| "_") idchar*
-    idchar = (alnum|"_")
+    id          = ~keyword (letter| "_") idchar*
+    idchar      = (alnum|"_")
 
-    strlit = "\"" char* "\""
-    intlit = digit+
-    floatlit = digit+ "." digit+ (("E"|"e") ("+"|"-")? digit+)?
+    strlit      = "\"" char* "\""
+    intlit      = digit+
+    floatlit    = digit+ "." digit+ (("E"|"e") ("+"|"-")? digit+)?
+
     //valid characters in a string
-
-    char = "\\n"                                                                --newlineescape
-        |"\\t"
-        |"\\\\"
-        |"\\\""
-        |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}"   --usecape
-        |~"\"" ~"\n" ~"\\" any                                                  --regular
-    space += "#" (~"\n" any)*                                                   --comment
+    char        = "\\n"                                                 --newlineescape
+                |"\\t"
+                |"\\\\"
+                |"\\\""
+                |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}"   --usecape
+                |~"\"" ~"\n" ~"\\" any                                  --regular
+    space       += "#" (~"\n" any)*                                     --comment
 }
