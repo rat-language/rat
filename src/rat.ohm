@@ -17,12 +17,12 @@ Rat {
                 | (const|var) id ":" Type "=" Exp ";"                   --vardec
                 | FuncDecl
                 | Primary op? "=" Exp ";"                               --assign
-                | LoopStmt
                 | Call ";"                                              --call
                 | break ";"                                             --break
                 | pass ";"                                              --pass
                 | return Exp ";"                                        --return 
                 | IfStmt
+                | LoopStmt
                 | TryStmt
 
     FuncDecl    = (Type|void) id Params Block

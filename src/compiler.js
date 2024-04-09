@@ -11,22 +11,19 @@ import generate from "./generator.js"
  * [parser] -> [analyzer] -> [optimizer] -> [generator]
  *****/
 
-export default function compile(sourceCode, outputType) {
-  if (outputType === 'parsed') {
-    // will return the match object
-    // uncomment to view match object
-    // return parse(sourceCode)
-    return 'Syntax is OK'
-  } else if (outputType === 'analyzed') { 
-    // return analyze(parse(sourceCode))
-    return 'Semantics are OK'
-  } else if (outputType === 'optimized') {
-    return optimize(analyze(parse(sourceCode)))
-  } else if (outputType === 'js') {
-    return generate(optimize(analyze(parse(sourceCode))))
-  } else {
-    throw new Error(`Unknown output type: ${outputType}`)
+export default function compile(source, outputType) {
+  
+
+  if (!["parsed", "analyzed", "optimized", "js"].includes(outputType)) {
+    throw new Error("Unknown output type")
   }
+  const match = parse(source)
+  if (outputType === "parsed") return "Syntax is ok"
+  const analyzed = analyze(match)
+  if (outputType === "analyzed") return analyzed
+  const optimized = optimize(analyzed)
+  if (outputType === "optimized") return optimized
+  return generate(optimized)
   // Alternate sequence we could do, if we simply wanted to compile the code
   // const match = parse(sourceCode);
   // const ir = analyze(match);

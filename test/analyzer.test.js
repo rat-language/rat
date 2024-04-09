@@ -183,11 +183,13 @@ describe("The analyzer", () => {
       assert.ok(analyze(parse(source)))
     })
   }
+
   for (const [scenario, source, errorMessagePattern] of semanticErrors) {
     it(`throws on ${scenario}`, () => {
       assert.throws(() => analyze(parse(source)), errorMessagePattern)
     })
   }
+  
   // it("produces the expected representation for a trivial program", () => {
   //   assert.deepEqual(
   //     analyze(parse("let x = π + 2.2;")),

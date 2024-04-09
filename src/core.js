@@ -81,9 +81,7 @@ export function passStatement(_pass, _semicolon) {
   return { kind: "PassStatement" }; 
 }
 
-export function breakStatement(_break, _semicolon) {
-  return { kind: "BreakStatement" };
-}
+export const breakStatement = { kind: "BreakStatement" }
 
 export function returnStatement(expression) {
   return { kind: "ReturnStatement", expression };

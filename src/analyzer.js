@@ -13,12 +13,7 @@ const ANY = core.Type.ANY;
 const VOID = core.Type.VOID;
 const NONE = core.Type.VOID;
 
-function must(condition, message, errorLocation) {
-  if (!condition) {
-    const prefix = errorLocation.at.source.getLineAndColumnMessage();
-    throw new Error(`${prefix}${message}`);
-  }
-}
+
 
 class Context {
   constructor({ parent, locals = {} }) {
@@ -34,77 +29,8 @@ class Context {
   static root() { return new Context({ locals: new Map(Object.entries(core.standardLibrary)) }); }
 
   newChildContext(props) { return new Context({ ...this, ...props, parent: this, locals: new Map() }); }
-
-  get(name, expectedType, node) {
-    let entity;
-    for (let context = this; context; context = context.parent) {
-      entity = context.locals.get(name);
-      if (entity) break;
-    }
-    must(entity, `${name} has not been declared`, node);
-    must(
-      entity.constructor === expectedType,
-      `${name} was expected to be a ${expectedType.name}`,
-      node
-    );
-    return entity;
-  }
 }
 
-function mustAllHaveSameType(expressions, at) {
-  must(
-    expressions.slice(1).every(e => equivalent(e.type, expressions[0].type)),
-    "Not all elements have the same type",
-    at
-  )
-}
-
-function mustHaveNumericType(e, at) { must([INT, FLOAT].includes(e.type), "Expected a number", at); }
-
-function mustHaveArrayType(e, at) { must(e.type?.kind === "ArrayType", "Expected an array", at); }
-
-function mustHaveIterableType(e, at) {
-  must((e.type?.kind === "ArrayType" | e.type?.kind === "DictType" | e.type?.kind === STRING), "Expected an array", at);
-}
-
-function mustHaveNumericOrStringType(e, at) {
-  must(
-    [INT, FLOAT, STRING].includes(e.type),
-    "Expected a number or string",
-    at
-  );
-}
-
-function mustHaveAnOptionalType(e, at) {
-  must(e.type?.kind === "OptionalType", "Expected an optional", at)
-}
-
-function mustHaveBooleanType(e, at) { must(e.type === BOOLEAN, "Expected a boolean", at); }
-
-function mustHaveIntegerType(e, at) { must(e.type === INT, "Expected an integer", at); }
-
-function mustBeTheSameType(e1, e2, at) { must(equivalent(e1.type, e2.type), "Operands do not have the same type", at); }
-
-function mustBothHaveTheSameType(e1, e2, at) {
-  must(equivalent(e1.type, e2.type), "Operands do not have the same type", at)
-}
-
-function equivalent(t1, t2) {
-  return (
-    t1 === t2 ||
-    (t1 instanceof core.OptionalType &&
-      t2 instanceof core.OptionalType &&
-      equivalent(t1.baseType, t2.baseType)) ||
-    (t1 instanceof core.ArrayType &&
-      t2 instanceof core.ArrayType &&
-      equivalent(t1.baseType, t2.baseType)) ||
-    (t1.constructor === core.FunctionType &&
-      t2.constructor === core.FunctionType &&
-      equivalent(t1.returnType, t2.returnType) &&
-      t1.paramTypes.length === t2.paramTypes.length &&
-      t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
-  );
-}
 
 export default function analyze(match) {
   // Track the context manually via a simple variable. The initial context
@@ -118,15 +44,94 @@ export default function analyze(match) {
   // Use errorLocation to give contextual information about the error that will
   // appear: this should be an object whose "at" property is a parse tree node.
   // Ohm's getLineAndColumnMessage will be used to prefix the error message.
-
-  function mustBeAssignable(e, { toType: type }, at) {
-    const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(
-      type
-    )}`
-    must(assignable(e.type, type), message, at)
+  function must(condition, message, errorLocation) {
+    if (!condition) {
+      const prefix = errorLocation.at.source.getLineAndColumnMessage();
+      throw new Error(`${prefix}${message}`);
+    }
   }
 
+  function mustNotAlreadyBeDeclared(name, at) { must(!context.locals.has(name), `Identifier ${name} already declared`, at); }
+
+  function mustHaveBeenFound(entity, name, at) { must(entity, `Identifier ${name} not declared`, at); }
+  
+  function mustHaveNumericType(e, at) { must([INT, FLOAT].includes(e.type), "Expected a number", at); }
+
+  function mustHaveNumericOrStringType(e, at) {
+    must([INT, FLOAT, STRING].includes(e.type), "Expected a number or string", at);
+  }
+
+  function mustHaveBooleanType(e, at) { must(e.type === BOOLEAN, "Expected a boolean", at); }
+
+  function mustHaveIntegerType(e, at) { must(e.type === INT, "Expected an integer", at); }
+
+  function mustHaveArrayType(e, at) { must(e.type?.kind === "ArrayType", "Expected an array", at); }
+
+  function mustHaveAnOptionalType(e, at) { must(e.type?.kind === "OptionalType", "Expected an optional", at) }
+
+  function mustBothHaveTheSameType(e1, e2, at) { must(equivalent(e1.type, e2.type), "Operands do not have the same type", at) }
+
+  function mustAllHaveSameType(expressions, at) {
+    // Used to check the elements of an array expression, and the two
+    // arms of a conditional expression, among other scenarios.
+    must(expressions.slice(1).every(e => equivalent(e.type, expressions[0].type)), "Not all elements have the same type", at)
+  }
+
+
+  function mustBeAType(e, at) {
+    // This is a rather ugly hack
+    must(e?.kind.endsWith("Type"), "Type expected", at)
+  }
+
+  function mustBeAnArrayType(t, at) {
+    must(t?.kind === "ArrayType", "Must be an array type", at)
+  }
+
+  // ↓ ↓ NOT IN TOALS CODE ↓ ↓
+  function mustHaveIterableType(e, at) { must((e.type?.kind === "ArrayType" | e.type?.kind === "DictType" | e.type?.kind === STRING), `${e.type?.kind} is not an iterable object`, at); }
+
+  function mustBeTheSameType(e1, e2, at) { must(equivalent(e1.type, e2.type), "Operands do not have the same type", at); }
+
+  // function equivalent(t1, t2) {
+  //   return (
+  //     t1 === t2 ||
+  //     (t1 instanceof core.OptionalType &&
+  //       t2 instanceof core.OptionalType &&
+  //       equivalent(t1.baseType, t2.baseType)) ||
+  //     (t1 instanceof core.ArrayType &&
+  //       t2 instanceof core.ArrayType &&
+  //       equivalent(t1.baseType, t2.baseType)) ||
+  //     (t1.constructor === core.FunctionType && t2.constructor === core.FunctionType &&
+  //       equivalent(t1.returnType, t2.returnType) &&
+  //       t1.paramTypes.length === t2.paramTypes.length &&
+  //       t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
+  //   );
+  // }
+
+  function equivalent(t1, t2) {
+    return ( t1 === t2 ||
+      (t1?.kind === "OptionalType" && t2?.kind === "OptionalType" && equivalent(t1.baseType, t2.baseType)) ||
+      (t1?.kind === "ArrayType" && t2?.kind === "ArrayType" && equivalent(t1.baseType, t2.baseType)) ||
+      (t1?.kind === "FunctionType" && t2?.kind === "FunctionType" && equivalent(t1.returnType, t2.returnType) && t1.paramTypes.length === t2.paramTypes.length && t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
+    )
+  }
+
+  function assignable(fromType, toType) {
+    return (
+      toType == ANY ||
+      equivalent(fromType, toType) ||
+      (fromType?.kind === "FunctionType" &&
+        toType?.kind === "FunctionType" &&
+        // covariant in return types
+        assignable(fromType.returnType, toType.returnType) &&
+        fromType.paramTypes.length === toType.paramTypes.length &&
+        // contravariant in parameter types
+        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
+    )
+  }  
+  
   function typeDescription(type) {
+    // TODO: add cases for promise type, dictionary type, and noneType (variant of void type)
     switch (type.kind) {
       case "IntType":
         return "int"
@@ -151,47 +156,53 @@ export default function analyze(match) {
     }
   }
 
-  function assignable(fromType, toType) {
-    return (
-      toType == ANY ||
-      equivalent(fromType, toType) ||
-      (fromType?.kind === "FunctionType" &&
-        toType?.kind === "FunctionType" &&
-        // covariant in return types
-        assignable(fromType.returnType, toType.returnType) &&
-        fromType.paramTypes.length === toType.paramTypes.length &&
-        // contravariant in parameter types
-        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
-    )
-  }
-
-  function mustBeInLoop(context, at) { must(context.withinLoop, "Break statement must be inside a loop", at); }
-  function mustNotAlreadyBeDeclared(name, at) { must(!context.locals.has(name), `Identifier ${name} already declared`, at); }
-
-  function mustHaveBeenFound(entity, name, at) { must(entity, `Identifier ${name} not declared`, at); }
-
-  function mustBeAVariable(entity, at) { must(entity?.kind === "Variable", `Functions can not appear here`, at); }
-
-  function mustBeAFunction(entity, at) { must(entity?.kind === "Function", `${entity.name} is not a function`, at); }
-
-  function mustBeInAFunction(at) {
-    must(context.function, "Return can only appear in a function", at)
-  }
-  
-  function mustReturnSomething(f, at) {
-    must(f.type.returnType !== VOID, "Cannot return a value from this function", at)
+  function mustBeAssignable(e, { toType: type }, at) {
+    const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(
+      type
+    )}`
+    must(assignable(e.type, type), message, at)
   }
 
   function mustNotBeReadOnly(entity, at) { must(!entity.readOnly, `${entity.name} is read only`, at); }
 
-  function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
-    const equalCount = argCount === paramCount;
-    must(
-      equalCount,
-      `${paramCount} argument(s) required but ${argCount} passed`,
-      at
-    );
+  function mustBeInLoop(context, at) { must(context.withinLoop, "Break statement must be inside a loop", at); }
+
+  function mustBeInAFunction(at) { must(context.function, "Return can only appear in a function", at) }
+
+  function mustBeCallable(e, at) {
+    const callable = e?.kind === "StructType" || e.type?.kind === "FunctionType"
+    must(callable, "Call of non-function or non-constructor", at)
   }
+
+  function mustNotReturnAnything(f, at) {
+    must(f.type.returnType === VOID, "Something should be returned", at)
+  }
+
+  function mustReturnSomething(f, at) {
+    must(f.type.returnType !== VOID, "Cannot return a value from this function", at)
+  }
+
+  function mustBeReturnable(e, { from: f }, at) {
+    mustBeAssignable(e, { toType: f.type.returnType }, at)
+  }
+
+  function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
+    const message = `${paramCount} argument(s) required but ${argCount} passed`
+    must(argCount === paramCount, message, at)
+  }
+  
+  // function mustBeAVariable(entity, at) { must(entity?.kind === "Variable", `Functions can not appear here`, at); }
+
+  // function mustBeAFunction(entity, at) { must(entity?.kind === "Function", `${entity.name} is not a function`, at); }
+
+  // function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
+  //   const equalCount = argCount === paramCount;
+  //   must(
+  //     equalCount,
+  //     `${paramCount} argument(s) required but ${argCount} passed`,
+  //     at
+  //   );
+  // }
 
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     Program(statements) {
@@ -227,22 +238,26 @@ export default function analyze(match) {
     Stmt_assign(id, ops, _eq, exp, _semicolon) {
       const target = id.rep();
       mustNotBeReadOnly(target, { at: id });
+      // if (ops != "") {
+      //   return core.assignment(target, core.binary(ops, target, exp.rep(), target.type));
+      // }
       return core.assignment(target, exp.rep());
     },
 
     //Call
     Stmt_call(call, _semicolon) {
-      return core.callStatement(call.rep());
+      return call.rep();
     },
 
     //Pass
     Stmt_pass(_pass, _semicolon) {
       return core.passStatement();
     },
+
     //Break
     Stmt_break(breakKeyword, _semicolon) {
       mustBeInLoop(context, { at: breakKeyword });
-      return core.breakStatement();
+      return core.breakStatement
     },
     //Return
     Stmt_return(returnKeyword, exp, _semicolon) {
@@ -311,16 +326,21 @@ export default function analyze(match) {
     Call(id, args) {
       // ids used in calls must have already been declared and must be
       // bound to function entities, not to variable entities.
-      const callee = context.lookup(id.sourceString);
-      mustHaveBeenFound(callee, id.sourceString, { at: id });
-      mustBeAFunction(callee, { at: id });
-      const passed = args.rep()
-      mustHaveCorrectArgumentCount(passed.length, callee.paramCount, { at: id });
-      return core.call(callee, passed);
+      const callee = id.rep();
+      mustBeCallable(callee, { at: id });
+      const exps = args.rep();
+      const targetTypes = callee.type.paramTypes;
+      mustHaveCorrectArgumentCount(exps.length, targetTypes.length, { at: id });
+      const argumnts = exps.map((exp, i) => {
+        const arg = exp.rep()
+        mustBeAssignable(arg, { toType: targetTypes[i] }, { at: exp })
+        return arg
+      })     
+      return core.call(callee, argumnts);
     },
 
     Args(_open, expList, _close) {
-      return expList.asIteration().children.map((exp) => exp.rep());
+      return expList.asIteration().children;
     },
 
     // //If
@@ -498,7 +518,7 @@ export default function analyze(match) {
       // be bound to variable entities, not function entities.
       const entity = context.lookup(id.sourceString);
       mustHaveBeenFound(entity, id.sourceString, { at: id });
-      mustBeAVariable(entity, { at: id });
+      // mustBeAVariable(entity, { at: id });
       return entity;
     },
 
