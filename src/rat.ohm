@@ -19,10 +19,10 @@ Rat {
                 | Primary op? "=" Exp ";"                               --assign
                 | LoopStmt
                 | Call ";"                                              --call
-                | IfStmt
-                | pass ";"                                              --pass
                 | break ";"                                             --break
+                | pass ";"                                              --pass
                 | return Exp ";"                                        --return 
+                | IfStmt
                 | TryStmt
 
     FuncDecl    = (Type|void) id Params Block
@@ -93,6 +93,7 @@ Rat {
                 | Type "^"                                              --promise
                 |"[" Type "]"                                           --array
                 | "[" Type":"Type"]"                                    --dictionary
+                | "(" ListOf<Type, ","> ")" "->" Type                   --function
                 | id                                                    --id
 
     //KEYWORDS:

@@ -23,9 +23,9 @@ const semanticChecks = [
   ["for inclusive", "for i in 1...10 {print(i);}"],
   ["||", "print(true || 1<2 || false || !true);"],
   ["&&", "print(true && 1<2 && false && !true);"],
-  
-  
+
   //------------( NOT WORKING )-----------------//
+  ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
   // ["return statement", "bool f() { return true; }"],
   // ["break in nested if", "while false {if true {break;}}"],
@@ -34,7 +34,6 @@ const semanticChecks = [
   // ["ok to != arrays", "print([1]!=[5,8]);"],
   // ["assigned functions", "void f() {}\nlet g = f;g = f;"],
   // ["return in nested if", "bool f() {if true {return false;}}"],
-  
   
   //------------( STILL IN CARLOS )-----------------//
   // // ["shifts", "print(1<<3<<5<<8>>2>>0);"],
@@ -79,7 +78,7 @@ const semanticChecks = [
   // // ["built-in sin", "print(sin(π));"],
   // // ["built-in cos", "print(cos(93.999));"],
   // // ["built-in hypot", "print(hypot(-4.0, 3.00001));"],
-  
+
   // ------------( not even in our language lmao sam )-----------------//
   // ["conditionals with ints", "print(true ? 8 : 5);"],
 ]

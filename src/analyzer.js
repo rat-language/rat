@@ -85,6 +85,10 @@ function mustHaveIntegerType(e, at) { must(e.type === INT, "Expected an integer"
 
 function mustBeTheSameType(e1, e2, at) { must(equivalent(e1.type, e2.type), "Operands do not have the same type", at); }
 
+function mustBothHaveTheSameType(e1, e2, at) {
+  must(equivalent(e1.type, e2.type), "Operands do not have the same type", at)
+}
+
 function equivalent(t1, t2) {
   return (
     t1 === t2 ||
@@ -170,6 +174,14 @@ export default function analyze(match) {
 
   function mustBeAFunction(entity, at) { must(entity?.kind === "Function", `${entity.name} is not a function`, at); }
 
+  function mustBeInAFunction(at) {
+    must(context.function, "Return can only appear in a function", at)
+  }
+  
+  function mustReturnSomething(f, at) {
+    must(f.type.returnType !== VOID, "Cannot return a value from this function", at)
+  }
+
   function mustNotBeReadOnly(entity, at) { must(!entity.readOnly, `${entity.name} is read only`, at); }
 
   function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
@@ -233,31 +245,38 @@ export default function analyze(match) {
       return core.breakStatement();
     },
     //Return
-    Stmt_return(_return, exp, _semicolon) {
-      return core.returnStatement(exp.rep());
+    Stmt_return(returnKeyword, exp, _semicolon) {
+      mustBeInAFunction({ at: returnKeyword })
+      mustReturnSomething(context.function, { at: returnKeyword })
+      const returnExpression = exp.rep()
+      mustBeReturnable(returnExpression, { from: context.function }, { at: exp })
+      return core.returnStatement(returnExpression)
     },
 
     //Function Declaration
     FuncDecl(type, id, parameters, block) {
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      // Start by making the function, but we don't yet know its type.
+      // Also add it to the context so that we can have recursion.
+      const fun = core.fun(id.sourceString)
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      context.add(id.sourceString, fun)
 
-      const fun = new core.fun(id.sourceString, params.length);
-      context.add(id.sourceString, fun);
-      // Add the function to the context before analyzing the body, because
-      // we want to allow functions to be recursive
+      // Parameters are part of the child context
+      context = context.newChildContext({ inLoop: false, function: fun })
+      const params = parameters.rep()
+      // Now that the parameters are known, we compute the function's type.
+      // This is fine; we did not need the type to analyze the parameters,
+      // but we do need to set it before analyzing the body.
+      const paramTypes = params.map(param => param.type)
+      const returnType = type.children?.[0]?.rep() ?? VOID
+      fun.type = core.functionType(paramTypes, returnType)
 
-      context = context.newChildContext({ inLoop: false, function: fun });
-      const params = parameters.rep();
-      // console.log(params)
+      // Analyze body while still in child context
+      const body = block.rep()
 
-      const paramTypes = params.map(param => param.type);
-      const returnType = type.children?.[0]?.rep() ?? VOID;
-      fun.type = new core.functionType(paramTypes, returnType);
-
-      const bodyRep = block.rep();
-
-      context = context.parent;
-      return new core.functionDeclaration(fun, params, bodyRep);
+      // Go back up to the outer context before returning
+      context = context.parent
+      return core.functionDeclaration(fun, params, body)
     },
 
     //While
@@ -522,6 +541,12 @@ export default function analyze(match) {
 
     Type_dictionary(_open, baseType1, _colon, type2, _close) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
+    },
+
+    Type_function(_open, types, _close, _arrow, retType) {
+      const paramTypes = types.asIteration().children.map(t => t.rep())
+      const returnType = retType.rep()
+      return core.functionType(paramTypes, returnType)
     },
 
     Type_id(_id) {
