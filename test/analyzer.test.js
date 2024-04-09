@@ -50,21 +50,21 @@ const semanticChecks = [
   // // ["call of assigned functions", "function f(x: int) {}\nlet g=f;g(1);"],
   // // ["type equivalence of nested arrays", "function f(x: [[int]]) {} print(f([[1],[2]]));"],
   // // [
-    // //   "call of assigned function in expression",
-    // //   `function f(x: int, y: boolean): int {}
-    // //   let g = f;
-    // //   print(g(1, true));
-    // //   f = g; // Type check here`,
-    // // ],
-    // // [
+  // //   "call of assigned function in expression",
+  // //   `function f(x: int, y: boolean): int {}
+  // //   let g = f;
+  // //   print(g(1, true));
+  // //   f = g; // Type check here`,
+  // // ],
+  // // [
   // //   "pass a function to a function",
   // //   `function f(x: int, y: (boolean)->void): int { return 1; }
   // //    function g(z: boolean) {}
   // //    f(2, g);`,
   // // ],
   // // [
-    // //   "function return types",
-    // //   `function square(x: int): int { return x * x; }
+  // //   "function return types",
+  // //   `function square(x: int): int { return x * x; }
   // //    function compose(): (int)->int { return square; }`,
   // // ],
   // // ["function assign", "function f() {} let g = f; let h = [g, f]; print(h[0]());"],
@@ -87,16 +87,33 @@ const semanticChecks = [
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
   //------------( WORKING )-----------------//
-  ["undeclared id", "var a: int = 1; print(x);", /Identifier x not declared/],
-  ["redeclared id", "var x:int = 1; var x:int = 1;", /Identifier x already declared/],
-  ["assign to const", "const x : int = 1; x = 2;", /x is read only/],
+  ["undeclared id", "var a: int = 1; print(x);",      /Identifier x not declared/],
+  ["redeclared id", "var x:int = 1; var x:int = 1;",  /Identifier x already declared/],
+  ["assign to const", "const x : int = 1; x = 2;",    /x is read only/],
   ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Expected a number/],
-
+  ["unwrap non-optional", "print(1??2);",     /Expected an optional/],
+  ["bad types for +", "print(false+1);",      /Expected a number or string/],
+  ["bad types for -", "print(false-1);",      /Expected a number/],
+  ["bad types for *", "print(false*1);",      /Expected a number/],
+  ["bad types for /", "print(false/1);",      /Expected a number/],
+  ["bad types for **", "print(false**1);",    /Expected a number/],
+  ["bad types for <", "print(false<1);",      /Expected a number or string/],
+  ["bad types for <=", "print(false<=1);",    /Expected a number or string/],
+  ["bad types for negation", "print(-true);", /Expected a number/],
+  ["bad types for not", 'print(!"hello");',   /Expected a boolean/],
+  
   //------------( NOT WORKING )-----------------//
   // ["assign bad array type", "var x: int = 1;x=[true];", /Cannot assign a \[int\] to a boolean/],
   // ["assign bad optional type", "var x: int = 1;x=some 2;", /Cannot assign a int\? to a int/],
   // ["break outside loop", "break;", /Break can only appear in a loop/],
-
+  // ["bad types for >", "print(false>1);", /Expected a number or string/],
+  // ["bad types for >=", "print(false>=1);", /Expected a number or string/],
+  // ["bad types for ==", "print(2==2.0);", /not have the same type/],
+  // ["bad types for !=", "print(false!=1);", /not have the same type/],
+  // ["bad types for length", "print(#false);", /Expected an array/],
+  // ["bad types for random", "print(random 3);", /Expected an array/],
+  // ["Non-type in param", "var x:int=1; void f(y:x){}", /Type expected/],
+  
 
   //------------( STILL IN CARLOS )-----------------//
   // // [
@@ -118,26 +135,10 @@ const semanticErrors = [
   // // ["non-integer repeat", 'repeat "1" {}', /Expected an integer/],
   // ["non-integer low range", "for i in true...2 ", /Expected an integer in range min/],
   // ["non-integer high range", "for i in 1..<false {}", /Expected an integer in range max/],
-  ["unwrap non-optional", "print(1??2);", /Expected an optional/],
   // ["bad types for ||", "print(false||1);", /Expected a boolean/],
   // ["bad types for &&", "print(false&&1);", /Expected a boolean/],
   // ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
   // ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
-  // ["bad types for +", "print(false+1);", /Expected a number or string/],
-  // ["bad types for -", "print(false-1);", /Expected a number/],
-  // ["bad types for *", "print(false*1);", /Expected a number/],
-  // ["bad types for /", "print(false/1);", /Expected a number/],
-  // ["bad types for **", "print(false**1);", /Expected a number/],
-  // ["bad types for <", "print(false<1);", /Expected a number or string/],
-  // ["bad types for <=", "print(false<=1);", /Expected a number or string/],
-  // ["bad types for >", "print(false>1);", /Expected a number or string/],
-  // ["bad types for >=", "print(false>=1);", /Expected a number or string/],
-  // ["bad types for ==", "print(2==2.0);", /not have the same type/],
-  // ["bad types for !=", "print(false!=1);", /not have the same type/],
-  // ["bad types for negation", "print(-true);", /Expected a number/],
-  // ["bad types for length", "print(#false);", /Expected an array/],
-  // ["bad types for not", 'print(!"hello");', /Expected a boolean/],
-  // ["bad types for random", "print(random 3);", /Expected an array/],
   // ["non-integer index", "var a: [int] = [];print(a[false]);", /Expected an integer/],
   // // ["no such field", "struct S{} let x=S(); print(x.y);", /No such field/],
   // // ["diff type array elements", "print([3,3.0]);", /Not all elements have the same type/],
@@ -172,7 +173,7 @@ const semanticErrors = [
   // //   /Cannot assign a \(int\)->string to a \(int\)->int/,
   // // ],
   // // ["bad call to sin()", "print(sin(true));", /Cannot assign a boolean to a float/],
-  // // ["Non-type in param", "let x=1;function f(y:x){}", /Type expected/],
+  
   // // ["Non-type in return type", "let x=1;function f():x{return 1;}", /Type expected/],
   // // ["Non-type in field type", "let x=1;struct S {y:x}", /Type expected/],
 ]

@@ -45,7 +45,7 @@ Rat {
     Block       = "{" Stmt* "}"
 
     // lowest precedence
-    Exp         = Exp0 "??" Exp                                         --unwrap
+    Exp         = Exp "??" Exp0                                         --unwrap
                 | Exp0
                 | await ("<<" Exp  ">>" )? ( one | all )? Exp           --await
     Exp0        = Exp "||" Disjunct                                     --logicalor

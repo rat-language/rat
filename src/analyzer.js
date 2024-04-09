@@ -75,6 +75,10 @@ function mustHaveNumericOrStringType(e, at) {
   );
 }
 
+function mustHaveAnOptionalType(e, at) {
+  must(e.type?.kind === "OptionalType", "Expected an optional", at)
+}
+
 function mustHaveBooleanType(e, at) { must(e.type === BOOLEAN, "Expected a boolean", at); }
 
 function mustHaveIntegerType(e, at) { must(e.type === INT, "Expected an integer", at); }
@@ -110,6 +114,52 @@ export default function analyze(match) {
   // Use errorLocation to give contextual information about the error that will
   // appear: this should be an object whose "at" property is a parse tree node.
   // Ohm's getLineAndColumnMessage will be used to prefix the error message.
+
+  function mustBeAssignable(e, { toType: type }, at) {
+    const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(
+      type
+    )}`
+    must(assignable(e.type, type), message, at)
+  }
+
+  function typeDescription(type) {
+    switch (type.kind) {
+      case "IntType":
+        return "int"
+      case "FloatType":
+        return "float"
+      case "StringType":
+        return "str"
+      case "BoolType":
+        return "bool"
+      case "VoidType":
+        return "void"
+      case "AnyType":
+        return "any"
+      case "FunctionType":
+        const paramTypes = type.paramTypes.map(typeDescription).join(", ")
+        const returnType = typeDescription(type.returnType)
+        return `(${paramTypes})->${returnType}`
+      case "ArrayType":
+        return `[${typeDescription(type.baseType)}]`
+      case "OptionalType":
+        return `${typeDescription(type.baseType)}?`
+    }
+  }
+
+  function assignable(fromType, toType) {
+    return (
+      toType == ANY ||
+      equivalent(fromType, toType) ||
+      (fromType?.kind === "FunctionType" &&
+        toType?.kind === "FunctionType" &&
+        // covariant in return types
+        assignable(fromType.returnType, toType.returnType) &&
+        fromType.paramTypes.length === toType.paramTypes.length &&
+        // contravariant in parameter types
+        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
+    )
+  }
 
   function mustBeInLoop(context, at) { must(context.withinLoop, "Break statement must be inside a loop", at); }
   function mustNotAlreadyBeDeclared(name, at) { must(!context.locals.has(name), `Identifier ${name} already declared`, at); }
@@ -327,8 +377,11 @@ export default function analyze(match) {
     },
     //==================== (EXPRESSIONS) ====================//
 
-    Exp_unwrap(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep());
+    Exp_unwrap(exp1, elseOp, exp2) {
+      const [optional, op, alternate] = [exp1.rep(), elseOp.sourceString, exp2.rep()]
+      mustHaveAnOptionalType(optional, { at: exp1 })
+      mustBeAssignable(alternate, { toType: optional.type.baseType }, { at: exp2 })
+      return core.binary(op, optional, alternate, optional.type)
     },
 
     Factor_unary(unaryOp, exp) {
