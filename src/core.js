@@ -56,7 +56,7 @@ export function shortIfStatement(test, consequent) { return { kind: "ShortIfStat
 
 export function ifStatement(test, consequent, alternate) { return { kind: "IfStatement", test, consequent, alternate }; }
 
-export function passStatement(_pass, _semicolon) {  return { kind: "PassStatement" };  }
+export const passStatement = {  kind: "PassStatement" }
 
 export const breakStatement = { kind: "BreakStatement" }
 
@@ -83,6 +83,8 @@ export function arrayType(baseType) { return { kind: "ArrayType", baseType }; }
 export function dictionaryType(keyType, valueType) { return { kind: "DictionaryType", keyType, valueType }; }
 
 export function arrayLiteral(elements) { return { kind: "ArrayLiteral", elements, type: arrayType(elements[0].type) }; }
+
+export function emptyOptional(type) { return { kind: "EmptyOptional", type } }
 
 export function emptyArrayLiteral() { return { kind: "EmptyArray" } }
 

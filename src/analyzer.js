@@ -33,7 +33,6 @@ class Context {
   add(name, entity) {
     this.locals.set(name, entity);
   }
-
   lookup(name) {
     return this.locals.get(name) || this.parent?.lookup(name);
   }
@@ -353,21 +352,21 @@ export default function analyze(match) {
       // god awful hack
       // console.log(`A proper integer should be seen as ${util.inspect(core.intType, {showHidden: false, depth: null, colors: true})}`)
       // console.log(`mapper for int is ${util.inspect(primitiveTypeMapper("int"), {showHidden: false, depth: null, colors: true})}`)
-      console.log(
-        `${id.sourceString} is typed to be ${
-          type.sourceString
-        } which is being identified as ${util.inspect(varType, {
-          showHidden: false,
-          depth: null,
-          colors: true,
-        })}`
-      );
-      console.log(
-        `initialized to ${exp.sourceString} of type ${util.inspect(
-          initializer.type,
-          { showHidden: false, depth: null, colors: true }
-        )}`
-      );
+      // console.log(
+      //   `${id.sourceString} is typed to be ${
+      //     type.sourceString
+      //   } which is being identified as ${util.inspect(varType, {
+      //     showHidden: false,
+      //     depth: null,
+      //     colors: true,
+      //   })}`
+      // );
+      // console.log(
+      //   `initialized to ${exp.sourceString} of type ${util.inspect(
+      //     initializer.type,
+      //     { showHidden: false, depth: null, colors: true }
+      //   )}`
+      // );
 
       // mustHaveInitializerMatchingType(varType, type, { at: exp });
       // equivalent(varType, initializer.type)
@@ -387,7 +386,7 @@ export default function analyze(match) {
       const source = exp.rep();
       const target = variable.rep();
       mustBeAssignable(source, { toType: target.type }, { at: exp });
-      mustNotBeReadOnly(target, { at: id });
+      mustNotBeReadOnly(target, { at: variable });
       // if (ops != "") {
       //   return core.assignment(target, core.binary(ops, target, exp.rep(), target.type));
       // }
@@ -401,7 +400,7 @@ export default function analyze(match) {
 
     //Pass
     Stmt_pass(_pass, _semicolon) {
-      return core.passStatement();
+      return core.passStatement;
     },
 
     //Break
@@ -465,7 +464,7 @@ export default function analyze(match) {
       mustHaveIterableType(iterable, { at: exp });
       return core.forStatement(
         iterator.sourceString,
-        iterable.rep(),
+        iterable,
         block.rep()
       );
     },
@@ -739,7 +738,7 @@ export default function analyze(match) {
     Type_array(_open, baseType, _close) {
       return core.arrayType(baseType.rep());
     },
-
+    
     Type_dictionary(_open, baseType1, _colon, type2, _close) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
     },
