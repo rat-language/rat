@@ -4,15 +4,25 @@
 // called the AST). This representation also includes entities from the
 // standard library, as needed.
 import * as core from "./core.js";
+import util from "util";
 
-const INT = core.Type.INT;
-const FLOAT = core.Type.FLOAT;
-const STRING = core.Type.STRING;
-const BOOLEAN = core.Type.BOOLEAN;
-const ANY = core.Type.ANY;
-const VOID = core.Type.VOID;
-const NONE = core.Type.VOID;
+const INT = core.intType
+const FLOAT = core.floatType
+const STRING = core.stringType
+const BOOLEAN = core.boolType
+const ANY = core.anyType
+const VOID = core.voidType
 
+
+const types = {
+  "int": INT,
+  "float": FLOAT,
+  "str": STRING,
+  "bool": BOOLEAN,
+  "void": VOID,
+  "any": ANY,
+  "None": VOID
+}
 
 
 class Context {
@@ -57,9 +67,7 @@ export default function analyze(match) {
   
   function mustHaveNumericType(e, at) { must([INT, FLOAT].includes(e.type), "Expected a number", at); }
 
-  function mustHaveNumericOrStringType(e, at) {
-    must([INT, FLOAT, STRING].includes(e.type), "Expected a number or string", at);
-  }
+  function mustHaveNumericOrStringType(e, at) { must([INT, FLOAT, STRING].includes(e.type), "Expected a number or string", at); }
 
   function mustHaveBooleanType(e, at) { must(e.type === BOOLEAN, "Expected a boolean", at); }
 
@@ -76,7 +84,6 @@ export default function analyze(match) {
     // arms of a conditional expression, among other scenarios.
     must(expressions.slice(1).every(e => equivalent(e.type, expressions[0].type)), "Not all elements have the same type", at)
   }
-
 
   function mustBeAType(e, at) {
     // This is a rather ugly hack
@@ -128,7 +135,7 @@ export default function analyze(match) {
         // contravariant in parameter types
         toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
     )
-  }  
+  }
   
   function typeDescription(type) {
     // TODO: add cases for promise type, dictionary type, and noneType (variant of void type)
@@ -155,6 +162,31 @@ export default function analyze(match) {
         return `${typeDescription(type.baseType)}?`
     }
   }
+
+  function primitiveTypeMapper(type) {
+    // CHECK WITH TA
+    if (type.charAt((type.length - 1)) === "?") {
+      return core.optionalType(primitiveTypeMapper(type.slice(0, -1)))
+    }
+    if (type.charAt(0) === "[" && type.charAt(type.length - 1) === "]") {
+      return core.arrayType(primitiveTypeMapper(type.slice(1, -1)))
+    }
+    switch(type) {
+      case "int":
+        return INT
+      case "float":
+        return FLOAT
+      case "str":
+        return STRING
+      case "bool":
+        return BOOLEAN
+      case "void":
+        return VOID
+      case "any":
+        return ANY
+    }
+  }
+
 
   function mustBeAssignable(e, { toType: type }, at) {
     const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(
@@ -203,10 +235,15 @@ export default function analyze(match) {
   //     at
   //   );
   // }
+  function mustHaveInitializerMatchingType(initializer, type, at) {
+    // console.log(`Initializer: ${initializer}`, type, at)
+    // console.log(`Type: ${type.kind}`)
+    must(typeDescription(initializer.type) == type, `Initializer must be of type ${type}`, at)
+  }
 
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     Program(statements) {
-      return core.program(statements.children.map((s) => s.rep()));
+      return core.program(statements.children.map(s => s.rep()));
     },
 
     //==================== (VALID STATEMENTS) ====================//
@@ -215,14 +252,38 @@ export default function analyze(match) {
     },
 
     //Variable Declaration
+    // var x: int = 5;
+    // modifier: "var"
+    // id: "x"
+    // type: "int"
+    // exp: 5
+
     Stmt_vardec(modifier, id, _colon, type, _eq, exp, _semicolon) {
       // TODO: Need to do something else with the 'type'
+      // const lmaoYeet = exp.sourceString == "None" 
       const initializer = exp.rep();
+      // if (lmaoYeet) {
+      //   initializer = core.voidType
+      // } 
+      // console.log(`Passed in type: ${type.rep()}`)
       const readOnly = modifier.sourceString === "const";
+      // console.log(types[type.sourceString])
+
+      //PROBLEM
+
+      const varType = primitiveTypeMapper(type.sourceString)
+      // god awful hack
+      // console.log(`A proper integer should be seen as ${util.inspect(core.intType, {showHidden: false, depth: null, colors: true})}`)
+      // console.log(`mapper for int is ${util.inspect(primitiveTypeMapper("int"), {showHidden: false, depth: null, colors: true})}`)
+      console.log(`${id.sourceString} is typed to be ${type.sourceString} which is being identified as ${util.inspect(varType, {showHidden: false, depth: null, colors: true})}`)
+      console.log(`initialized to ${exp.sourceString} of type ${util.inspect(initializer.type, {showHidden: false, depth: null, colors: true})}`)
+
+      // mustHaveInitializerMatchingType(varType, type, { at: exp });
+      // equivalent(varType, initializer.type)
       const variable = core.variable(
         id.sourceString,
         readOnly,
-        initializer.type
+        varType
       );
 
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
@@ -231,17 +292,19 @@ export default function analyze(match) {
       context.add(id.sourceString, variable);
       // Need to make sure this we can both read and write to this variable
 
-      return core.variableDeclaration(variable, initializer);
+      return core.variableDeclaration(variable, varType, initializer);
     },
 
     //Assignment
-    Stmt_assign(id, ops, _eq, exp, _semicolon) {
-      const target = id.rep();
+    Stmt_assign(variable, ops, _eq, exp, _semicolon) {
+      const source = exp.rep();
+      const target = variable.rep();
+      mustBeAssignable(source, { toType: target.type }, { at: exp });
       mustNotBeReadOnly(target, { at: id });
       // if (ops != "") {
       //   return core.assignment(target, core.binary(ops, target, exp.rep(), target.type));
       // }
-      return core.assignment(target, exp.rep());
+      return core.assignment(target, source);
     },
 
     //Call
@@ -259,6 +322,7 @@ export default function analyze(match) {
       mustBeInLoop(context, { at: breakKeyword });
       return core.breakStatement
     },
+
     //Return
     Stmt_return(returnKeyword, exp, _semicolon) {
       mustBeInAFunction({ at: returnKeyword })
@@ -330,13 +394,13 @@ export default function analyze(match) {
       mustBeCallable(callee, { at: id });
       const exps = args.rep();
       const targetTypes = callee.type.paramTypes;
-      mustHaveCorrectArgumentCount(exps.length, targetTypes.length, { at: id });
+      mustHaveCorrectArgumentCount(exps.length, targetTypes.length, { at: args });
       const argumnts = exps.map((exp, i) => {
         const arg = exp.rep()
         mustBeAssignable(arg, { toType: targetTypes[i] }, { at: exp })
         return arg
       })     
-      return core.call(callee, argumnts);
+      return core.functionCall(callee, argumnts);
     },
 
     Args(_open, expList, _close) {
@@ -518,7 +582,6 @@ export default function analyze(match) {
       // be bound to variable entities, not function entities.
       const entity = context.lookup(id.sourceString);
       mustHaveBeenFound(entity, id.sourceString, { at: id });
-      // mustBeAVariable(entity, { at: id });
       return entity;
     },
 
@@ -569,8 +632,11 @@ export default function analyze(match) {
       return core.functionType(paramTypes, returnType)
     },
 
-    Type_id(_id) {
-      return context.lookup(this.sourceString);
+    Type_id(id) {
+      const entity = context.lookup(id.sourceString)
+      mustHaveBeenFound(entity, id.sourceString, { at: id })
+      mustBeAType(entity, { at: id })
+      return entity
     },
 
     true(_) {
@@ -581,6 +647,9 @@ export default function analyze(match) {
       return false;
     },
 
+    none(_){
+      return null;
+    },
 
     strlit(_openQuote, _chars, _closeQuote) {
       // strings will be represented as plain JS strings, including

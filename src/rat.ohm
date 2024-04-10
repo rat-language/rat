@@ -94,33 +94,40 @@ Rat {
                 |"[" Type "]"                                           --array
                 | "[" Type":"Type"]"                                    --dictionary
                 | "(" ListOf<Type, ","> ")" "->" Type                   --function
+                | int | float | string | bool
                 | id                                                    --id
 
     //KEYWORDS:
     print       = "print" ~idchar
-    true        = "true" ~idchar
-    false       = "false" ~idchar
-    in          = "in" ~idchar
-    const       = "const" ~idchar
-    var         = "var" ~idchar
-    while       = "while" ~idchar
-    for         = "for" ~idchar
-    if          = "if" ~idchar
-    else        = "else" ~idchar
-    break       = "break" ~idchar
-    return      = "return" ~idchar
-    some        = "some" ~idchar
-    none        = "None" ~idchar
-    anything    = "anything" ~idchar
-    pass        = "pass" ~idchar
-    await       = "await" ~idchar
-    try         = "try" ~idchar
-    catch       = "catch" ~idchar
-    one         = "one" ~idchar
-    void        = "void" ~idchar
-    all         = "all" ~idchar
+    
+    int         = "int" ~idchar
+    float       = "float" ~idchar
+    string      = "str" ~idchar
+    bool        = "bool" ~idchar
+
+    true        = "true"    ~idchar
+    false       = "false"   ~idchar
+    in          = "in"      ~idchar
+    const       = "const"   ~idchar
+    var         = "var"     ~idchar
+    while       = "while"   ~idchar
+    for         = "for"     ~idchar
+    if          = "if"      ~idchar
+    else        = "else"    ~idchar
+    break       = "break"   ~idchar
+    return      = "return"  ~idchar
+    some        = "some"    ~idchar
+    none        = "None"    ~idchar
+    anything    = "anything"~idchar
+    pass        = "pass"    ~idchar
+    await       = "await"   ~idchar
+    try         = "try"     ~idchar
+    catch       = "catch"   ~idchar
+    one         = "one"     ~idchar
+    void        = "void"    ~idchar
+    all         = "all"     ~idchar
     timeout     = "timeout" ~idchar
-    from        = "from" ~idchar
+    from        = "from"    ~idchar
 
     // await used for asynchronous functions that perform a call that is promised to return a value
     // await one - used for having an array of promise types, will return value when one promise is fulfilled
@@ -132,6 +139,8 @@ Rat {
                 | while | for | if | else | else | return
                 | some  | void | await | one | all | none
                 | from
+                | int | float | string | bool
+
 
     //allows you to name your variables
     id          = ~keyword (letter| "_") idchar*
