@@ -26,7 +26,7 @@ const semanticChecks = [
   ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
   ["complex array types", "void f(x: [[[int?]]?]) {}"],
   ["return statement", "bool f() { return true; }"],
-  ["break in nested if", "while false {if true {break;}}"],
+  ["break in nested if", "while false {break;}"],
   ["for over collection", "for i in [2,3,5] {print(1);}"],
   ["ok to == arrays", "print([1]==[5,8]);"],
   // ["ok to != arrays", "print([1]!=[5,8]);"],

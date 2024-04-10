@@ -261,7 +261,7 @@ export default function analyze(match) {
     must(!entity.readOnly, `${entity.name} is read only`, at);
   }
 
-  function mustBeInLoop(context, at) {
+  function mustBeInLoop(at) {
     must(context.withinLoop, "Break statement must be inside a loop", at);
   }
 
@@ -405,7 +405,7 @@ export default function analyze(match) {
 
     //Break
     Stmt_break(breakKeyword, _semicolon) {
-      mustBeInLoop(context, { at: breakKeyword });
+      mustBeInLoop({ at: breakKeyword });
       return core.breakStatement;
     },
 
