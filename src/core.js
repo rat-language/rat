@@ -31,9 +31,13 @@ export const anyType = { kind: "AnyType" };
 //==================== (VALID STATEMENTS) ====================//
 export function printStatement(argument) { return { kind: "PrintStatement", argument }; }
 
-export function functionDeclaration(fun, params, body) { return { kind: "FunctionDeclaration", fun, params, body }; }
+export function functionDeclaration(fun, params, body) { 
+  return { kind: "FunctionDeclaration", fun, params, body }; 
+}
 
-export function fun(name, type) { return { kind: "Function", name, type }; }
+export function fun(name, type) { 
+  return { kind: "Function", name, type }; 
+}
 
 export function assignment(target, source) { return { kind: "Assignment", target, source }; }
 
@@ -61,6 +65,8 @@ export const passStatement = {  kind: "PassStatement" }
 export const breakStatement = { kind: "BreakStatement" }
 
 export function returnStatement(expression) { return { kind: "ReturnStatement", expression }; }
+
+export function shortReturnStatement() { return { kind: "ShortReturnStatement" } }
 
 export function tryStatement(body, catchClause, finallyClause) { return { kind: "TryStatement", body, catchClause, finallyClause };}
 
@@ -116,33 +122,3 @@ String.prototype.type = stringType
 Number.prototype.type = floatType
 BigInt.prototype.type = intType
 Boolean.prototype.type = boolType
-
-/*
-
-[int] is: 
-{
-  kind: ArrayType
-  baseType: {kind: IntType}
-}
-
-
-[[int]] is:
-{
-  kind: ArrayType
-  baseType: {
-    kind: ArrayType
-    baseType: {kind: IntType}
-  }
-}
-
-str is:
-{
-  kind: StringType
-}
-
-bool is:
-{
-  kind: BoolType
-}
-
-*/

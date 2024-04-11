@@ -13,22 +13,12 @@ const BOOLEAN = core.boolType;
 const ANY = core.anyType;
 const VOID = core.voidType;
 
-const types = {
-  int: INT,
-  float: FLOAT,
-  str: STRING,
-  bool: BOOLEAN,
-  void: VOID,
-  any: ANY,
-  None: VOID,
-};
-
 class Context {
-  constructor({ parent, locals = {} }) {
+  constructor({ parent, locals = {}, inLoop = false, function: f = null}) {
     this.parent = parent;
     this.locals = new Map(Object.entries(locals));
-    this.withinLoop = false;
-    this.function = null;
+    this.inLoop = inLoop;
+    this.function = f;
   }
   add(name, entity) {
     this.locals.set(name, entity);
@@ -63,7 +53,7 @@ export default function analyze(match) {
   function must(condition, message, errorLocation) {
     if (!condition) {
       const prefix = errorLocation.at.source.getLineAndColumnMessage();
-      throw new Error(`${prefix}${message}`);
+      throw new Error(`${prefix}${message.short}`);
     }
   }
 
@@ -262,7 +252,7 @@ export default function analyze(match) {
   }
 
   function mustBeInLoop(at) {
-    must(context.withinLoop, "Break statement must be inside a loop", at);
+    must(context.inLoop, "Break statement must be inside a loop", at);
   }
 
   function mustBeInAFunction(at) {
@@ -328,50 +318,13 @@ export default function analyze(match) {
       return core.printStatement(exp.rep());
     },
 
-    //Variable Declaration
-    // var x: int = 5;
-    // modifier: "var"
-    // id: "x"
-    // type: "int"
-    // exp: 5
-
     Stmt_vardec(modifier, id, _colon, type, _eq, exp, _semicolon) {
       // TODO: Need to do something else with the 'type'
-      // const lmaoYeet = exp.sourceString == "None"
       const initializer = exp.rep();
-      // if (lmaoYeet) {
-      //   initializer = core.voidType
-      // }
-      // console.log(`Passed in type: ${type.rep()}`)
       const readOnly = modifier.sourceString === "const";
-      // console.log(types[type.sourceString])
-
-      //PROBLEM
 
       const varType = primitiveTypeMapper(type.sourceString);
-      // god awful hack
-      // console.log(`A proper integer should be seen as ${util.inspect(core.intType, {showHidden: false, depth: null, colors: true})}`)
-      // console.log(`mapper for int is ${util.inspect(primitiveTypeMapper("int"), {showHidden: false, depth: null, colors: true})}`)
-      // console.log(
-      //   `${id.sourceString} is typed to be ${
-      //     type.sourceString
-      //   } which is being identified as ${util.inspect(varType, {
-      //     showHidden: false,
-      //     depth: null,
-      //     colors: true,
-      //   })}`
-      // );
-      // console.log(
-      //   `initialized to ${exp.sourceString} of type ${util.inspect(
-      //     initializer.type,
-      //     { showHidden: false, depth: null, colors: true }
-      //   )}`
-      // );
-
-      // mustHaveInitializerMatchingType(varType, type, { at: exp });
-      // equivalent(varType, initializer.type)
       const variable = core.variable(id.sourceString, readOnly, varType);
-
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       // TODO: Add type checking
       // exp must be of type 'type'
@@ -411,15 +364,22 @@ export default function analyze(match) {
 
     //Return
     Stmt_return(returnKeyword, exp, _semicolon) {
-      mustBeInAFunction({ at: returnKeyword });
+      // console.log(context)
+      mustBeInAFunction({ at: exp });
       mustReturnSomething(context.function, { at: returnKeyword });
       const returnExpression = exp.rep();
-      mustBeReturnable(
-        returnExpression,
+      mustBeReturnable( returnExpression,
         { from: context.function },
-        { at: exp }
+        { at: exp } 
       );
       return core.returnStatement(returnExpression);
+    },
+   
+    //Return
+    Stmt_shortreturn(returnKeyword, _semicolon) {
+      mustBeInAFunction({ at: returnKeyword })
+      mustNotReturnAnything(context.function, { at: returnKeyword })
+      return core.shortReturnStatement()
     },
 
     //Function Declaration
@@ -490,7 +450,8 @@ export default function analyze(match) {
     Call(id, args) {
       // ids used in calls must have already been declared and must be
       // bound to function entities, not to variable entities.
-      const callee = id.rep();
+      const callee = context.lookup(id.sourceString);
+
       mustBeCallable(callee, { at: id });
       const exps = args.rep();
       const targetTypes = callee.type.paramTypes;
@@ -743,11 +704,11 @@ export default function analyze(match) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
     },
 
-    Type_function(_open, types, _close, _arrow, retType) {
-      const paramTypes = types.asIteration().children.map((t) => t.rep());
-      const returnType = retType.rep();
-      return core.functionType(paramTypes, returnType);
-    },
+    // Type_function(_open, types, _close, _arrow, retType) {
+    //   const paramTypes = types.asIteration().children.map((t) => t.rep());
+    //   const returnType = retType.rep();
+    //   return core.functionType(paramTypes, returnType);
+    // },
 
     Primary_emptyoptional(_no, type) {
       return new core.emptyOptional(type.rep());
@@ -805,9 +766,13 @@ export default function analyze(match) {
       return VOID;
     },
 
-    _terminal() {
+    id(_firstChar, _restChars) {
       return this.sourceString;
     },
+
+    // _terminal() {
+    //   return this.sourceString;
+    // },
   });
   return builder(match).rep();
 }

@@ -21,6 +21,7 @@ Rat {
                 | break ";"                                             --break
                 | pass ";"                                              --pass
                 | return Exp ";"                                        --return 
+                | return ";"                                        --shortreturn 
                 | IfStmt
                 | LoopStmt
                 | TryStmt
@@ -96,8 +97,8 @@ Rat {
                 | Type "^"                                              --promise
                 |"[" Type "]"                                           --array
                 | "[" Type":"Type"]"                                    --dictionary
-                | "(" ListOf<Type, ","> ")" "->" Type                   --function
                 | int | float | str | bool | anything
+                // | "(" ListOf<Type, ","> ")" "->" Type                   --function
 
     //KEYWORDS:
     print       = "print" ~idchar
