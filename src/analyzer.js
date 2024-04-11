@@ -192,7 +192,7 @@ export default function analyze(match) {
     const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(
       type
     )}`
-    must(assignable(e.type, type), message, at)
+    must(assignable(typeDescription(e.type), typeDescription(type)), message, at)
   }
 
   function mustNotBeReadOnly(entity, at) { must(!entity.readOnly, `${entity.name} is read only`, at); }
@@ -259,40 +259,12 @@ export default function analyze(match) {
     // exp: 5
 
     Stmt_vardec(modifier, id, _colon, type, _eq, exp, _semicolon) {
-      // TODO: Need to do something else with the 'type'
-      // const lmaoYeet = exp.sourceString == "None" 
-      const initializer = exp.rep();
-      // if (lmaoYeet) {
-      //   initializer = core.voidType
-      // } 
-      // console.log(`Passed in type: ${type.rep()}`)
-      const readOnly = modifier.sourceString === "const";
-      // console.log(types[type.sourceString])
-
-      //PROBLEM
-
-      const varType = primitiveTypeMapper(type.sourceString)
-      // god awful hack
-      // console.log(`A proper integer should be seen as ${util.inspect(core.intType, {showHidden: false, depth: null, colors: true})}`)
-      // console.log(`mapper for int is ${util.inspect(primitiveTypeMapper("int"), {showHidden: false, depth: null, colors: true})}`)
-      console.log(`${id.sourceString} is typed to be ${type.sourceString} which is being identified as ${util.inspect(varType, {showHidden: false, depth: null, colors: true})}`)
-      console.log(`initialized to ${exp.sourceString} of type ${util.inspect(initializer.type, {showHidden: false, depth: null, colors: true})}`)
-
-      // mustHaveInitializerMatchingType(varType, type, { at: exp });
-      // equivalent(varType, initializer.type)
-      const variable = core.variable(
-        id.sourceString,
-        readOnly,
-        varType
-      );
-
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-      // TODO: Add type checking
-      // exp must be of type 'type'
-      context.add(id.sourceString, variable);
-      // Need to make sure this we can both read and write to this variable
-
-      return core.variableDeclaration(variable, varType, initializer);
+      const initializer = exp.rep()
+      const readOnly = modifier.sourceString === "const"
+      const variable = core.variable(id.sourceString, readOnly, initializer.type)
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      context.add(id.sourceString, variable)
+      return core.variableDeclaration(variable, type, initializer)
     },
 
     //Assignment
@@ -300,7 +272,7 @@ export default function analyze(match) {
       const source = exp.rep();
       const target = variable.rep();
       mustBeAssignable(source, { toType: target.type }, { at: exp });
-      mustNotBeReadOnly(target, { at: id });
+      mustNotBeReadOnly(target, { at: variable });
       // if (ops != "") {
       //   return core.assignment(target, core.binary(ops, target, exp.rep(), target.type));
       // }
@@ -645,10 +617,6 @@ export default function analyze(match) {
 
     false(_) {
       return false;
-    },
-
-    none(_){
-      return null;
     },
 
     strlit(_openQuote, _chars, _closeQuote) {
