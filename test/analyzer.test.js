@@ -31,12 +31,11 @@ const semanticChecks = [
   ["type equivalence of nested arrays", 'int f(x: [[int]]) {return (x[0][0] + x[0][1]);} print(f([[1],[2]]));'],
   ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
   ["return statement", "bool f() { return true; }"],
+  // ["short return statement", "void f() { return; }"],
   ["break in nested if", "while false {if true{break;}}"],
   
   //------------( NOT WORKING )-----------------//
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
-
-
 
   
   //------------( STILL IN CARLOS )-----------------//
@@ -111,20 +110,26 @@ const semanticErrors = [
   ["bad types for ==", "print(2==2.0);", /not have the same type/],
   ["bad types for !=", "print(false!=1);", /not have the same type/],
   ["break outside loop", "break;", /Break can only appear in a loop/],
-
+  ["bad types for ||", "print(false||1);", /Expected a boolean/],
+  ["bad types for &&", "print(false&&1);", /Expected a boolean/],
+  ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
+  ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
 
   //------------( NOT WORKING )-----------------//
-  
-  
-  
-  //------------( STILL IN CARLOS )-----------------//
+  // ["non-integer low range", "for i in true...2 {}", /Expected an integer in range min/],
+  // ["non-integer high range", "for i in 1..<false {}", /Expected an integer in range max/],
+  // - TODO: Check whether or not we have error statements during the for loop checking, then determine whether we should alter our error statements
+
+
+  //------------( NOT WORKING for other reasons :P )-----------------//
   // NOTE: These are not valid in our language, the reasons why can be found below them
   // // ["bad types for length", "print(#false);", /Expected an array/],
   // - We don't have a '#' operator
   // ["Non-type in param", "var x:int=1; void f(y:x){}", /Type expected/],
   // - 'id' can't be a type and this will be detected in the syntax check.
   
-
+  
+  //------------( STILL IN CARLOS )-----------------//
   // // [
   // //   "break inside function",
   // //   "while true {function f() {break;}}",
@@ -142,12 +147,6 @@ const semanticErrors = [
   // // ["non-boolean if test", "if 1 {} else {}", /Expected a boolean/],
   // // ["non-boolean while test", "while 1 {}", /Expected a boolean/],
   // // ["non-integer repeat", 'repeat "1" {}', /Expected an integer/],
-  // ["non-integer low range", "for i in true...2 ", /Expected an integer in range min/],
-  // ["non-integer high range", "for i in 1..<false {}", /Expected an integer in range max/],
-  // ["bad types for ||", "print(false||1);", /Expected a boolean/],
-  // ["bad types for &&", "print(false&&1);", /Expected a boolean/],
-  // ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
-  // ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
   // ["non-integer index", "var a: [int] = [];print(a[false]);", /Expected an integer/],
   // // ["no such field", "struct S{} let x=S(); print(x.y);", /No such field/],
   // // ["diff type array elements", "print([3,3.0]);", /Not all elements have the same type/],
