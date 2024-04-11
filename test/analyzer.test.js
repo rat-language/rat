@@ -16,24 +16,27 @@ const semanticChecks = [
   ["initialize with empty array", "var a:[int] = [];"],
   ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
   ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
-  ["assign optionals", "var a: int? = None;"],
-  ["initialize with empty optional", "var a: int? = None;"],
-  ["assign optionals", "var a: int? = None; a = some 100;"],
+  ["assign optionals", "var a: int? = no int; a = some 100;"],
   ["for exclusive", "for j in 1..<10 {print(j);}"],
   ["for inclusive", "for i in 1...10 {print(i);}"],
   ["||", "print(true || 1<2 || false || !true);"],
   ["&&", "print(true && 1<2 && false && !true);"],
-
-  //------------( NOT WORKING )-----------------//
+  ["for over collection", "for i in [2,3,5] {print(1);}"],
+  ["ok to == arrays", "print([1]==[5,8]);"],
+  ["ok to != arrays", "print([1]!=[5,8]);"],
+  ["optional types", 'var x:int? = no int; x = some 100;'],
+  ["variables", 'var x: [[[[int]]]] =[[[[1]]]]; print(x[0][0][0][0]+2);'],
+  ["subscript exp", 'var a: [int] =[1,2]; print(a[0]);'],
+  ["outer variable", 'var x: int =1; while(false) {print(x);}'],
+  ["type equivalence of nested arrays", 'int f(x: [[int]]) {return (x[0][0] + x[0][1]);} print(f([[1],[2]]));'],
   ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
+  ["return statement", "bool f() { return true; }"],
+  // ["short return statement", "void f() { return; }"],
+  ["break in nested if", "while false {if true{break;}}"],
+  
+  //------------( NOT WORKING )-----------------//
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
-  // ["return statement", "bool f() { return true; }"],
-  // ["break in nested if", "while false {if true {break;}}"],
-  // ["for over collection", "for i in [2,3,5] {print(1);}"],
-  // ["ok to == arrays", "print([1]==[5,8]);"],
-  // ["ok to != arrays", "print([1]!=[5,8]);"],
-  // ["assigned functions", "void f() {}\nlet g = f;g = f;"],
-  // ["return in nested if", "bool f() {if true {return false;}}"],
+
   
   //------------( STILL IN CARLOS )-----------------//
   // // ["shifts", "print(1<<3<<5<<8>>2>>0);"],
@@ -86,7 +89,7 @@ const semanticChecks = [
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
   //------------( WORKING )-----------------//
-  ["undeclared id", "var a: int = 1; print(x);",      /Identifier x not declared/],
+  ["undeclared id", `var a: int = 1; print(x);`,      /Identifier x not declared/],
   ["redeclared id", "var x:int = 1; var x:int = 1;",  /Identifier x already declared/],
   ["assign to const", "const x : int = 1; x = 2;",    /x is read only/],
   ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Expected a number/],
@@ -100,20 +103,32 @@ const semanticErrors = [
   ["bad types for <=", "print(false<=1);",    /Expected a number or string/],
   ["bad types for negation", "print(-true);", /Expected a number/],
   ["bad types for not", 'print(!"hello");',   /Expected a boolean/],
-  
-  //------------( NOT WORKING )-----------------//
-  // ["assign bad array type", "var x: int = 1;x=[true];", /Cannot assign a \[int\] to a boolean/],
-  // ["assign bad optional type", "var x: int = 1;x=some 2;", /Cannot assign a int\? to a int/],
-  // ["break outside loop", "break;", /Break can only appear in a loop/],
-  // ["bad types for >", "print(false>1);", /Expected a number or string/],
-  // ["bad types for >=", "print(false>=1);", /Expected a number or string/],
-  // ["bad types for ==", "print(2==2.0);", /not have the same type/],
-  // ["bad types for !=", "print(false!=1);", /not have the same type/],
-  // ["bad types for length", "print(#false);", /Expected an array/],
-  // ["bad types for random", "print(random 3);", /Expected an array/],
-  // ["Non-type in param", "var x:int=1; void f(y:x){}", /Type expected/],
-  
+  ["assign bad array type", "var x: int = 1; x=[true];", /Cannot assign a \[bool\] to a int/],
+  ["assign bad optional type", "var x: int = 1;x=some 2;", /Cannot assign a int\? to a int/],
+  ["bad types for >", "print(false>1);", /Expected a number or string/],
+  ["bad types for >=", "print(false>=1);", /Expected a number or string/],
+  ["bad types for ==", "print(2==2.0);", /not have the same type/],
+  ["bad types for !=", "print(false!=1);", /not have the same type/],
+  ["break outside loop", "break;", /Break can only appear in a loop/],
+  ["bad types for ||", "print(false||1);", /Expected a boolean/],
+  ["bad types for &&", "print(false&&1);", /Expected a boolean/],
+  ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
+  ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
 
+  //------------( NOT WORKING )-----------------//
+  // ["non-integer low range", "for i in true...2 {}", /Expected an integer in range min/],
+  // ["non-integer high range", "for i in 1..<false {}", /Expected an integer in range max/],
+  // - TODO: Check whether or not we have error statements during the for loop checking, then determine whether we should alter our error statements
+
+
+  //------------( NOT WORKING for other reasons :P )-----------------//
+  // NOTE: These are not valid in our language, the reasons why can be found below them
+  // // ["bad types for length", "print(#false);", /Expected an array/],
+  // - We don't have a '#' operator
+  // ["Non-type in param", "var x:int=1; void f(y:x){}", /Type expected/],
+  // - 'id' can't be a type and this will be detected in the syntax check.
+  
+  
   //------------( STILL IN CARLOS )-----------------//
   // // [
   // //   "break inside function",
@@ -132,12 +147,6 @@ const semanticErrors = [
   // // ["non-boolean if test", "if 1 {} else {}", /Expected a boolean/],
   // // ["non-boolean while test", "while 1 {}", /Expected a boolean/],
   // // ["non-integer repeat", 'repeat "1" {}', /Expected an integer/],
-  // ["non-integer low range", "for i in true...2 ", /Expected an integer in range min/],
-  // ["non-integer high range", "for i in 1..<false {}", /Expected an integer in range max/],
-  // ["bad types for ||", "print(false||1);", /Expected a boolean/],
-  // ["bad types for &&", "print(false&&1);", /Expected a boolean/],
-  // ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
-  // ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
   // ["non-integer index", "var a: [int] = [];print(a[false]);", /Expected an integer/],
   // // ["no such field", "struct S{} let x=S(); print(x.y);", /No such field/],
   // // ["diff type array elements", "print([3,3.0]);", /Not all elements have the same type/],

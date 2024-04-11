@@ -21,6 +21,7 @@ Rat {
                 | break ";"                                             --break
                 | pass ";"                                              --pass
                 | return Exp ";"                                        --return 
+                | return ";"                                        --shortreturn 
                 | IfStmt
                 | LoopStmt
                 | TryStmt
@@ -33,6 +34,7 @@ Rat {
 
     Call        = id Args
     Args        = "(" ListOf<Exp, ","> ")"
+    Conversion  = Type "(" Exp ")"                                       --conversion
 
     IfStmt      = if Exp Block else Block                               --else
                 | if Exp Block else IfStmt                              --elseif
@@ -69,9 +71,10 @@ Rat {
                 | false
                 | floatlit 
                 | intlit 
-                | none
                 | Primary ("[" | "?[") Exp "]"                          --index
+                | no Type                                               --emptyoptional
                 | Call
+                | Conversion
                 | ArrayLit
                 | DictLit
                 | strlit
@@ -93,34 +96,38 @@ Rat {
                 | Type "^"                                              --promise
                 |"[" Type "]"                                           --array
                 | "[" Type":"Type"]"                                    --dictionary
-                | "(" ListOf<Type, ","> ")" "->" Type                   --function
-                | id                                                    --id
+                | int | float | str | bool | anything
+                // | "(" ListOf<Type, ","> ")" "->" Type                   --function
 
     //KEYWORDS:
     print       = "print" ~idchar
-    true        = "true" ~idchar
-    false       = "false" ~idchar
-    in          = "in" ~idchar
-    const       = "const" ~idchar
-    var         = "var" ~idchar
-    while       = "while" ~idchar
-    for         = "for" ~idchar
-    if          = "if" ~idchar
-    else        = "else" ~idchar
-    break       = "break" ~idchar
-    return      = "return" ~idchar
-    some        = "some" ~idchar
-    none        = "None" ~idchar
+    int         = "int" ~idchar
+    float       = "float" ~idchar
+    str         = "str" ~idchar
+    bool        = "bool" ~idchar
     anything    = "anything" ~idchar
-    pass        = "pass" ~idchar
-    await       = "await" ~idchar
-    try         = "try" ~idchar
-    catch       = "catch" ~idchar
-    one         = "one" ~idchar
-    void        = "void" ~idchar
-    all         = "all" ~idchar
+    true        = "true"    ~idchar
+    false       = "false"   ~idchar
+    in          = "in"      ~idchar
+    const       = "const"   ~idchar
+    var         = "var"     ~idchar
+    while       = "while"   ~idchar
+    for         = "for"     ~idchar
+    if          = "if"      ~idchar
+    else        = "else"    ~idchar
+    break       = "break"   ~idchar
+    return      = "return"  ~idchar
+    some        = "some"    ~idchar
+    pass        = "pass"    ~idchar
+    await       = "await"   ~idchar
+    try         = "try"     ~idchar
+    catch       = "catch"   ~idchar
+    one         = "one"     ~idchar
+    void        = "void"    ~idchar
+    all         = "all"     ~idchar
     timeout     = "timeout" ~idchar
-    from        = "from" ~idchar
+    from        = "from"    ~idchar
+    no          = "no"      ~idchar
 
     // await used for asynchronous functions that perform a call that is promised to return a value
     // await one - used for having an array of promise types, will return value when one promise is fulfilled
@@ -130,8 +137,9 @@ Rat {
 
     keyword     = print | true | false | pass
                 | while | for | if | else | else | return
-                | some  | void | await | one | all | none
-                | from
+                | some  | void | await | one | all | from
+                | int | float | str | bool
+
 
     //allows you to name your variables
     id          = ~keyword (letter| "_") idchar*
