@@ -53,7 +53,7 @@ export default function analyze(match) {
   function must(condition, message, errorLocation) {
     if (!condition) {
       const prefix = errorLocation.at.source.getLineAndColumnMessage();
-      throw new Error(`${prefix}${message.short}`);
+      throw new Error(`${prefix}${message}`);
     }
   }
 
@@ -252,7 +252,7 @@ export default function analyze(match) {
   }
 
   function mustBeInLoop(at) {
-    must(context.inLoop, "Break statement must be inside a loop", at);
+    must(context.inLoop, "Break can only appear in a loop", at);
   }
 
   function mustBeInAFunction(at) {
@@ -298,6 +298,7 @@ export default function analyze(match) {
   //     at
   //   );
   // }
+
   function mustHaveInitializerMatchingType(initializer, type, at) {
     // console.log(`Initializer: ${initializer}`, type, at)
     // console.log(`Type: ${type.kind}`)
@@ -330,7 +331,6 @@ export default function analyze(match) {
       // exp must be of type 'type'
       context.add(id.sourceString, variable);
       // Need to make sure this we can both read and write to this variable
-
       return core.variableDeclaration(variable, varType, initializer);
     },
 
@@ -720,10 +720,6 @@ export default function analyze(match) {
 
     false(_) {
       return false;
-    },
-
-    none(_) {
-      return null;
     },
 
     strlit(_openQuote, _chars, _closeQuote) {

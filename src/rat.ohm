@@ -71,9 +71,8 @@ Rat {
                 | false
                 | floatlit 
                 | intlit 
-                | none
                 | Primary ("[" | "?[") Exp "]"                          --index
-                | no Type                          --emptyoptional
+                | no Type                                               --emptyoptional
                 | Call
                 | Conversion
                 | ArrayLit
@@ -102,13 +101,11 @@ Rat {
 
     //KEYWORDS:
     print       = "print" ~idchar
-    
     int         = "int" ~idchar
     float       = "float" ~idchar
     str         = "str" ~idchar
     bool        = "bool" ~idchar
     anything    = "anything" ~idchar
-
     true        = "true"    ~idchar
     false       = "false"   ~idchar
     in          = "in"      ~idchar
@@ -121,7 +118,6 @@ Rat {
     break       = "break"   ~idchar
     return      = "return"  ~idchar
     some        = "some"    ~idchar
-    none        = "None"    ~idchar
     pass        = "pass"    ~idchar
     await       = "await"   ~idchar
     try         = "try"     ~idchar
@@ -141,8 +137,7 @@ Rat {
 
     keyword     = print | true | false | pass
                 | while | for | if | else | else | return
-                | some  | void | await | one | all | none
-                | from
+                | some  | void | await | one | all | from
                 | int | float | str | bool
 
 
