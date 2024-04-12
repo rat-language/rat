@@ -12,22 +12,6 @@ export const stringType = { kind: "StringType" };
 export const voidType = { kind: "VoidType" };
 export const anyType = { kind: "AnyType" };
 
-// export class Type {
-//   // Type of all basic type int, float, string, etc. and superclass of others
-//   static BOOLEAN = new Type("bool");
-//   static INT = new Type("int");
-//   static FLOAT = new Type("float");
-//   static STRING = new Type("str");
-//   static VOID = new Type("void");
-//   static ANY = new Type("any");
-//   constructor(description) {
-//     // The description is a convenient way to view the type. For basic
-//     // types or structs, it will just be the names. For arrays, you will
-//     // see "[T]". For optionals, "T?". For functions "(T1,...Tn)->T0".
-//     Object.assign(this, { description });
-//   }
-// }
-
 //==================== (VALID STATEMENTS) ====================//
 export function printStatement(argument) { return { kind: "PrintStatement", argument }; }
 
@@ -75,7 +59,8 @@ export function binary(op, left, right, type) { return { kind: "BinaryExpression
 
 export function unary(op, operand, type) { return { kind: "UnaryExpression", op, operand, type}; }
 
-export function index(array, index) { return { kind: "IndexExpression", array, index, type: array.type.baseType }; }
+// TODO: Fix to work with dictionaries
+export function index(iterable, index) { return { kind: "IndexExpression", iterable, index, type:  iterable.type?.baseType ?? iterable.type }; }
 
 //------------------------------- (TYPES) ---------------------------------//
 export function functionType(paramTypes, returnType) { return { kind: "FunctionType", paramTypes, returnType } }
@@ -86,13 +71,22 @@ export function promiseType(baseType) { return { kind: "PromiseType", baseType }
 
 export function arrayType(baseType) { return { kind: "ArrayType", baseType }; }
 
-export function dictionaryType(keyType, valueType) { return { kind: "DictionaryType", keyType, valueType }; }
+export function dictionaryType(keyBaseType, baseType) { return { kind: "DictionaryType", keyBaseType, baseType }; }
 
-export function arrayLiteral(elements) { return { kind: "ArrayLiteral", elements, type: arrayType(elements[0].type) }; }
+export function arrayLiteral(elements, ty) { 
+  // TODO: Modify to accept 'type' so that it tracks the basetype
+  return { kind: "ArrayLiteral", elements, type: arrayType(ty) }; 
+}
+
+export function dictionaryLiteral(elements) { return { kind: "DictionaryLiteral", elements, type: dictionaryType(elements[0].type) }; }
+
+export function dictionaryEntry(key, value) { return { kind: "DictionaryEntry", key, value }; }
 
 export function emptyOptional(type) { return { kind: "EmptyOptional", type } }
 
-export function emptyArrayLiteral() { return { kind: "EmptyArray" } }
+export function emptyArrayLiteral(type) { return { kind: "EmptyArray", type } }
+
+export function emptyDictLiteral(type1, type2) { return { kind: "EmptyDictionary", type1, type2 } }
 
 // These local constants are used to simplify the standard library definitions.
 const floatToFloatType = functionType([floatType], floatType)
@@ -100,22 +94,22 @@ const floatFloatToFloatType = functionType([floatType, floatType], floatType)
 const stringToIntsType = functionType([stringType], arrayType(intType))
 const anyToVoidType = functionType([anyType], voidType)
 
-
 export const standardLibrary = Object.freeze({
   int: intType,
   float: floatType,
   bool: boolType,
   str: stringType,
   void: voidType,
-  None: voidType,
   any: anyType,
-  // π: new Variable("π", true, Type.FLOAT),
-  // sin: new Function("sin", 1, true),
-  // sqrt: new Function("sqrt", 1, true),
-  // cos: new Function("cos", 1, true),
-  // exp: new Function("exp", 1, true),
-  // ln: new Function("ln", 1, true),
-  // hypot: new Function("hypot", 2, true),
+  π: new variable("π", true, floatType),
+  print: fun("print", anyToVoidType),
+  sin: fun("sin", floatToFloatType),
+  cos: fun("cos", floatToFloatType),
+  exp: fun("exp", floatToFloatType),
+  ln: fun("ln", floatToFloatType),
+  hypot: fun("hypot", floatFloatToFloatType),
+  bytes: fun("bytes", stringToIntsType),
+  codepoints: fun("codepoints", stringToIntsType),
 });
 
 String.prototype.type = stringType

@@ -4,7 +4,7 @@
 // called the AST). This representation also includes entities from the
 // standard library, as needed.
 import * as core from "./core.js";
-import util from "util";
+// import util from "util";
 
 const INT = core.intType;
 const FLOAT = core.floatType;
@@ -104,6 +104,7 @@ export default function analyze(match) {
   function mustAllHaveSameType(expressions, at) {
     // Used to check the elements of an array expression, and the two
     // arms of a conditional expression, among other scenarios.
+    // perhaps instead 
     must(
       expressions
         .slice(1)
@@ -141,23 +142,9 @@ export default function analyze(match) {
     );
   }
 
-  // function equivalent(t1, t2) {
-  //   return (
-  //     t1 === t2 ||
-  //     (t1 instanceof core.OptionalType &&
-  //       t2 instanceof core.OptionalType &&
-  //       equivalent(t1.baseType, t2.baseType)) ||
-  //     (t1 instanceof core.ArrayType &&
-  //       t2 instanceof core.ArrayType &&
-  //       equivalent(t1.baseType, t2.baseType)) ||
-  //     (t1.constructor === core.FunctionType && t2.constructor === core.FunctionType &&
-  //       equivalent(t1.returnType, t2.returnType) &&
-  //       t1.paramTypes.length === t2.paramTypes.length &&
-  //       t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
-  //   );
-  // }
-
   function equivalent(t1, t2) {
+    // TODO:  Add into this that if we have a list of [any] and a list of [int] that they are equivalent
+    // this helps when we declare our variables
     return (
       t1 === t2 ||
       (t1?.kind === "OptionalType" &&
@@ -175,8 +162,7 @@ export default function analyze(match) {
   }
 
   function assignable(fromType, toType) {
-    return (
-      toType == ANY ||
+    return ( toType == ANY ||
       equivalent(fromType, toType) ||
       (fromType?.kind === "FunctionType" &&
         toType?.kind === "FunctionType" &&
@@ -192,6 +178,7 @@ export default function analyze(match) {
 
   function typeDescription(type) {
     // TODO: add cases for promise type, dictionary type, and noneType (variant of void type)
+    
     switch (type.kind) {
       case "IntType":
         return "int";
@@ -211,32 +198,10 @@ export default function analyze(match) {
         return `(${paramTypes})->${returnType}`;
       case "ArrayType":
         return `[${typeDescription(type.baseType)}]`;
+      case "DictionaryType":
+        return `[${typeDescription(type.keyBaseType)}:${typeDescription(type.baseType)}]`;
       case "OptionalType":
         return `${typeDescription(type.baseType)}?`;
-    }
-  }
-
-  function primitiveTypeMapper(type) {
-    // CHECK WITH TA
-    if (type.charAt(type.length - 1) === "?") {
-      return core.optionalType(primitiveTypeMapper(type.slice(0, -1)));
-    }
-    if (type.charAt(0) === "[" && type.charAt(type.length - 1) === "]") {
-      return core.arrayType(primitiveTypeMapper(type.slice(1, -1)));
-    }
-    switch (type) {
-      case "int":
-        return INT;
-      case "float":
-        return FLOAT;
-      case "str":
-        return STRING;
-      case "bool":
-        return BOOLEAN;
-      case "void":
-        return VOID;
-      case "any":
-        return ANY;
     }
   }
 
@@ -260,8 +225,7 @@ export default function analyze(match) {
   }
 
   function mustBeCallable(e, at) {
-    const callable =
-      e?.kind === "StructType" || e.type?.kind === "FunctionType";
+    const callable = e?.kind === "StructType" || e.type?.kind === "FunctionType";
     must(callable, "Call of non-function or non-constructor", at);
   }
 
@@ -270,11 +234,7 @@ export default function analyze(match) {
   }
 
   function mustReturnSomething(f, at) {
-    must(
-      f.type.returnType !== VOID,
-      "Cannot return a value from this function",
-      at
-    );
+    must( f.type.returnType !== VOID, "Cannot return a value from this function", at );
   }
 
   function mustBeReturnable(e, { from: f }, at) {
@@ -286,27 +246,8 @@ export default function analyze(match) {
     must(argCount === paramCount, message, at);
   }
 
-  // function mustBeAVariable(entity, at) { must(entity?.kind === "Variable", `Functions can not appear here`, at); }
-
-  // function mustBeAFunction(entity, at) { must(entity?.kind === "Function", `${entity.name} is not a function`, at); }
-
-  // function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
-  //   const equalCount = argCount === paramCount;
-  //   must(
-  //     equalCount,
-  //     `${paramCount} argument(s) required but ${argCount} passed`,
-  //     at
-  //   );
-  // }
-
-  function mustHaveInitializerMatchingType(initializer, type, at) {
-    // console.log(`Initializer: ${initializer}`, type, at)
-    // console.log(`Type: ${type.kind}`)
-    must(
-      typeDescription(initializer.type) == type,
-      `Initializer must be of type ${type}`,
-      at
-    );
+  function mustHaveCorrectTypeOnLHS(e, type, at) {
+    must(equivalent(e.type, type), `Expected a ${typeDescription(type)}`, at);
   }
 
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
@@ -323,10 +264,17 @@ export default function analyze(match) {
       // TODO: Need to do something else with the 'type'
       const initializer = exp.rep();
       const readOnly = modifier.sourceString === "const";
-
-      const varType = primitiveTypeMapper(type.sourceString);
+      const varType = type.rep();
       const variable = core.variable(id.sourceString, readOnly, varType);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      if (initializer.kind == "EmptyArray"){
+        initializer.type = core.arrayType(varType)
+      } else{
+        // if initializer is not an empty array, empty optional, or empty dictionary, then its type must match the variable's type
+        
+        mustHaveCorrectTypeOnLHS(initializer, varType, { at: exp });
+      }
+      // otherwise, if it is empty, make sure it atleast matches the type of the variable!
       // TODO: Add type checking
       // exp must be of type 'type'
       context.add(id.sourceString, variable);
@@ -340,9 +288,9 @@ export default function analyze(match) {
       const target = variable.rep();
       mustBeAssignable(source, { toType: target.type }, { at: exp });
       mustNotBeReadOnly(target, { at: variable });
-      // if (ops != "") {
-      //   return core.assignment(target, core.binary(ops, target, exp.rep(), target.type));
-      // }
+      if (ops != "") {
+        return core.assignment(target, core.binary(ops, target, exp.rep(), target.type));
+      }
       return core.assignment(target, source);
     },
 
@@ -445,7 +393,7 @@ export default function analyze(match) {
       const [low, high] = [exp1.rep(), exp2.rep()];
       mustHaveIntegerType(low, { at: exp1 });
       mustHaveIntegerType(high, { at: exp2 });
-      const iterator = core.variable(id.sourceString, INT, true);
+      const iterator = core.variable(id.sourceString, true, INT);
       context = context.newChildContext({ inLoop: true });
       context.add(id.sourceString, iterator);
       const body = block.rep();
@@ -568,8 +516,7 @@ export default function analyze(match) {
         exp2.rep(),
       ];
       mustHaveAnOptionalType(optional, { at: exp1 });
-      mustBeAssignable(
-        alternate,
+      mustBeAssignable( alternate,
         { toType: optional.type.baseType },
         { at: exp2 }
       );
@@ -619,7 +566,6 @@ export default function analyze(match) {
 
     Conjunct_comparative(exp1, relOp, exp2) {
       const [left, op, right] = [exp1.rep(), relOp.sourceString, exp2.rep()];
-
       if (["<", "<=", ">", ">="].includes(op)) {
         mustHaveNumericOrStringType(left, { at: exp1 });
       }
@@ -660,10 +606,11 @@ export default function analyze(match) {
     // },
 
     Primary_index(exp1, _open, exp2, _close) {
-      const [array, index] = [exp1.rep(), exp2.rep()];
-      mustHaveArrayType(array, { at: exp1 });
+      const [iterable, index] = [exp1.rep(), exp2.rep()];
+      // mustHaveArrayType(array, { at: exp1 });
+      mustHaveIterableType(iterable, { at: exp1 });
       mustHaveIntegerType(index, { at: exp2 });
-      return core.index(array, index);
+      return core.index(iterable, index);
     },
 
     Primary_id(id) {
@@ -675,46 +622,65 @@ export default function analyze(match) {
     },
 
     ArrayLit_array(_open, expList, _close) {
+      // literals should return a javascripyt object
+      // if all are the same, type the array that way
       const elements = expList.asIteration().children.map((exp) => exp.rep());
+      // TODO : implement the following algorithm
+      // typeToCheck = element[0].type
+      // Loop through the elements:
+      // compare each type of the element to type to check,
+      /*
+      // if any of the types do not match, make it an array of any
+      if (element[0].type !== typeToCheck) {
+        return core.arrayLiteral(elements, core.anyType())
+      }
+      // if all types match, make it an array of that type
+      if (element[0].type !== typeToCheck) {
+        return core.arrayLiteral(elements, typeToCheck)
+      }
+      */
       mustAllHaveSameType(elements, { at: expList });
       return core.arrayLiteral(elements);
+      // return core.arrayLiteral(elements, elements[0].type);
+      // NOTE: Per Julian, our literals should be returning javascript equivalent values.
+      // see intlit and strlit for reference, these return integers and strings from javascript
+      // thus, we should instead have a return for elements
+      // return elements
     },
 
     ArrayLit_emptyarray(_open, _close) {
       return core.emptyArrayLiteral();
     },
-
-    DictLit(_open, bindings, _close) {
-      return core.dictLiteral(
-        bindings.asIteration().children.map((b) => b.rep())
-      );
+    
+    DictLit_dict(_open, bindings, _close) {
+      return core.dictionaryLiteral(bindings.asIteration().children.map((b) => b.rep()));
     },
 
+    DictLit_emptydict(_open, _close) {
+      return core.emptyDictLiteral();
+    },
+    
     Parens(_open, exp, _close) {
       return exp.rep();
     },
     //Dictionary stuff
     Binding(key, _colon, value) {
-      return [key.rep(), value.rep()];
+      return core.dictionaryEntry(key.rep(), value.rep());
     },
     // arr1 = [Int]()
     //-------------------- (TYPES) -------------------//
     Type_optional(baseType, _question) {
       return core.optionalType(baseType.rep());
     },
-
     Type_promise(baseType, _promise) {
       return core.promiseType(baseType.rep());
     },
-
     Type_array(_open, baseType, _close) {
       return core.arrayType(baseType.rep());
     },
-    
     Type_dictionary(_open, baseType1, _colon, type2, _close) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
     },
-
     // Type_function(_open, types, _close, _arrow, retType) {
     //   const paramTypes = types.asIteration().children.map((t) => t.rep());
     //   const returnType = retType.rep();
@@ -722,16 +688,11 @@ export default function analyze(match) {
     // },
 
     Primary_emptyoptional(_no, type) {
-      return new core.emptyOptional(type.rep());
+      return core.emptyOptional(type.rep());
     },
+    true(_) { return true; },
 
-    true(_) {
-      return true;
-    },
-
-    false(_) {
-      return false;
-    },
+    false(_) { return false; },
 
     strlit(_openQuote, _chars, _closeQuote) {
       // strings will be represented as plain JS strings, including
