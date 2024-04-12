@@ -34,8 +34,12 @@ $$ \textrm{emptyLanguage} = \epsilon $$
 
 ### 8. Give grammars for the following languages (using the notation from class):
 
-**a.** The empty language
-**b.** 
-**c.** 
-**d.** 
-**e.** 
+##### **a.** \(\{ a^{i}b^{j}c^{k} \mid i > j > k \}\)
+##### **b.** \(\{ a^{i}b^{j}c^{k} \mid i > j \land k = i - j \}\)
+##### **c.** \(\{ \langle M \rangle \mid M \text{ accepts } \omega \}\)
+##### **d.** \(\{ G \mid G \text{ is context-free } \land L(G) = \emptyset \}\)
+##### **e.** \(\{ a^{n}b^{n}c^{n} \mid n \geq 0 \}\)
+##### **f.** \(\{ \langle M \rangle \mid M \text{ does not halt } \}\)
+##### **g.** \(\{ w \mid w \text{ is a decimal numeral divisible by } 7 \}\)
+##### **h.** \(\{ \omega\omega\omega \mid \omega \text{ is a string over the Unicode alphabet} \}\)
+
