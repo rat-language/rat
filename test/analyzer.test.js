@@ -13,10 +13,7 @@ const semanticChecks = [
   ["relations", 'print( 1 <= 2 && "x" > "y" && 3.5 < 1.2);'],
   ["long if", "if true {print(1);} else {print(3);}"],
   ["else if", "var x: int = 2; if x == 3 { print (true); } else if x <= 3 {pass;}"],
-  ["initialize with empty array", "var a:[int] = [];"],
-  ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
   ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
-  ["assign optionals", "var a: int? = no int; a = some 100;"],
   ["for exclusive", "for j in 1..<10 {print(j);}"],
   ["for inclusive", "for i in 1...10 {print(i);}"],
   ["for loop over existing collection", `
@@ -30,21 +27,28 @@ const semanticChecks = [
   ["for over collection", "for i in [2,3,5] {print(1);}"],
   ["ok to == arrays", "print([1]==[5,8]);"],
   ["ok to != arrays", "print([1]!=[5,8]);"],
-  ["optional types", 'var x:int? = no int; x = some 100;'],
   ["variables", 'var x: [[[[int]]]] =[[[[1]]]]; print(x[0][0][0][0]+2);'],
   ["subscript exp", 'var a: [int] =[1,2]; print(a[0]);'],
   ["outer variable", 'var x: int =1; while(false) {print(x);}'],
   ["type equivalence of nested arrays", 'int f(x: [[int]]) {return (x[0][0] + x[0][1]);} print(f([[1],[2]]));'],
-  ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
   ["return statement", "bool? f() { return some true; }"],
   ["short return statement", `void f() { print("this will return nothing"); return; }`],
   // ["short return statement", "void f() { return; }"],
   ["break in nested if", "while false {if true{break;}}"],
+  // ["proper array assignment", `var x: [int] = [12, 13]; print(x[0]);`],
   
+  
+
   //------------( NOT WORKING )-----------------//
+  ["initialize with empty array", "var a:[int] = [];"],
+  ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
+  ["assign optionals", "var a: int? = no int; a = some 100;"],
+  ["dictionaries", `var ints: [str:int] = {"56": 2, "fakeOnes": 3};`],
+  ["optional types", 'var x:int? = no int; x = some 100;'],
+  ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
+
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
 
-  
   //------------( STILL IN CARLOS )-----------------//
   // // ["shifts", "print(1<<3<<5<<8>>2>>0);"],
   // // ["arithmetic", "let x=1;print(2*3+5**-3/2-5%8);"],
@@ -128,6 +132,9 @@ const semanticErrors = [
     print(i);
   }
   `, /'true' is not an iterable object/],
+  ["improper array declaration", `var x: [int] = ["12", "13"]; print(x[0]);`, /Expected a \[int\]/],
+  ["improper integer declaration", `var x: int = "12";`, /Expected a int/],
+
   //------------( NOT WORKING )-----------------//
 
 

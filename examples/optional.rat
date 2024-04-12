@@ -1,1 +1,1 @@
-var x:int? = None; x = some 100;
+var x:int? = no int; x = some 100;

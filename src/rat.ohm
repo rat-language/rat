@@ -72,34 +72,30 @@ Rat {
                 | false
                 | floatlit 
                 | intlit 
-                | Primary ("[" | "?[") Exp "]"                          --index
                 | no Type                                               --emptyoptional
                 | Call
+                | Primary ("[" | "?[") Exp "]"                          --index
                 | Conversion
                 | ArrayLit
                 | DictLit
                 | strlit
                 | id                                                    --id
                 | Parens
-
     ArrayLit    = "[" "]"                                               --emptyarray
                 | "[" NonemptyListOf<Exp, ",">"]"                       --array
-
-
-    DictLit     = "{" ListOf<Binding,",">"}"
+                
+    DictLit     = "{" "}"                                               --emptydict
+                | "{" ListOf<Binding,",">"}"                            --dict
     Parens      = "(" Exp ")"
-
     //key:value pairs for dictionaries
     Binding     = Exp ":" Exp
     op          = "**" | "*" | "/" | "%" |"+" | "-"
-
     Type        = Type "?"                                              --optional
                 | Type "^"                                              --promise
                 |"[" Type "]"                                           --array
                 | "[" Type":"Type"]"                                    --dictionary
                 | int | float | str | bool | anything
-                // | "(" ListOf<Type, ","> ")" "->" Type                   --function
-
+                | "(" ListOf<Type, ","> ")" "->" Type                   --function
     //KEYWORDS:
     print       = "print" ~idchar
     int         = "int" ~idchar
