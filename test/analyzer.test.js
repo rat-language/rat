@@ -19,6 +19,12 @@ const semanticChecks = [
   ["assign optionals", "var a: int? = no int; a = some 100;"],
   ["for exclusive", "for j in 1..<10 {print(j);}"],
   ["for inclusive", "for i in 1...10 {print(i);}"],
+  ["for loop over existing collection", `
+  var ints: [int] = [1,2,3,4,5,6,7,8,9,10];
+  for i in ints {
+    print(i);
+  }
+  `],
   ["||", "print(true || 1<2 || false || !true);"],
   ["&&", "print(true && 1<2 && false && !true);"],
   ["for over collection", "for i in [2,3,5] {print(1);}"],
@@ -30,7 +36,8 @@ const semanticChecks = [
   ["outer variable", 'var x: int =1; while(false) {print(x);}'],
   ["type equivalence of nested arrays", 'int f(x: [[int]]) {return (x[0][0] + x[0][1]);} print(f([[1],[2]]));'],
   ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
-  ["return statement", "bool f() { return true; }"],
+  ["return statement", "bool? f() { return some true; }"],
+  ["short return statement", `void f() { print("this will return nothing"); return; }`],
   // ["short return statement", "void f() { return; }"],
   ["break in nested if", "while false {if true{break;}}"],
   
@@ -114,11 +121,14 @@ const semanticErrors = [
   ["bad types for &&", "print(false&&1);", /Expected a boolean/],
   ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
   ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
-
+  ["non-integer low range", "for i in true...2 {}", /Expected an integer/],
+  ["non-integer high range", "for i in 1..<false {}", /Expected an integer/],
+  ["for loop over non-iterable value", `
+  for i in true {
+    print(i);
+  }
+  `, /'true' is not an iterable object/],
   //------------( NOT WORKING )-----------------//
-  // ["non-integer low range", "for i in true...2 {}", /Expected an integer in range min/],
-  // ["non-integer high range", "for i in 1..<false {}", /Expected an integer in range max/],
-  // - TODO: Check whether or not we have error statements during the for loop checking, then determine whether we should alter our error statements
 
 
   //------------( NOT WORKING for other reasons :P )-----------------//

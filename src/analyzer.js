@@ -123,12 +123,12 @@ export default function analyze(match) {
   }
 
   // ↓ ↓ NOT IN TOALS CODE ↓ ↓
-  function mustHaveIterableType(e, at) {
+  function mustHaveIterableType(e, rawStr, at) {
     must(
       (e.type?.kind === "ArrayType") |
         (e.type?.kind === "DictType") |
         (e.type?.kind === STRING),
-      `${e.type?.kind} is not an iterable object`,
+      `'${rawStr}' is not an iterable object`,
       at
     );
   }
@@ -397,9 +397,15 @@ export default function analyze(match) {
       // This is fine; we did not need the type to analyze the parameters,
       // but we do need to set it before analyzing the body.
       const paramTypes = params.map((param) => param.type);
-      const returnType = type.children?.[0]?.rep() ?? VOID;
+      // I'm using this for now, I didn't want to get rid of the null coalescing until I fully understood what was happening
+      let returnType
+      try{
+        returnType = type.rep() ?? VOID;
+      } catch (e) {
+        returnType = type.children?.[0]?.rep() ?? VOID;
+      }
+      // const returnType = type.children?.[0]?.rep() ?? type.rep() ?? VOID;
       fun.type = core.functionType(paramTypes, returnType);
-
       // Analyze body while still in child context
       const body = block.rep();
 
@@ -419,14 +425,20 @@ export default function analyze(match) {
     },
 
     //For
-    LoopStmt_foreach(_for, iterator, _in, exp, block) {
+    LoopStmt_foreach(_for, iter, _in, exp, block) {
       const iterable = exp.rep();
-      mustHaveIterableType(iterable, { at: exp });
-      return core.forStatement(
-        iterator.sourceString,
-        iterable,
-        block.rep()
-      );
+      mustHaveIterableType(iterable, exp.sourceString, { at: exp });
+      // TODO: add cases for the iterable types:
+      // - if iterable's type is an array, make iterator of the baseType 
+      // - if iterable's type is a dict, make iterator of the baseType of the key 
+      // - if iterable's type is a str, also make iterator a str
+      // This should be done after implementing the dictionary finish this after doing the dictionary type stuff, 
+      const iterator = core.variable(iter.sourceString,false, iterable.type.baseType);
+      context = context.newChildContext({ inLoop: true });
+      context.add(iterator.name, iterator);
+      const body = block.rep();
+      context = context.parent
+      return core.forStatement(iterator, iterable, body);
     },
 
     LoopStmt_range(_for, id, _in, exp1, range, exp2, block) {
@@ -470,6 +482,14 @@ export default function analyze(match) {
       return expList.asIteration().children;
     },
 
+    Conversion(type, _open, exp, _close) {
+      const target = type.rep();
+      const source = exp.rep();
+      // TODO: Add a way to determine whether the type can be converted
+      mustBeAssignable(source, { toType: target }, { at: exp });
+      return core.conversion(target, source);
+    },
+
     // //If
     IfStmt_if(_if, exp, block) {
       const test = exp.rep();
@@ -508,21 +528,12 @@ export default function analyze(match) {
       context = context.parent;
       context = context.newChildContext();
       const params = parameters.rep();
-      // context.add(pa)
       const catchBlock = block2.rep();
       context = context.parent;
       return core.tryStatement(tryBlock, catchBlock, params, block3.rep());
     },
 
-    TryStmt_timeout(
-      _try,
-      block1,
-      _timeout,
-      block2,
-      _catch,
-      parameters,
-      block3
-    ) {
+    TryStmt_timeout( _try, block1, _timeout, block2, _catch, parameters, block3) {
       context = context.newChildContext();
       const tryBlock = block1.rep();
       context = context.parent;

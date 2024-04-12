@@ -1,8 +1,8 @@
 ## analyzer.js/core.js:
 - Need to add 'try' statements
-- Need to add tests for 'dictionary' types, 
-- Need to add tests for identifying type conversions
-- Fix up the 'shortReturn' statements.
+- Need to add 'dictionary' types, 
+- Need to add type conversions
+- thinking of changing the error message for the for loop over the collections, this is within the `mustHaveIterableType`
 
 ## analyzer.test.js:
 - Add more unit tests for the above (e.g. try, dictionary, etc.) 
@@ -18,3 +18,12 @@ Breakpoints don't work for files not directly mentioned in the command line so `
 - CTRL+SHFT+P
   - Search: "Debug Toggle Auto Attach", click on it
   - set to 'smart'
+
+
+## Questions for Toal: 
+In our `FuncDecl`, what is the advantage of one statement over the other when handling/identifying the return type?:
+```js
+const returnType = type.children?.[0]?.rep() ?? VOID;
+// versus
+const returnType = type.rep() ?? VOID;
+```

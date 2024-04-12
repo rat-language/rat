@@ -34,7 +34,8 @@ Rat {
 
     Call        = id Args
     Args        = "(" ListOf<Exp, ","> ")"
-    Conversion  = Type "(" Exp ")"                                       --conversion
+    Conversion  = Type "(" Exp ")"
+    // Conversion  = Type "(" Exp ")"                                      --conversion
 
     IfStmt      = if Exp Block else Block                               --else
                 | if Exp Block else IfStmt                              --elseif
@@ -126,7 +127,6 @@ Rat {
     void        = "void"    ~idchar
     all         = "all"     ~idchar
     timeout     = "timeout" ~idchar
-    from        = "from"    ~idchar
     no          = "no"      ~idchar
 
     // await used for asynchronous functions that perform a call that is promised to return a value
@@ -137,9 +137,8 @@ Rat {
 
     keyword     = print | true | false | pass
                 | while | for | if | else | else | return
-                | some  | void | await | one | all | from
+                | some  | void | await | one | all
                 | int | float | str | bool
-
 
     //allows you to name your variables
     id          = ~keyword (letter| "_") idchar*
