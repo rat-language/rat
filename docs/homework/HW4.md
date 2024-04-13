@@ -48,6 +48,22 @@ S \rightarrow \text{EqualAsBs} \mid \varepsilon \\
 \text{EqualAsBs} \rightarrow \text{"a"} \text{EqualAsBs} \text{"b"} \text{SecondHalf} \\
 \text{SecondHalf} \rightarrow \text{"a"} \text{SecondHalf} \text{"b"} \mid \varepsilon
 $
+
+
+
+
+## 4. 
+#### a. 
+      V :{ n, f, e, d}
+#### b. 
+      Σ: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, +, -, E, .}
+#### c.  R: 
+        n → d f? e?
+        f → . d+
+        e → (E|e) C + 1 -)? d+
+        d → (0|1|2|3|4|5|6|7|8|9)
+        S; n 
+
 ### 5. Give Turing Machines that recognize the following languages. If any of the languages below are Type-3, you may (and are encouraged to) give a FA in lieu of a TM recognizer, if the FA is simpler.
 
 #### **a.** \(\{ w \in \{a, b\}^* \mid w \text{ ends with } abb\}\)
