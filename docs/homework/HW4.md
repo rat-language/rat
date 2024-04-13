@@ -7,7 +7,10 @@
   #### d. Complexity Theory: Complexity Theory looks to define the amount of space and time different programs take to compute. These limits are much more theoretical than computational limits.
 
 ## 2. 
-    
+  #### a. {0, 1, 10, 011}
+  #### b. {10}
+  #### c. {010, 01, 01110, 1010, 101}
+  #### d. { *, 1, 10, 11, 110, 111, 1101, 1010, 1110...}
 ## 3. Give grammars for the following languages (using the notation from class):
 
 #### **a.** $\textrm{The Empty Langauge}$
