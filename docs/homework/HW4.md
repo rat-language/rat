@@ -1,4 +1,5 @@
-
+# Homework 4
+---
 
 ## 3. Give grammars for the following languages (using the notation from class):
 
@@ -39,24 +40,72 @@ S \rightarrow \text{EqualAsBs} \mid \varepsilon \\
 $
 ### 5. Give Turing Machines that recognize the following languages. If any of the languages below are Type-3, you may (and are encouraged to) give a FA in lieu of a TM recognizer, if the FA is simpler.
 
-##### **a.** \(\{ w \in \{a, b\}^* \mid w \text{ ends with } abb\}\)
-##### **b.** \(\{ w \in \{a, b\}^* \mid \#_a(w) = \#_b(w) \}\) $\textrm{(same number of a's as b's)} $
-##### **c.**\(\{ w \in \{a, b\}^* \mid w \text{ alternates a's and b's}\}\)
-##### **d.**\(\{ a^{n}b^{2n} \mid n \geq 0 \}\)
+#### **a.** \(\{ w \in \{a, b\}^* \mid w \text{ ends with } abb\}\)
+#### **b.** \(\{ w \in \{a, b\}^* \mid \#_a(w) = \#_b(w) \}\) $\textrm{(same number of a's as b's)} $
+#### **c.**\(\{ w \in \{a, b\}^* \mid w \text{ alternates a's and b's}\}\)
+#### **d.**\(\{ a^{n}b^{2n} \mid n \geq 0 \}\)
 
 
 ### 6. Give Turing Machines that compute the following functions, where the input and output are binary numerals.
-##### **a.** $\lambda n . 2 n + 2$
-##### **b.** $ \textrm{one's complement} $
-##### **b.** $ \textrm{The function described in Python as } \lambda n: str(n)[1:-1] $
+#### **a.** $\lambda n . 2 n + 2$
+**1. Initialization (Unary):**
+- Start at the beginning of the tape.
+- Find the first '1' to indicate the start of the input.
 
-### 7. Give grammars for the following languages (using the notation from class):
+**2. Mark and Double:**
+- Replace the first '1' with a marker symbol 'X' to indicate it has been processed.
+
+**3. Append Two '1's:**
+- Move to the right end of the tape, past the last '1'.
+- Append two '1's for each 'X' encountered.
+
+**4. Loop Back:**
+- After appending, move back to the next unmarked '1'.
+- If an unmarked '1' is found, go to step 2.
+- If no unmarked '1' remains, proceed to the next step.
+
+**5. Add Two:**
+- Once all '1's have been doubled, append two additional '1's at the end of the tape.
+
+**6. Cleanup (Optional):**
+- Replace all the 'X' markers back to '1's, if the original input needs to be restored.
+
+**7. Halt:**
+- Move the head to a position indicating completion.
+- Enter the halt state.
+#### **b.** $ \textrm{one's complement} $
+**Step 1:** Start at the beginning of the tape where the binary number begins.
+
+**Step 2:** Read the current symbol.
+- If it is '0', write '1'.
+- If it is '1', write '0'.
+- Move the tape head to the right.
+
+**Step 3:** Repeat Step 2 for each bit in the number until a blank symbol is encountered, indicating the end of the number.
+
+**Step 4:** Once the end of the number is reached, enter the halt state to signify completion.
+
+#### **c.** $ \textrm{The function described in Python as } \lambda n: str(n)[1:-1] $
+**Step 1:** Initialize by finding the start of the number on the tape.
+
+**Step 2:** Move right to skip the first character of the number's representation.
+
+**Step 3:** Continue moving right until you find the last character. This is done by detecting a blank space indicating the end of the number.
+
+**Step 4:** Once the last character is found, move left to unmark it or overwrite it with a blank symbol.
+
+**Step 5:** Shift the entire string to the left to close the gap, if necessary, by repeatedly moving all characters one position to the left until the original position of the first character is reached.
+
+**Step 6:** When the shift is complete, and the first and last characters have been removed, enter the halt state.
+
+
+
+### 7. For the JavaScript/Python expression 5 * 3 - 1 ** 3
 
 ##### **a.** $ \textrm{Show a 3AC machine program to evaluate this expression, leaving the result in} $
 ##### **b.** $ \textrm{Show a Stack machine program to evaluate this expression, leaving the result on the top of the stack.} $
 
-### 8. Give grammars for the following languages (using the notation from class):
-
+### 8. Characterize each of the following languages as either (a) regular, (b) context-free but not regular, (c) recursive but not context-free, (d) recursively enumerable but not recursive, or (e) not even recursively enumerable.
 ##### **a.** \(\{ a^{i}b^{j}c^{k} \mid i > j > k \}\)
 ##### **b.** \(\{ a^{i}b^{j}c^{k} \mid i > j \land k = i - j \}\)
 ##### **c.** \(\{ \langle M \rangle \mid M \text{ accepts } \omega \}\)
