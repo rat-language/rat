@@ -1,10 +1,10 @@
 # Homework 4
 ---
 ## 1.
-  a. Language Theory: Once "What is Information" is answered, LT looks to express info w/ symbols study/theory of how alphabets can express different expressions.
-  b. Automata Theory: AT looks to study and define the machines that will be built to calculate, compile, and eventually create expressions.
-  c. Computability Theory: Aims to define the capabilities of what cannot be computed, i.e. the limits of computation.
-  d. Complexity Theory: Complexity Theory looks to define the amount of space and time different programs take to compute. These limits are much more theoretical than computational limits.
+  #### a. Language Theory: Once "What is Information" is answered, LT looks to express info w/ symbols study/theory of how alphabets can express different expressions.
+  #### b. Automata Theory: AT looks to study and define the machines that will be built to calculate, compile, and eventually create expressions.
+  #### c. Computability Theory: Aims to define the capabilities of what cannot be computed, i.e. the limits of computation.
+  #### d. Complexity Theory: Complexity Theory looks to define the amount of space and time different programs take to compute. These limits are much more theoretical than computational limits.
 
 ## 2. 
     
