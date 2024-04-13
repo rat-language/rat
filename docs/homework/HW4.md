@@ -102,8 +102,22 @@ $
 
 ### 7. For the JavaScript/Python expression 5 * 3 - 1 ** 3
 
-##### **a.** $ \textrm{Show a 3AC machine program to evaluate this expression, leaving the result in} $
+##### **a.** $ \textrm{Show a 3AC machine program to evaluate this expression, leaving the result in}\ r0$
+
+t1 = 5 * 3      // Multiply 5 by 3 and store the result in temporary variable t1
+t2 = 1 ** 3     // Raise 1 to the power of 3 and store the result in temporary variable t2
+r0 = t1 - t2    // Subtract t2 from t1 and store the result in r0
+
 ##### **b.** $ \textrm{Show a Stack machine program to evaluate this expression, leaving the result on the top of the stack.} $
+
+PUSH 5          // Push 5 onto the stack
+PUSH 3          // Push 3 onto the stack
+MULTIPLY        // Pop the top two elements, multiply them, and push the result back on the stack
+PUSH 1          // Push 1 onto the stack
+PUSH 3          // Push 3 onto the stack
+POWER           // Pop the top two elements, calculate the power, and push the result back on the stack
+SUBTRACT        // Pop the top two elements, subtract the second from the first, and push the result back on the stack
+
 
 ### 8. Characterize each of the following languages as either (a) regular, (b) context-free but not regular, (c) recursive but not context-free, (d) recursively enumerable but not recursive, or (e) not even recursively enumerable.
 ##### **a.** \(\{ a^{i}b^{j}c^{k} \mid i > j > k \}\)
