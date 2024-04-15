@@ -84,7 +84,7 @@ export function dictionaryEntry(key, value) { return { kind: "DictionaryEntry", 
 
 export function emptyOptional(baseType) { return { kind: "EmptyOptional", type: optionalType(baseType) } }
 
-export function emptyArrayLiteral(type) { return { kind: "EmptyArray", type } }
+export function emptyArrayLiteral() { return { kind: "EmptyArray", type: arrayType(anyType) } }
 
 export function emptyDictLiteral(type1, type2) { return { kind: "EmptyDictionary", type1, type2 } }
 

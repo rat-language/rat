@@ -627,7 +627,15 @@ export default function analyze(match) {
       const elements = expList.asIteration().children.map((exp) => exp.rep());
       // TODO : implement the following algorithm
       // typeToCheck = element[0].type
+      let typeToCheck = elements[0].type
       // Loop through the elements:
+      for (let element of elements) {
+        // if the type of the element is not the same as the type to check,
+        if (element.type !== typeToCheck) {
+          // make it an array of any
+          return core.arrayLiteral(elements, ANY)
+        }
+      }
       // compare each type of the element to type to check,
       /*
       // if any of the types do not match, make it an array of any
@@ -639,8 +647,8 @@ export default function analyze(match) {
         return core.arrayLiteral(elements, typeToCheck)
       }
       */
-      mustAllHaveSameType(elements, { at: expList });
-      return core.arrayLiteral(elements);
+      // mustAllHaveSameType(elements, { at: expList });
+      return core.arrayLiteral(elements, typeToCheck);
       // return core.arrayLiteral(elements, elements[0].type);
       // NOTE: Per Julian, our literals should be returning javascript equivalent values.
       // see intlit and strlit for reference, these return integers and strings from javascript
