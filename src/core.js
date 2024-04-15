@@ -82,7 +82,7 @@ export function dictionaryLiteral(elements) { return { kind: "DictionaryLiteral"
 
 export function dictionaryEntry(key, value) { return { kind: "DictionaryEntry", key, value }; }
 
-export function emptyOptional(type) { return { kind: "EmptyOptional", type } }
+export function emptyOptional(baseType) { return { kind: "EmptyOptional", type: optionalType(baseType) } }
 
 export function emptyArrayLiteral(type) { return { kind: "EmptyArray", type } }
 
