@@ -33,8 +33,6 @@ const semanticChecks = [
   // ["break in nested if", "while false {if true{break;}}"],
   // // ["proper array assignment", `var x: [int] = [12, 13]; print(x[0]);`],
   
-  
-  
   ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
   ["subscript exp", 'var a: [int] =[1,2]; print(a[0]);'],
   ["type equivalence of nested arrays", 'int f(x: [[int]]) {return (x[0][0] + x[0][1]);} print(f([[1],[2]]));'],
