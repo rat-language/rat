@@ -97,11 +97,11 @@ Rat {
                 | int | float | str | bool | anything
                 | "(" ListOf<Type, ","> ")" "->" Type                   --function
     //KEYWORDS:
-    print       = "print" ~idchar
-    int         = "int" ~idchar
-    float       = "float" ~idchar
-    str         = "str" ~idchar
-    bool        = "bool" ~idchar
+    print       = "print"   ~idchar
+    int         = "int"     ~idchar
+    float       = "float"   ~idchar
+    str         = "str"     ~idchar
+    bool        = "bool"    ~idchar
     anything    = "anything" ~idchar
     true        = "true"    ~idchar
     false       = "false"   ~idchar
