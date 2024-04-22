@@ -6,32 +6,32 @@ import { program, variableDeclaration, variable, binary, floatType } from "../sr
 // Programs that are semantically correct
 const semanticChecks = [
   //------------( WORKING )-----------------//
-  // ["variable declarations", 'const x:int = 1; var y: bool = false;'],
-  // ["increment and decrement", "var x: int = 10; x -= 1; x += 1;"],
-  // ["??", "print(some 5 ?? 0);"],
-  // ["nested ??", "print(some 5 ?? 8 ?? 0);"],
-  // ["relations", 'print( 1 <= 2 && "x" > "y" && 3.5 < 1.2);'],
-  // ["long if", "if true {print(1);} else {print(3);}"],
-  // ["else if", "var x: int = 2; if x == 3 { print (true); } else if x <= 3 {pass;}"],
-  // ["for exclusive", "for j in 1..<10 {print(j);}"],
-  // ["for inclusive", "for i in 1...10 {print(i);}"],
-  // ["for loop over existing collection", `
-  // var ints: [int] = [1,2,3,4,5,6,7,8,9,10];
-  // for i in ints {
-  //   print(i);
-  // }
-  // `],
-  // ["||", "print(true || 1<2 || false || !true);"],
-  // ["&&", "print(true && 1<2 && false && !true);"],
-  // ["for over collection", "for i in [2,3,5] {print(1);}"],
-  // ["ok to == arrays", "print([1]==[5,8]);"],
-  // ["ok to != arrays", "print([1]!=[5,8]);"],
-  // ["outer variable", 'var x: int =1; while(false) {print(x);}'],
-  // ["return statement", "bool? f() { return some true; }"],
-  // ["short return statement", `void f() { print("this will return nothing"); return; }`],
-  // // ["short return statement", "void f() { return; }"],
-  // ["break in nested if", "while false {if true{break;}}"],
-  // // ["proper array assignment", `var x: [int] = [12, 13]; print(x[0]);`],
+  ["variable declarations", 'const x:int = 1; var y: bool = false;'],
+  ["increment and decrement", "var x: int = 10; x -= 1; x += 1;"],
+  ["??", "print(some 5 ?? 0);"],
+  ["nested ??", "print(some 5 ?? 8 ?? 0);"],
+  ["relations", 'print( 1 <= 2 && "x" > "y" && 3.5 < 1.2);'],
+  ["long if", "if true {print(1);} else {print(3);}"],
+  ["else if", "var x: int = 2; if x == 3 { print (true); } else if x <= 3 {pass;}"],
+  ["for exclusive", "for j in 1..<10 {print(j);}"],
+  ["for inclusive", "for i in 1...10 {print(i);}"],
+  ["for loop over existing collection", `
+  var ints: [int] = [1,2,3,4,5,6,7,8,9,10];
+  for i in ints {
+    print(i);
+  }
+  `],
+  ["||", "print(true || 1<2 || false || !true);"],
+  ["&&", "print(true && 1<2 && false && !true);"],
+  ["for over collection", "for i in [2,3,5] {print(1);}"],
+  ["ok to == arrays", "print([1]==[5,8]);"],
+  ["ok to != arrays", "print([1]!=[5,8]);"],
+  ["outer variable", 'var x: int =1; while(false) {print(x);}'],
+  ["return statement", "bool? f() { return some true; }"],
+  ["short return statement", `void f() { print("this will return nothing"); return; }`],
+  // ["short return statement", "void f() { return; }"],
+  ["break in nested if", "while false {if true{break;}}"],
+  // ["proper array assignment", `var x: [int] = [12, 13]; print(x[0]);`],
   
   ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
   ["subscript exp", 'var a: [int] =[1,2]; print(a[0]);'],
@@ -100,40 +100,40 @@ const semanticChecks = [
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
   //------------( WORKING )-----------------//
-  // ["undeclared id", `var a: int = 1; print(x);`,      /Identifier x not declared/],
-  // ["redeclared id", "var x:int = 1; var x:int = 1;",  /Identifier x already declared/],
-  // ["assign to const", "const x : int = 1; x = 2;",    /x is read only/],
-  // ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Expected a number/],
-  // ["unwrap non-optional", "print(1??2);",     /Expected an optional/],
-  // ["bad types for +", "print(false+1);",      /Expected a number or string/],
-  // ["bad types for -", "print(false-1);",      /Expected a number/],
-  // ["bad types for *", "print(false*1);",      /Expected a number/],
-  // ["bad types for /", "print(false/1);",      /Expected a number/],
-  // ["bad types for **", "print(false**1);",    /Expected a number/],
-  // ["bad types for <", "print(false<1);",      /Expected a number or string/],
-  // ["bad types for <=", "print(false<=1);",    /Expected a number or string/],
-  // ["bad types for negation", "print(-true);", /Expected a number/],
-  // ["bad types for not", 'print(!"hello");',   /Expected a boolean/],
+  ["undeclared id", `var a: int = 1; print(x);`,      /Identifier x not declared/],
+  ["redeclared id", "var x:int = 1; var x:int = 1;",  /Identifier x already declared/],
+  ["assign to const", "const x : int = 1; x = 2;",    /x is read only/],
+  ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Expected a number/],
+  ["unwrap non-optional", "print(1??2);",     /Expected an optional/],
+  ["bad types for +", "print(false+1);",      /Expected a number or string/],
+  ["bad types for -", "print(false-1);",      /Expected a number/],
+  ["bad types for *", "print(false*1);",      /Expected a number/],
+  ["bad types for /", "print(false/1);",      /Expected a number/],
+  ["bad types for **", "print(false**1);",    /Expected a number/],
+  ["bad types for <", "print(false<1);",      /Expected a number or string/],
+  ["bad types for <=", "print(false<=1);",    /Expected a number or string/],
+  ["bad types for negation", "print(-true);", /Expected a number/],
+  ["bad types for not", 'print(!"hello");',   /Expected a boolean/],
   ["assign bad array type", "var x: int = 1; x=[true];", /Cannot assign a \[bool\] to a int/],
-  // ["assign bad optional type", "var x: int = 1;x=some 2;", /Cannot assign a int\? to a int/],
-  // ["bad types for >", "print(false>1);", /Expected a number or string/],
-  // ["bad types for >=", "print(false>=1);", /Expected a number or string/],
-  // ["bad types for ==", "print(2==2.0);", /not have the same type/],
-  // ["bad types for !=", "print(false!=1);", /not have the same type/],
-  // ["break outside loop", "break;", /Break can only appear in a loop/],
-  // ["bad types for ||", "print(false||1);", /Expected a boolean/],
-  // ["bad types for &&", "print(false&&1);", /Expected a boolean/],
-  // ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
-  // ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
-  // ["non-integer low range", "for i in true...2 {}", /Expected an integer/],
-  // ["non-integer high range", "for i in 1..<false {}", /Expected an integer/],
-  // ["for loop over non-iterable value", `
-  // for i in true {
-  //   print(i);
-  // }
-  // `, /'true' is not an iterable object/],
-  // ["improper array declaration", `var x: [int] = ["12", "13"]; print(x[0]);`, /Expected a \[int\]/],
-  // ["improper integer declaration", `var x: int = "12";`, /Expected a int/],
+  ["assign bad optional type", "var x: int = 1;x=some 2;", /Cannot assign a int\? to a int/],
+  ["bad types for >", "print(false>1);", /Expected a number or string/],
+  ["bad types for >=", "print(false>=1);", /Expected a number or string/],
+  ["bad types for ==", "print(2==2.0);", /not have the same type/],
+  ["bad types for !=", "print(false!=1);", /not have the same type/],
+  ["break outside loop", "break;", /Break can only appear in a loop/],
+  ["bad types for ||", "print(false||1);", /Expected a boolean/],
+  ["bad types for &&", "print(false&&1);", /Expected a boolean/],
+  ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
+  ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
+  ["non-integer low range", "for i in true...2 {}", /Expected an integer/],
+  ["non-integer high range", "for i in 1..<false {}", /Expected an integer/],
+  ["for loop over non-iterable value", `
+  for i in true {
+    print(i);
+  }
+  `, /'true' is not an iterable object/],
+  ["improper array declaration", `var x: [int] = ["12", "13"]; print(x[0]);`, /Expected a \[int\]/],
+  ["improper integer declaration", `var x: int = "12";`, /Expected a int/],
 
   //------------( NOT WORKING )-----------------//
 

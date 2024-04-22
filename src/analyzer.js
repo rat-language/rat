@@ -14,7 +14,7 @@ const ANY = core.anyType;
 const VOID = core.voidType;
 
 class Context {
-  constructor({ parent, locals = {}, inLoop = false, function: f = null}) {
+  constructor({ parent, locals = {}, inLoop = false, function: f = null }) {
     this.parent = parent;
     this.locals = new Map(Object.entries(locals));
     this.inLoop = inLoop;
@@ -127,8 +127,8 @@ export default function analyze(match) {
   function mustHaveIterableType(e, rawStr, at) {
     must(
       (e.type?.kind === "ArrayType") |
-        (e.type?.kind === "DictType") |
-        (e.type?.kind === STRING),
+      (e.type?.kind === "DictType") |
+      (e.type?.kind === STRING),
       `'${rawStr}' is not an iterable object`,
       at
     );
@@ -162,7 +162,7 @@ export default function analyze(match) {
   }
 
   function assignable(fromType, toType) {
-    return ( toType == ANY ||
+    return (toType == ANY ||
       equivalent(fromType, toType) ||
       (fromType?.kind === "FunctionType" &&
         toType?.kind === "FunctionType" &&
@@ -178,7 +178,7 @@ export default function analyze(match) {
 
   function typeDescription(type) {
     // TODO: add cases for promise type, dictionary type, and noneType (variant of void type)
-    
+
     switch (type.kind) {
       case "IntType":
         return "int";
@@ -234,7 +234,7 @@ export default function analyze(match) {
   }
 
   function mustReturnSomething(f, at) {
-    must( f.type.returnType !== VOID, "Cannot return a value from this function", at );
+    must(f.type.returnType !== VOID, "Cannot return a value from this function", at);
   }
 
   function mustBeReturnable(e, { from: f }, at) {
@@ -267,11 +267,11 @@ export default function analyze(match) {
       const varType = type.rep();
       const variable = core.variable(id.sourceString, readOnly, varType);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-      if (initializer.kind == "EmptyArray"){
+      if (initializer.kind == "EmptyArray") {
         initializer.type = core.arrayType(varType)
-      } else{
+      } else {
         // if initializer is not an empty array, empty optional, or empty dictionary, then its type must match the variable's type
-        
+
         mustHaveCorrectTypeOnLHS(initializer, varType, { at: exp });
       }
       // otherwise, if it is empty, make sure it atleast matches the type of the variable!
@@ -316,13 +316,13 @@ export default function analyze(match) {
       mustBeInAFunction({ at: exp });
       mustReturnSomething(context.function, { at: returnKeyword });
       const returnExpression = exp.rep();
-      mustBeReturnable( returnExpression,
+      mustBeReturnable(returnExpression,
         { from: context.function },
-        { at: exp } 
+        { at: exp }
       );
       return core.returnStatement(returnExpression);
     },
-   
+
     //Return
     Stmt_shortreturn(returnKeyword, _semicolon) {
       mustBeInAFunction({ at: returnKeyword })
@@ -347,7 +347,7 @@ export default function analyze(match) {
       const paramTypes = params.map((param) => param.type);
       // I'm using this for now, I didn't want to get rid of the null coalescing until I fully understood what was happening
       let returnType
-      try{
+      try {
         returnType = type.rep() ?? VOID;
       } catch (e) {
         returnType = type.children?.[0]?.rep() ?? VOID;
@@ -381,7 +381,7 @@ export default function analyze(match) {
       // - if iterable's type is a dict, make iterator of the baseType of the key 
       // - if iterable's type is a str, also make iterator a str
       // This should be done after implementing the dictionary finish this after doing the dictionary type stuff, 
-      const iterator = core.variable(iter.sourceString,false, iterable.type.baseType);
+      const iterator = core.variable(iter.sourceString, false, iterable.type.baseType);
       context = context.newChildContext({ inLoop: true });
       context.add(iterator.name, iterator);
       const body = block.rep();
@@ -481,7 +481,7 @@ export default function analyze(match) {
       return core.tryStatement(tryBlock, catchBlock, params, block3.rep());
     },
 
-    TryStmt_timeout( _try, block1, _timeout, block2, _catch, parameters, block3) {
+    TryStmt_timeout(_try, block1, _timeout, block2, _catch, parameters, block3) {
       context = context.newChildContext();
       const tryBlock = block1.rep();
       context = context.parent;
@@ -516,7 +516,7 @@ export default function analyze(match) {
         exp2.rep(),
       ];
       mustHaveAnOptionalType(optional, { at: exp1 });
-      mustBeAssignable( alternate,
+      mustBeAssignable(alternate,
         { toType: optional.type.baseType },
         { at: exp2 }
       );
@@ -659,7 +659,7 @@ export default function analyze(match) {
     ArrayLit_emptyarray(_open, _close) {
       return core.emptyArrayLiteral();
     },
-    
+
     DictLit_dict(_open, bindings, _close) {
       return core.dictionaryLiteral(bindings.asIteration().children.map((b) => b.rep()));
     },
@@ -667,7 +667,7 @@ export default function analyze(match) {
     DictLit_emptydict(_open, _close) {
       return core.emptyDictLiteral();
     },
-    
+
     Parens(_open, exp, _close) {
       return exp.rep();
     },
@@ -689,11 +689,11 @@ export default function analyze(match) {
     Type_dictionary(_open, baseType1, _colon, type2, _close) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
     },
-    // Type_function(_open, types, _close, _arrow, retType) {
-    //   const paramTypes = types.asIteration().children.map((t) => t.rep());
-    //   const returnType = retType.rep();
-    //   return core.functionType(paramTypes, returnType);
-    // },
+    Type_function(_open, types, _close, _arrow, retType) {
+      const paramTypes = types.asIteration().children.map((t) => t.rep());
+      const returnType = retType.rep();
+      return core.functionType(paramTypes, returnType);
+    },
 
     Primary_emptyoptional(_no, type) {
       return core.emptyOptional(type.rep());
