@@ -104,7 +104,7 @@ export default function analyze(match) {
   function mustAllHaveSameType(expressions, at) {
     // Used to check the elements of an array expression, and the two
     // arms of a conditional expression, among other scenarios.
-    // perhaps instead 
+    // perhaps instead
     must(
       expressions
         .slice(1)
@@ -127,8 +127,8 @@ export default function analyze(match) {
   function mustHaveIterableType(e, rawStr, at) {
     must(
       (e.type?.kind === "ArrayType") |
-      (e.type?.kind === "DictType") |
-      (e.type?.kind === STRING),
+        (e.type?.kind === "DictType") |
+        (e.type?.kind === STRING),
       `'${rawStr}' is not an iterable object`,
       at
     );
@@ -162,7 +162,8 @@ export default function analyze(match) {
   }
 
   function assignable(fromType, toType) {
-    return (toType == ANY ||
+    return (
+      toType == ANY ||
       equivalent(fromType, toType) ||
       (fromType?.kind === "FunctionType" &&
         toType?.kind === "FunctionType" &&
@@ -199,7 +200,9 @@ export default function analyze(match) {
       case "ArrayType":
         return `[${typeDescription(type.baseType)}]`;
       case "DictionaryType":
-        return `[${typeDescription(type.keyBaseType)}:${typeDescription(type.baseType)}]`;
+        return `[${typeDescription(type.keyBaseType)}:${typeDescription(
+          type.baseType
+        )}]`;
       case "OptionalType":
         return `${typeDescription(type.baseType)}?`;
     }
@@ -225,7 +228,8 @@ export default function analyze(match) {
   }
 
   function mustBeCallable(e, at) {
-    const callable = e?.kind === "StructType" || e.type?.kind === "FunctionType";
+    const callable =
+      e?.kind === "StructType" || e.type?.kind === "FunctionType";
     must(callable, "Call of non-function or non-constructor", at);
   }
 
@@ -234,7 +238,11 @@ export default function analyze(match) {
   }
 
   function mustReturnSomething(f, at) {
-    must(f.type.returnType !== VOID, "Cannot return a value from this function", at);
+    must(
+      f.type.returnType !== VOID,
+      "Cannot return a value from this function",
+      at
+    );
   }
 
   function mustBeReturnable(e, { from: f }, at) {
@@ -268,7 +276,7 @@ export default function analyze(match) {
       const variable = core.variable(id.sourceString, readOnly, varType);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       if (initializer.kind == "EmptyArray") {
-        initializer.type = core.arrayType(varType)
+        initializer.type = core.arrayType(varType);
       } else {
         // if initializer is not an empty array, empty optional, or empty dictionary, then its type must match the variable's type
 
@@ -289,7 +297,10 @@ export default function analyze(match) {
       mustBeAssignable(source, { toType: target.type }, { at: exp });
       mustNotBeReadOnly(target, { at: variable });
       if (ops != "") {
-        return core.assignment(target, core.binary(ops, target, exp.rep(), target.type));
+        return core.assignment(
+          target,
+          core.binary(ops, target, exp.rep(), target.type)
+        );
       }
       return core.assignment(target, source);
     },
@@ -316,7 +327,8 @@ export default function analyze(match) {
       mustBeInAFunction({ at: exp });
       mustReturnSomething(context.function, { at: returnKeyword });
       const returnExpression = exp.rep();
-      mustBeReturnable(returnExpression,
+      mustBeReturnable(
+        returnExpression,
         { from: context.function },
         { at: exp }
       );
@@ -325,9 +337,9 @@ export default function analyze(match) {
 
     //Return
     Stmt_shortreturn(returnKeyword, _semicolon) {
-      mustBeInAFunction({ at: returnKeyword })
-      mustNotReturnAnything(context.function, { at: returnKeyword })
-      return core.shortReturnStatement()
+      mustBeInAFunction({ at: returnKeyword });
+      mustNotReturnAnything(context.function, { at: returnKeyword });
+      return core.shortReturnStatement();
     },
 
     //Function Declaration
@@ -346,7 +358,7 @@ export default function analyze(match) {
       // but we do need to set it before analyzing the body.
       const paramTypes = params.map((param) => param.type);
       // I'm using this for now, I didn't want to get rid of the null coalescing until I fully understood what was happening
-      let returnType
+      let returnType;
       try {
         returnType = type.rep() ?? VOID;
       } catch (e) {
@@ -377,15 +389,19 @@ export default function analyze(match) {
       const iterable = exp.rep();
       mustHaveIterableType(iterable, exp.sourceString, { at: exp });
       // TODO: add cases for the iterable types:
-      // - if iterable's type is an array, make iterator of the baseType 
-      // - if iterable's type is a dict, make iterator of the baseType of the key 
+      // - if iterable's type is an array, make iterator of the baseType
+      // - if iterable's type is a dict, make iterator of the baseType of the key
       // - if iterable's type is a str, also make iterator a str
-      // This should be done after implementing the dictionary finish this after doing the dictionary type stuff, 
-      const iterator = core.variable(iter.sourceString, false, iterable.type.baseType);
+      // This should be done after implementing the dictionary finish this after doing the dictionary type stuff,
+      const iterator = core.variable(
+        iter.sourceString,
+        false,
+        iterable.type.baseType
+      );
       context = context.newChildContext({ inLoop: true });
       context.add(iterator.name, iterator);
       const body = block.rep();
-      context = context.parent
+      context = context.parent;
       return core.forStatement(iterator, iterable, body);
     },
 
@@ -481,7 +497,15 @@ export default function analyze(match) {
       return core.tryStatement(tryBlock, catchBlock, params, block3.rep());
     },
 
-    TryStmt_timeout(_try, block1, _timeout, block2, _catch, parameters, block3) {
+    TryStmt_timeout(
+      _try,
+      block1,
+      _timeout,
+      block2,
+      _catch,
+      parameters,
+      block3
+    ) {
       context = context.newChildContext();
       const tryBlock = block1.rep();
       context = context.parent;
@@ -516,7 +540,8 @@ export default function analyze(match) {
         exp2.rep(),
       ];
       mustHaveAnOptionalType(optional, { at: exp1 });
-      mustBeAssignable(alternate,
+      mustBeAssignable(
+        alternate,
         { toType: optional.type.baseType },
         { at: exp2 }
       );
@@ -627,13 +652,13 @@ export default function analyze(match) {
       const elements = expList.asIteration().children.map((exp) => exp.rep());
       // TODO : implement the following algorithm
       // typeToCheck = element[0].type
-      let typeToCheck = elements[0].type
+      let typeToCheck = elements[0].type;
       // Loop through the elements:
       for (let element of elements) {
         // if the type of the element is not the same as the type to check,
         if (element.type !== typeToCheck) {
           // make it an array of any
-          return core.arrayLiteral(elements, ANY)
+          return core.arrayLiteral(elements, ANY);
         }
       }
       // compare each type of the element to type to check,
@@ -661,7 +686,9 @@ export default function analyze(match) {
     },
 
     DictLit_dict(_open, bindings, _close) {
-      return core.dictionaryLiteral(bindings.asIteration().children.map((b) => b.rep()));
+      return core.dictionaryLiteral(
+        bindings.asIteration().children.map((b) => b.rep())
+      );
     },
 
     DictLit_emptydict(_open, _close) {
@@ -698,9 +725,13 @@ export default function analyze(match) {
     Primary_emptyoptional(_no, type) {
       return core.emptyOptional(type.rep());
     },
-    true(_) { return true; },
+    true(_) {
+      return true;
+    },
 
-    false(_) { return false; },
+    false(_) {
+      return false;
+    },
 
     strlit(_openQuote, _chars, _closeQuote) {
       // strings will be represented as plain JS strings, including

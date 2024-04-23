@@ -1,0 +1,2 @@
+int sqr(x: int) {return (x * x);}
+print(sqr(3) + 1);

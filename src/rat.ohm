@@ -92,7 +92,7 @@ Rat {
     op          = "**" | "*" | "/" | "%" |"+" | "-"
     Type        = Type "?"                                              --optional
                 | Type "^"                                              --promise
-                |"[" Type "]"                                           --array
+                | "[" Type "]"                                          --array
                 | "[" Type":"Type"]"                                    --dictionary
                 | int | float | str | bool | anything
                 | "(" ListOf<Type, ","> ")" "->" Type                   --function
