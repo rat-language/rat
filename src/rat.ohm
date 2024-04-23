@@ -32,7 +32,7 @@ Rat {
                 | for id in Primary Block						        --foreach
                 | for id in Exp ("..." | "..<") Exp Block               --range
 
-    Call        = id Args
+    Call        = Primary Args
     Args        = "(" ListOf<Exp, ","> ")"
     Conversion  = Type "(" Exp ")"
     // Conversion  = Type "(" Exp ")"                                      --conversion
@@ -92,7 +92,7 @@ Rat {
     op          = "**" | "*" | "/" | "%" |"+" | "-"
     Type        = Type "?"                                              --optional
                 | Type "^"                                              --promise
-                | "[" Type "]"                                          --array
+                |"[" Type "]"                                           --array
                 | "[" Type":"Type"]"                                    --dictionary
                 | int | float | str | bool | anything
                 | "(" ListOf<Type, ","> ")" "->" Type                   --function
