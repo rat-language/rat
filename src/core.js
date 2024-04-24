@@ -52,12 +52,12 @@ export function functionCall(callee, args) {
   return { kind: "Call", callee, args, type: callee.type.returnType };
 }
 
-export function shortIfStatement(test, consequent) {
-  return { kind: "ShortIfStatement", test, consequent };
-}
-
 export function ifStatement(test, consequent, alternate) {
   return { kind: "IfStatement", test, consequent, alternate };
+}
+
+export function shortIfStatement(test, consequent) {
+  return { kind: "ShortIfStatement", test, consequent };
 }
 
 export const passStatement = { kind: "PassStatement" };

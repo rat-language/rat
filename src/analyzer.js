@@ -587,7 +587,7 @@ export default function analyze(match) {
         mustHaveNumericOrStringType(left, { at: exp1 });
       }
       mustBeTheSameType(left, right, { at: relOp });
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep(), BOOLEAN);
+      return core.binary(op, left, right, BOOLEAN);
     },
 
     Comp_additive(exp1, addOp, exp2) {

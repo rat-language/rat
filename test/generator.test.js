@@ -26,9 +26,24 @@ const fixtures = [
         let j_2 = 4;
         i_1 = (i_1 + j_2);
         let k_3 = (2 * j_2);
-
+        
         function foo_4(x_5) {
           return (x_5 * 2);
+        }
+        `
+    },
+    {
+        name: "If statements",
+        source: `
+        var i:int = 12;
+        if (i > 0) { 
+          i = i + 1;
+        }
+        `,
+        expected: dedent`
+        let i_1 = 12;
+        if ((i_1 > 0)) {
+          i_1 = (i_1 + 1);
         }
         `
     },
