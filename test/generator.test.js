@@ -30,7 +30,7 @@ const fixtures = [
         function foo_4(x_5) {
           return (x_5 * 2);
         }
-        `,
+        `
   },
   {
     name: "whilllle",
@@ -48,7 +48,7 @@ const fixtures = [
           `,
     expected: dedent`
           let i_1 = 12;
-        `,
+        `
   },
 
   {
@@ -64,7 +64,7 @@ const fixtures = [
           return false;
         }
         let x_2 = foo_1();
-        `,
+        `
   },
   {
     name: "Simple If statements",
@@ -79,7 +79,7 @@ const fixtures = [
         if ((j_1 > 0)) {
           j_1 = (j_1 + 1);
         }
-        `,
+        `
   },
   {
     name: "If statements",
@@ -173,7 +173,43 @@ const fixtures = [
       }
       `,
   },
-];
+
+  {
+    name: "assign to array element",
+    source: `
+      var x: [int] = [1, 2, 3];
+      x[0] = 4;
+      `,
+    expected: dedent`
+      let x_1 = [1, 2, 3];
+      x_1[0] = 4;
+      `
+  },
+  {
+    name: "empty array",
+    source: `
+      var x: [int] = [];
+      `,
+    expected: dedent`
+      let x_1 = [];
+      `
+  },
+  {
+    name: "short if",
+    source: `
+      var x: int = 0;
+      if (x == 0){
+        print("hello world");
+    }
+      `,
+    expected: dedent`
+      let x_1 = 0;
+      if ((x_1 === 0)) {
+      console.log("hello world");
+      }
+      `
+  }
+]
 
 describe("The code generator", () => {
   for (const fixture of fixtures) {
