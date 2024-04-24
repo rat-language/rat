@@ -128,7 +128,7 @@ export default function analyze(match) {
     must(
       (e.type?.kind === "ArrayType") |
       (e.type?.kind === "DictType") |
-      (e.type?.kind === STRING),
+      (e.type === STRING),
       `'${rawStr}' is not an iterable object`,
       at
     );
@@ -624,7 +624,7 @@ export default function analyze(match) {
     Primary_index(exp1, _open, exp2, _close) {
       const [iterable, index] = [exp1.rep(), exp2.rep()];
       // mustHaveArrayType(array, { at: exp1 });
-      mustHaveIterableType(iterable, { at: exp1 });
+      mustHaveIterableType(iterable, exp1.sourceString, { at: exp1 });
       mustHaveIntegerType(index, { at: exp2 });
       return core.index(iterable, index);
     },
