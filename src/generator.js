@@ -79,12 +79,6 @@ export default function generate(program) {
     Function(f) {
       return targetName(f)
     },
-    Increment(s) {
-      output.push(`${gen(s.variable)}++;`)
-    },
-    Decrement(s) {
-      output.push(`${gen(s.variable)}--;`)
-    },
     Assignment(s) {
       output.push(`${gen(s.target)} = ${gen(s.source)};`)
     },
@@ -138,9 +132,9 @@ export default function generate(program) {
       s.body.forEach(gen)
       output.push("}")
     },
-    Conditional(e) {
-      return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`
-    },
+    // Conditional(e) {
+    //   return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`
+    // },
     BinaryExpression(e) {
       const op = { "==": "===", "!=": "!==" }[e.op] ?? e.op
       return `(${gen(e.left)} ${op} ${gen(e.right)})`
@@ -168,12 +162,6 @@ export default function generate(program) {
     EmptyArray(e) {
       return "[]"
     },
-    MemberExpression(e) {
-      const object = gen(e.object)
-      const field = JSON.stringify(gen(e.field))
-      const chain = e.op === "." ? "" : e.op
-      return `(${object}${chain}[${field}])`
-    },
     FunctionCall(c) {
       const targetCode = standardFunctions.has(c.callee)
         ? standardFunctions.get(c.callee)(c.args.map(gen))
@@ -187,6 +175,18 @@ export default function generate(program) {
     ConstructorCall(c) {
       return `new ${gen(c.callee)}(${c.args.map(gen).join(", ")})`
     },
+    // Number(e) {
+    //   return e
+    // },
+    // BigInt(e) {
+    //     return e
+    // },
+    // Boolean(e) {
+    //     return e
+    // },
+    // String(e) {
+    //     return e
+    // },
   }
 
   gen(program)

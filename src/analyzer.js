@@ -145,6 +145,7 @@ export default function analyze(match) {
   function equivalent(t1, t2) {
     // TODO:  Add into this that if we have a list of [any] and a list of [int] that they are equivalent
     // this helps when we declare our variables
+    // t2 === ANY || t1 === ANY ||
     return (
       t1 === t2 ||
       (t1?.kind === "OptionalType" &&
@@ -173,14 +174,13 @@ export default function analyze(match) {
           assignable(t, fromType.paramTypes[i])
         )) ||
       (fromType?.kind === "ArrayType" &&
-        toType?.kind === "ArrayType" &&
-        (fromType.baseType === ANY || assignable(fromType.baseType, toType.baseType)))
+          toType?.kind === "ArrayType" &&
+          (fromType.baseType === ANY || assignable(fromType.baseType, toType.baseType)))
     );
   }
 
   function typeDescription(type) {
     // TODO: add cases for promise type, dictionary type, and noneType (variant of void type)
-
     switch (type.kind) {
       case "IntType":
         return "int";
@@ -292,10 +292,10 @@ export default function analyze(match) {
       const target = variable.rep();
       mustBeAssignable(source, { toType: target.type }, { at: exp });
       mustNotBeReadOnly(target, { at: variable });
-      if (ops != "") {
+      if (ops.sourceString != "") {
         return core.assignment(
           target,
-          core.binary(ops, target, exp.rep(), target.type)
+          core.binary(ops.sourceString, target, exp.rep(), target.type)
         );
       }
       return core.assignment(target, source);
@@ -587,7 +587,6 @@ export default function analyze(match) {
         mustHaveNumericOrStringType(left, { at: exp1 });
       }
       mustBeTheSameType(left, right, { at: relOp });
-
       return core.binary(op.sourceString, exp1.rep(), exp2.rep(), BOOLEAN);
     },
 

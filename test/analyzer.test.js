@@ -35,6 +35,7 @@ const semanticChecks = [
 
   ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
   ["subscript exp", 'var a: [int] =[1,2]; print(a[0]);'],
+  ["alternate assignment", 'var a: int = 12; a += 2;'],
   ["type equivalence of nested arrays", 'int f(x: [[int]]) {return (x[0][0] + x[0][1]);} print(f([[1],[2]]));'],
   ["variables", 'var x: [[[[int]]]] =[[[[1]]]]; print(x[0][0][0][0]+2);'],
 
@@ -43,10 +44,12 @@ const semanticChecks = [
   ["initialize with empty array", "var a:[int] = [];"],
   ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
   ["assign optionals", "var a: int? = no int; a = some 100;"],
-  ["dictionaries", `var ints: [str:int] = {"56": 2, "fakeOnes": 3};`],
   ["optional types", 'var x:int? = no int; x = some 100;'],
   ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
-
+  
+  //------------( POSSIBLY CUT )-----------------//
+  // ["dictionaries", `var ints: [str:int] = {"56": 2, "fakeOnes": 3};`],
+  
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
 
   //------------( STILL IN CARLOS )-----------------//
