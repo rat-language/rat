@@ -44,7 +44,7 @@ export default function generate(program) {
     Program(p) {
       p.statements.forEach(gen)
     },
-    
+
     VariableDeclaration(d) {
       // We don't care about const vs. let in the generated code! The analyzer has
       // already checked that we never updated a const, so let is always fine.

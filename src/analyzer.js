@@ -163,18 +163,19 @@ export default function analyze(match) {
 
   function assignable(fromType, toType) {
     return (
-      toType == ANY ||
+      toType === ANY ||
       equivalent(fromType, toType) ||
       (fromType?.kind === "FunctionType" &&
-        toType?.kind === "FunctionType" &&
-        // covariant in return types
-        assignable(fromType.returnType, toType.returnType) &&
-        fromType.paramTypes.length === toType.paramTypes.length &&
-        // contravariant in parameter types
-        toType.paramTypes.every((t, i) =>
-          assignable(t, fromType.paramTypes[i])
-        ))
-    );
+          toType?.kind === "FunctionType" &&
+          assignable(fromType.returnType, toType.returnType) &&
+          fromType.paramTypes.length === toType.paramTypes.length &&
+          toType.paramTypes.every((t, i) =>
+              assignable(t, fromType.paramTypes[i])
+          )) ||
+      (fromType?.kind === "ArrayType" &&
+          toType?.kind === "ArrayType" &&
+          (fromType.baseType === ANY || assignable(fromType.baseType, toType.baseType)))
+  );
   }
 
   function typeDescription(type) {
@@ -269,26 +270,21 @@ export default function analyze(match) {
     },
 
     Stmt_vardec(modifier, id, _colon, type, _eq, exp, _semicolon) {
-      // TODO: Need to do something else with the 'type'
       const initializer = exp.rep();
       const readOnly = modifier.sourceString === "const";
       const varType = type.rep();
       const variable = core.variable(id.sourceString, readOnly, varType);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-      if (initializer.kind == "EmptyArray") {
-        initializer.type = core.arrayType(varType);
+      if (initializer.kind === "ArrayLit") {
+          initializer.elements.forEach(element => {
+              mustBeAssignable(element, {toType: varType.baseType}, {at: exp});
+          });
       } else {
-        // if initializer is not an empty array, empty optional, or empty dictionary, then its type must match the variable's type
-
-        mustHaveCorrectTypeOnLHS(initializer, varType, { at: exp });
+          mustBeAssignable(initializer, {toType: varType}, {at: exp});
       }
-      // otherwise, if it is empty, make sure it atleast matches the type of the variable!
-      // TODO: Add type checking
-      // exp must be of type 'type'
       context.add(id.sourceString, variable);
-      // Need to make sure this we can both read and write to this variable
       return core.variableDeclaration(variable, varType, initializer);
-    },
+  },
 
     //Assignment
     Stmt_assign(variable, ops, _eq, exp, _semicolon) {
