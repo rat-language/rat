@@ -58,3 +58,6 @@ const returnType = type.rep() ?? VOID;
 check the core if issues with generator, ensure javascript output is stated as we want exactly
 
 statement that the expression belongs to, has to be traced all the way through
+
+exact functionality represented in javascript code
+gen on the p.argument to fully fill out the tree before printing
