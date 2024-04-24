@@ -5,13 +5,13 @@ import optimize from "../src/optimizer.js"
 import generate from "../src/generator.js"
 
 function dedent(s) {
-    return `${s}`.replace(/(?<=\n)\s+/g, "").trim()
+  return `${s}`.replace(/(?<=\n)\s+/g, "").trim()
 }
 
 const fixtures = [
-    {
-        name: "while loop",
-        source: `
+  {
+    name: "while loop",
+    source: `
         var i:int = 12;
         var j:int = 4;
         i = i + j;
@@ -21,7 +21,7 @@ const fixtures = [
           return x * 2;
         }
         `,
-        expected: dedent`
+    expected: dedent`
         let i_1 = 12;
         let j_2 = 4;
         i_1 = (i_1 + j_2);
@@ -31,52 +31,74 @@ const fixtures = [
           return (x_5 * 2);
         }
         `
-    },
-    {
-        name: "If statements",
-        source: `
+  },
+  {
+    name: "If statements",
+    source: `
         var i:int = 12;
         if (i > 0) { 
           i = i + 1;
         }
         `,
-        expected: dedent`
+    expected: dedent`
         let i_1 = 12;
         if ((i_1 > 0)) {
           i_1 = (i_1 + 1);
         }
         `
-    },
-    // {
-    //     name: "call",
-    //     source: `
-    //     int sqr(x: int) {return (x * x);}
-    //     print(sqr(3) + 1);
-    //     `,
-    //     expected: dedent`
-    //     function sqr(x) {
-    //       return x * x;
-    //     }
-    //     console.log(sqr(3) + 1);
-    //     `
-    // },
-    // {
-    //     name: "for loop",
-    //     source: `
-    //     for j in 1...10 {
-    //         if j > 8 {
-    //           break;
-    //         }
-    //       }
-    //     `,
-    //     expected: dedent`
-    //     for (let j_1 = 1; j_1 <= 10; j_1++) {
-    //       if (j_1 > 8) {
-    //         break;
-    //       }
-    //     }
-    //     `
-    // }
+  },
+  {
+    name: "Call",
+    source: `
+      int sqr(x: int) {return (x * x);}
+      sqr(3);
+      `,
+    expected: dedent`
+      function sqr(x) {
+        return x * x;
+      }
+      sqr(3);
+      `
+  },
+  {
+    name: "Print",
+    source: `
+      print(3);
+      `,
+    expected: dedent`
+      console.log(3);
+      `
+  },
+  // {
+  //     name: "call",
+  //     source: `
+  //     int sqr(x: int) {return (x * x);}
+  //     print(sqr(3) + 1);
+  //     `,
+  //     expected: dedent`
+  //     function sqr(x) {
+  //       return x * x;
+  //     }
+  //     console.log(sqr(3) + 1);
+  //     `
+  // },
+  // {
+  //     name: "for loop",
+  //     source: `
+  //     for j in 1...10 {
+  //         if j > 8 {
+  //           break;
+  //         }
+  //       }
+  //     `,
+  //     expected: dedent`
+  //     for (let j_1 = 1; j_1 <= 10; j_1++) {
+  //       if (j_1 > 8) {
+  //         break;
+  //       }
+  //     }
+  //     `
+  // }
 ]
 
 
