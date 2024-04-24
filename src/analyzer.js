@@ -127,8 +127,8 @@ export default function analyze(match) {
   function mustHaveIterableType(e, rawStr, at) {
     must(
       (e.type?.kind === "ArrayType") |
-        (e.type?.kind === "DictType") |
-        (e.type?.kind === STRING),
+      (e.type?.kind === "DictType") |
+      (e.type?.kind === STRING),
       `'${rawStr}' is not an iterable object`,
       at
     );
@@ -166,16 +166,16 @@ export default function analyze(match) {
       toType === ANY ||
       equivalent(fromType, toType) ||
       (fromType?.kind === "FunctionType" &&
-          toType?.kind === "FunctionType" &&
-          assignable(fromType.returnType, toType.returnType) &&
-          fromType.paramTypes.length === toType.paramTypes.length &&
-          toType.paramTypes.every((t, i) =>
-              assignable(t, fromType.paramTypes[i])
-          )) ||
+        toType?.kind === "FunctionType" &&
+        assignable(fromType.returnType, toType.returnType) &&
+        fromType.paramTypes.length === toType.paramTypes.length &&
+        toType.paramTypes.every((t, i) =>
+          assignable(t, fromType.paramTypes[i])
+        )) ||
       (fromType?.kind === "ArrayType" &&
-          toType?.kind === "ArrayType" &&
-          (fromType.baseType === ANY || assignable(fromType.baseType, toType.baseType)))
-  );
+        toType?.kind === "ArrayType" &&
+        (fromType.baseType === ANY || assignable(fromType.baseType, toType.baseType)))
+    );
   }
 
   function typeDescription(type) {
@@ -276,15 +276,15 @@ export default function analyze(match) {
       const variable = core.variable(id.sourceString, readOnly, varType);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       if (initializer.kind === "ArrayLit") {
-          initializer.elements.forEach(element => {
-              mustBeAssignable(element, {toType: varType.baseType}, {at: exp});
-          });
+        initializer.elements.forEach(element => {
+          mustBeAssignable(element, { toType: varType.baseType }, { at: exp });
+        });
       } else {
-          mustBeAssignable(initializer, {toType: varType}, {at: exp});
+        mustBeAssignable(initializer, { toType: varType }, { at: exp });
       }
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, varType, initializer);
-  },
+    },
 
     //Assignment
     Stmt_assign(variable, ops, _eq, exp, _semicolon) {
@@ -420,16 +420,11 @@ export default function analyze(match) {
     },
 
     Call(id, args) {
-      // ids used in calls must have already been declared and must be
-      // bound to function entities, not to variable entities.
       const callee = context.lookup(id.sourceString);
-
       mustBeCallable(callee, { at: id });
       const exps = args.rep();
       const targetTypes = callee.type.paramTypes;
-      mustHaveCorrectArgumentCount(exps.length, targetTypes.length, {
-        at: args,
-      });
+      mustHaveCorrectArgumentCount(exps.length, targetTypes.length, { at: args });
       const argumnts = exps.map((exp, i) => {
         const arg = exp.rep();
         mustBeAssignable(arg, { toType: targetTypes[i] }, { at: exp });
@@ -437,6 +432,7 @@ export default function analyze(match) {
       });
       return core.functionCall(callee, argumnts);
     },
+
 
     Args(_open, expList, _close) {
       return expList.asIteration().children;
