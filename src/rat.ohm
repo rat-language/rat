@@ -14,7 +14,7 @@ Rat {
     // here, we define valid statements
     //=========== (VALID STATEMENTS) ============== //
     Stmt        = print "("Exp ")" ";"                                  --print
-                | (const|var) id ":" Type "=" Exp ";"                   --vardec
+                | (const|var) id ":" Type "=" Exp ";"              --vardec
                 | FuncDecl
                 | Primary op? "=" Exp ";"                               --assign
                 | Call ";"                                              --call

@@ -153,10 +153,10 @@ export default function generate(program) {
     EmptyOptional(e) {
       return "undefined"
     },
-    SubscriptExpression(e) {
+    IndexExpression(e) {
       return `${gen(e.array)}[${gen(e.index)}]`
     },
-    ArrayExpression(e) {
+    ArrayLiteral(e) {
       return `[${e.elements.map(gen).join(",")}]`
     },
     EmptyArray(e) {

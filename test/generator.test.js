@@ -9,29 +9,29 @@ function dedent(s) {
 }
 
 const fixtures = [
-  // {
-  //   name: "while loop",
-  //   source: `
-  //       var i:int = 12;
-  //       var j:int = 4;
-  //       i = i + j;
-  //       var k: int = 2 * j;
+  {
+    name: "while loop",
+    source: `
+        var i:int = 12;
+        var j:int = 4;
+        i = i + j;
+        var k: int = 2 * j;
         
-  //       int foo(x:int){
-  //         return x * 2;
-  //       }
-  //       `,
-  //   expected: dedent`
-  //       let i_1 = 12;
-  //       let j_2 = 4;
-  //       i_1 = (i_1 + j_2);
-  //       let k_3 = (2 * j_2);
+        int foo(x:int){
+          return x * 2;
+        }
+        `,
+    expected: dedent`
+        let i_1 = 12;
+        let j_2 = 4;
+        i_1 = (i_1 + j_2);
+        let k_3 = (2 * j_2);
         
-  //       function foo_4(x_5) {
-  //         return (x_5 * 2);
-  //       }
-  //       `
-  //   },
+        function foo_4(x_5) {
+          return (x_5 * 2);
+        }
+        `
+    },
   {
     name: "whilllle",
     source: `
@@ -106,6 +106,21 @@ const fixtures = [
         `
   },
   {
+    name: "Indexing",
+    // var y: int = x[0];
+    source: `
+    var x: [int] = [3];
+    var y: int = x[0];
+      `,
+      // let y_2 = x_1[0];
+    expected: dedent`
+    let x_1 = [3];
+    let y_2 = x_1[0];
+
+      `
+    
+  },
+  {
     name: "Call",
     source: `
       int sqr(x: int) {return (x * x);}
@@ -142,19 +157,6 @@ const fixtures = [
     let z_4 = (y_1 + sqr_2(y_1));
     `
   },
-  // {
-  //     name: "call",
-  //     source: `
-  //     int sqr(x: int) {return (x * x);}
-  //     print(sqr(3) + 1);
-  //     `,
-  //     expected: dedent`
-  //     function sqr(x) {
-  //       return x * x;
-  //     }
-  //     console.log(sqr(3) + 1);
-  //     `
-  // },
   {
       name: "for loop",
       source: `
