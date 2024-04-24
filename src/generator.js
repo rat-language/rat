@@ -162,12 +162,13 @@ export default function generate(program) {
     EmptyArray(e) {
       return "[]"
     },
-    FunctionCall(c) {
+    Call(c) {
       const targetCode = standardFunctions.has(c.callee)
         ? standardFunctions.get(c.callee)(c.args.map(gen))
         : `${gen(c.callee)}(${c.args.map(gen).join(", ")})`
       // Calls in expressions vs in statements are handled differently
       if (c.callee.type.returnType !== voidType) {
+        output.push(`${targetCode};`) // Not sure about this
         return targetCode
       }
       output.push(`${targetCode};`)

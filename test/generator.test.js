@@ -31,19 +31,43 @@ const fixtures = [
           return (x_5 * 2);
         }
         `
-  },
-  {
-    name: "If statements",
-    source: `
+    },
+    {
+        name: "Simple If statements",
+        source: `
+        var j:int = 12;
+        if (j > 0) { 
+          j = j + 1;
+        }
+        `,
+        expected: dedent`
+        let j_1 = 12;
+        if ((j_1 > 0)) {
+          j_1 = (j_1 + 1);
+        }
+        `
+      },
+      {
+        name: "If statements",
+        source: `
         var i:int = 12;
         if (i > 0) { 
           i = i + 1;
+        } else if (i == 0) {
+          i = i * 2;
+        } else {
+          i = i - 1;
         }
         `,
     expected: dedent`
         let i_1 = 12;
         if ((i_1 > 0)) {
           i_1 = (i_1 + 1);
+        } else
+        if ((i_1 === 0)) {
+          i_1 = (i_1 * 2);
+        } else {
+          i_1 = (i_1 - 1);
         }
         `
   },
@@ -54,10 +78,10 @@ const fixtures = [
       sqr(3);
       `,
     expected: dedent`
-      function sqr(x) {
-        return x * x;
+      function sqr_1(x_2) {
+        return (x_2 * x_2);
       }
-      sqr(3);
+      sqr_1(3);
       `
   },
   {
