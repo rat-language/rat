@@ -137,7 +137,8 @@ const semanticErrors = [
   `, /'true' is not an iterable object/],
   ["improper array declaration", `var x: [int] = ["12", "13"]; print(x[0]);`, /Cannot assign a \[str\] to a \[int\]/],
   ["improper integer declaration", `var x: int = "12";`, /Cannot assign a str to a int/],
-
+  
+  ["int foo ", "int foo() { return false; }", /Cannot assign a bool to a int/],
   //------------( NOT WORKING )-----------------//
 
 
