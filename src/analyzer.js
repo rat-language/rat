@@ -554,9 +554,9 @@ export default function analyze(match) {
       return core.unary(op, operand, type);
     },
 
-    // Exp_await(_await, exp) {
-    //   return core.await(exp.rep())
-    // }
+    // Exp_await(_await, _open, exp, _close, _oneall, _exp) {
+    //   return core.await_exp(exp.rep())
+    // },
 
     Exp0_logicalor(exp1, _or, exp2) {
       let left = exp1.rep();
@@ -710,11 +710,11 @@ export default function analyze(match) {
     Type_dictionary(_open, baseType1, _colon, type2, _close) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
     },
-    Type_function(_open, types, _close, _arrow, retType) {
-      const paramTypes = types.asIteration().children.map((t) => t.rep());
-      const returnType = retType.rep();
-      return core.functionType(paramTypes, returnType);
-    },
+    // Type_function(_open, types, _close, _arrow, retType) {
+    //   const paramTypes = types.asIteration().children.map((t) => t.rep());
+    //   const returnType = retType.rep();
+    //   return core.functionType(paramTypes, returnType);
+    // },
 
     Primary_emptyoptional(_no, type) {
       return core.emptyOptional(type.rep());
@@ -768,6 +768,7 @@ export default function analyze(match) {
     },
 
     id(_firstChar, _restChars) {
+      console.log("we are inside id")
       return this.sourceString;
     },
 

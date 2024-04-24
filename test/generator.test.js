@@ -181,7 +181,7 @@ const fixtures = [
       x[0] = 4;
       `,
     expected: dedent`
-      let x_1 = [1, 2, 3];
+      let x_1 = [1,2,3];
       x_1[0] = 4;
       `
   },
@@ -207,6 +207,21 @@ const fixtures = [
       if ((x_1 === 0)) {
       console.log("hello world");
       }
+      `
+  },
+  {
+    name: "short return",
+    source: `
+      int foo() {
+        return;
+      }
+      foo();
+      `,
+    expected: dedent`
+      function foo_1() {
+        return;
+      }
+      foo_1();
       `
   }
 ]

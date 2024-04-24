@@ -1,0 +1,6 @@
+try {
+  r = await foo();
+} catch(e:str) {
+  # if a different error occurs, do this instead
+  print(e);
+}

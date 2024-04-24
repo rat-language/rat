@@ -1,0 +1,8 @@
+try {
+    r = await <<500>> foo();
+    } 
+    timeout {
+        pass;
+        } 
+catch(e:str) {print(e);
+}

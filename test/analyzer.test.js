@@ -41,6 +41,9 @@ const semanticChecks = [
   ["variables", 'var x: [[[[int]]]] =[[[[1]]]]; print(x[0][0][0][0]+2);'],
   ["indexing strings", 'var x: str = "hello"; print(x[1]);'],
   ["indexing arrays", 'var x: [int] = [1,2,3]; print(x[1]);'],
+  ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
+  ["try statement timeout", "try {r = await <<500>> foo();} timeout {pass;} catch(e:str) {print(e);}"],
+  ["short return", "int foo() {\nreturn;\n}\nfoo();"],
 
   //------------( NOT WORKING )-----------------//
   ["initialize with empty array", "var a:[int] = [];"],
@@ -48,6 +51,8 @@ const semanticChecks = [
   ["assign optionals", "var a: int? = no int; a = some 100;"],
   ["optional types", 'var x:int? = no int; x = some 100;'],
   ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
+  ["float type", "var _grams: float = 2.01;"],
+
 
   //------------( POSSIBLY CUT )-----------------//
   // ["dictionaries", `var ints: [str:int] = {"56": 2, "fakeOnes": 3};`],

@@ -113,13 +113,13 @@ export default function generate(program) {
       s.body.forEach(gen);
       output.push("}");
     },
-    RepeatStatement(s) {
-      // JS can only repeat n times if you give it a counter variable!
-      const i = targetName({ name: "i" });
-      output.push(`for (let ${i} = 0; ${i} < ${gen(s.count)}; ${i}++) {`);
-      s.body.forEach(gen);
-      output.push("}");
-    },
+    // RepeatStatement(s) {
+    //   // JS can only repeat n times if you give it a counter variable!
+    //   const i = targetName({ name: "i" });
+    //   output.push(`for (let ${i} = 0; ${i} < ${gen(s.count)}; ${i}++) {`);
+    //   s.body.forEach(gen);
+    //   output.push("}");
+    // },
     ForRangeStatement(s) {
       const i = targetName(s.iterator);
       const op = s.op === "..." ? "<=" : "<";

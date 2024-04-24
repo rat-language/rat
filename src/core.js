@@ -80,6 +80,9 @@ export function tryStatement(body, catchClause, finallyClause) {
   return { kind: "TryStatement", body, catchClause, finallyClause };
 }
 
+// export function await_exp(exp) {
+//   return { kind: "Await", exp };
+// }
 //==========================( EXPRESSIONS )================================//
 export function binary(op, left, right, type) {
   return { kind: "BinaryExpression", op, left, right, type };
