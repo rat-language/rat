@@ -31,6 +31,7 @@ const semanticChecks = [
   ["short return statement", `void f() { print("this will return nothing"); return; }`],
   // ["short return statement", "void f() { return; }"],
   ["break in nested if", "while false {if true{break;}}"],
+  ["string indexing", `var x: str = "hello"; print(x[0]);`],
   // ["proper array assignment", `var x: [int] = [12, 13]; print(x[0]);`],
 
   ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
