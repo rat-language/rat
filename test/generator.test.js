@@ -1,37 +1,37 @@
-import assert from "node:assert/strict"
-import parse from "../src/parser.js"
-import analyze from "../src/analyzer.js"
-import optimize from "../src/optimizer.js"
-import generate from "../src/generator.js"
+import assert from "node:assert/strict";
+import parse from "../src/parser.js";
+import analyze from "../src/analyzer.js";
+import optimize from "../src/optimizer.js";
+import generate from "../src/generator.js";
 
 function dedent(s) {
-  return `${s}`.replace(/(?<=\n)\s+/g, "").trim()
+  return `${s}`.replace(/(?<=\n)\s+/g, "").trim();
 }
 
 const fixtures = [
-  // {
-  //   name: "while loop",
-  //   source: `
-  //       var i:int = 12;
-  //       var j:int = 4;
-  //       i = i + j;
-  //       var k: int = 2 * j;
-
-  //       int foo(x:int){
-  //         return x * 2;
-  //       }
-  //       `,
-  //   expected: dedent`
-  //       let i_1 = 12;
-  //       let j_2 = 4;
-  //       i_1 = (i_1 + j_2);
-  //       let k_3 = (2 * j_2);
-
-  //       function foo_4(x_5) {
-  //         return (x_5 * 2);
-  //       }
-  //       `
-  //   },
+  {
+    name: "while loop",
+    source: `
+        var i:int = 12;
+        var j:int = 4;
+        i = i + j;
+        var k: int = 2 * j;
+        
+        int foo(x:int){
+          return x * 2;
+        }
+        `,
+    expected: dedent`
+        let i_1 = 12;
+        let j_2 = 4;
+        i_1 = (i_1 + j_2);
+        let k_3 = (2 * j_2);
+        
+        function foo_4(x_5) {
+          return (x_5 * 2);
+        }
+        `
+  },
   {
     name: "whilllle",
     source: `
@@ -103,7 +103,21 @@ const fixtures = [
         } else {
           i_1 = (i_1 - 1);
         }
-        `
+        `,
+  },
+  {
+    name: "Indexing",
+    // var y: int = x[0];
+    source: `
+    var x: [int] = [3, 10, 100];
+    var y: int = x[0];
+      `,
+    // let y_2 = x_1[0];
+    expected: dedent`
+    let x_1 = [3,10,100];
+    let y_2 = x_1[0];
+
+      `,
   },
   {
     name: "Call",
@@ -116,7 +130,7 @@ const fixtures = [
         return (x_2 * x_2);
       }
       sqr_1(3);
-      `
+      `,
   }, // kind field did not hit any generation, core --> calls are
   {
     name: "Print",
@@ -125,7 +139,7 @@ const fixtures = [
       `,
     expected: dedent`
       console.log(3);
-      `
+      `,
   },
   {
     name: "Call in Expression",
@@ -140,22 +154,8 @@ const fixtures = [
       return (x_3 * x_3);
     }
     let z_4 = (y_1 + sqr_2(y_1));
-    `
+    `,
   },
-
-  // {
-  //     name: "call",
-  //     source: `
-  //     int sqr(x: int) {return (x * x);}
-  //     print(sqr(3) + 1);
-  //     `,
-  //     expected: dedent`
-  //     function sqr(x) {
-  //       return x * x;
-  //     }
-  //     console.log(sqr(3) + 1);
-  //     `
-  // },
   {
     name: "for loop",
     source: `
@@ -171,8 +171,9 @@ const fixtures = [
           break;
         }
       }
-      `
+      `,
   },
+
   {
     name: "assign to array element",
     source: `
@@ -210,12 +211,11 @@ const fixtures = [
   }
 ]
 
-
 describe("The code generator", () => {
   for (const fixture of fixtures) {
     it(`produces expected js output for the ${fixture.name} program`, () => {
-      const actual = generate(optimize(analyze(parse(fixture.source))))
-      assert.deepEqual(actual, fixture.expected)
-    })
+      const actual = generate(optimize(analyze(parse(fixture.source))));
+      assert.deepEqual(actual, fixture.expected);
+    });
   }
-})
+});

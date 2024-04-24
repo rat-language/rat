@@ -275,13 +275,13 @@ export default function analyze(match) {
       const varType = type.rep();
       const variable = core.variable(id.sourceString, readOnly, varType);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-      if (initializer.kind === "ArrayLit") {
-        initializer.elements.forEach(element => {
-          mustBeAssignable(element, { toType: varType.baseType }, { at: exp });
-        });
-      } else {
-        mustBeAssignable(initializer, { toType: varType }, { at: exp });
-      }
+      // if (initializer.kind === "ArrayLiteral") {
+      //   initializer.elements.forEach(element => {
+      //     mustBeAssignable(element, { toType: varType.baseType }, { at: exp });
+      //   });
+      // } else {
+      // }
+      mustBeAssignable(initializer, { toType: varType }, { at: exp });
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, varType, initializer);
     },
@@ -330,7 +330,6 @@ export default function analyze(match) {
       );
       return core.returnStatement(returnExpression);
     },
-
     //Return
     Stmt_shortreturn(returnKeyword, _semicolon) {
       mustBeInAFunction({ at: returnKeyword });
@@ -636,22 +635,23 @@ export default function analyze(match) {
       mustHaveBeenFound(entity, id.sourceString, { at: id });
       return entity;
     },
-
+    
     ArrayLit_array(_open, expList, _close) {
       // literals should return a javascripyt object
       // if all are the same, type the array that way
       const elements = expList.asIteration().children.map((exp) => exp.rep());
       // TODO : implement the following algorithm
       // typeToCheck = element[0].type
-      let typeToCheck = elements[0].type;
-      // Loop through the elements:
-      for (let element of elements) {
-        // if the type of the element is not the same as the type to check,
-        if (element.type !== typeToCheck) {
-          // make it an array of any
-          return core.arrayLiteral(elements, ANY);
-        }
-      }
+      mustAllHaveSameType(elements, { at: expList });
+      // let typeToCheck = elements[0].type;
+      // // Loop through the elements:
+      // for (let element of elements) {
+      //   // if the type of the element is not the same as the type to check,
+      //   if (element.type !== typeToCheck) {
+      //     // make it an array of any
+      //     return core.arrayLiteral(elements, ANY);
+      //   }
+      // }
       // compare each type of the element to type to check,
       /*
       // if any of the types do not match, make it an array of any
@@ -664,13 +664,15 @@ export default function analyze(match) {
       }
       */
       // mustAllHaveSameType(elements, { at: expList });
-      return core.arrayLiteral(elements, typeToCheck);
+      return core.arrayLiteral(elements);
       // return core.arrayLiteral(elements, elements[0].type);
       // NOTE: Per Julian, our literals should be returning javascript equivalent values.
       // see intlit and strlit for reference, these return integers and strings from javascript
       // thus, we should instead have a return for elements
       // return elements
     },
+
+    
 
     ArrayLit_emptyarray(_open, _close) {
       return core.emptyArrayLiteral();
@@ -698,6 +700,7 @@ export default function analyze(match) {
     Type_optional(baseType, _question) {
       return core.optionalType(baseType.rep());
     },
+
     Type_promise(baseType, _promise) {
       return core.promiseType(baseType.rep());
     },

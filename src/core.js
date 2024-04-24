@@ -120,10 +120,14 @@ export function dictionaryType(keyBaseType, baseType) {
   return { kind: "DictionaryType", keyBaseType, baseType };
 }
 
-export function arrayLiteral(elements, ty) {
+export function arrayLiteral(elements) {
   // TODO: Modify to accept 'type' so that it tracks the basetype
-  return { kind: "ArrayLiteral", elements, type: arrayType(ty) };
+  return { kind: "ArrayLiteral", elements, type: arrayType(elements[0].type) };
 }
+
+// export function arrayExpression(elements) {
+//   return { kind: "ArrayExpression", elements, type: arrayType(elements[0].type) }
+// }
 
 export function dictionaryLiteral(elements) {
   return {
@@ -144,6 +148,7 @@ export function emptyOptional(baseType) {
 export function emptyArrayLiteral() {
   return { kind: "EmptyArray", type: arrayType(anyType) };
 }
+
 
 export function emptyDictLiteral(type1, type2) {
   return { kind: "EmptyDictionary", type1, type2 };
