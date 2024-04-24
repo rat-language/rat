@@ -52,3 +52,9 @@ const returnType = type.children?.[0]?.rep() ?? VOID;
 // versus
 const returnType = type.rep() ?? VOID;
 ```
+
+
+## Tips
+check the core if issues with generator, ensure javascript output is stated as we want exactly
+
+statement that the expression belongs to, has to be traced all the way through

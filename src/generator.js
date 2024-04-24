@@ -13,7 +13,7 @@ export default function generate(program) {
   const output = []
 
   const standardFunctions = new Map([
-    [standardLibrary.print, x => `console.log(${x})`],
+    [standardLibrary.print, x => `console.log(${x})`], // print is a statement, take a peek at Bella's language
     [standardLibrary.sin, x => `Math.sin(${x})`],
     [standardLibrary.cos, x => `Math.cos(${x})`],
     [standardLibrary.exp, x => `Math.exp(${x})`],
@@ -165,13 +165,21 @@ export default function generate(program) {
     Call(c) {
       const targetCode = standardFunctions.has(c.callee)
         ? standardFunctions.get(c.callee)(c.args.map(gen))
-        : `${gen(c.callee)}(${c.args.map(gen).join(", ")})`
+        : `${gen(c.callee)}(${c.args.map(gen).join(", ")})` // analyzing a statement, will become output.push... anything evaluating should be returned
       // Calls in expressions vs in statements are handled differently
       if (c.callee.type.returnType !== voidType) {
-        output.push(`${targetCode};`) // Not sure about this
+        // output.push(`${targetCode};`) // Not sure about this
         return targetCode
       }
       output.push(`${targetCode};`)
+    },
+    CallStatement(c) {
+      output.push(`${gen(c.call)};`)
+    },
+    PrintStatement(p) {
+      // exact functionality represented in javascript code
+      // gen on the p.argument to fully fill out the tree before printing
+      output.push(`console.log(${gen(p.argument)});`)
     },
     ConstructorCall(c) {
       return `new ${gen(c.callee)}(${c.args.map(gen).join(", ")})`

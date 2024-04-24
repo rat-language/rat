@@ -52,6 +52,10 @@ export function functionCall(callee, args) {
   return { kind: "Call", callee, args, type: callee.type.returnType };
 }
 
+export function callStatement(call) {
+  return { kind: "CallStatement", call}
+}
+
 export function ifStatement(test, consequent, alternate) {
   return { kind: "IfStatement", test, consequent, alternate };
 }

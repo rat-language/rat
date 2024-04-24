@@ -83,7 +83,7 @@ const fixtures = [
       }
       sqr_1(3);
       `
-  },
+  }, // kind field did not hit any generation, core --> calls are
   {
     name: "Print",
     source: `
@@ -93,6 +93,21 @@ const fixtures = [
       console.log(3);
       `
   },
+  {
+    name: "Call in Expression",
+    source: `
+      let y: int = 3;
+      int sqr(x: int) {return (x * x);}
+      y + sqr;
+    `,
+    expected: dedent `
+    var y = 3;
+    function sqr_1(x_2) {
+        return (x_2 * x_2);
+      };
+      
+    `
+  }
   // {
   //     name: "call",
   //     source: `

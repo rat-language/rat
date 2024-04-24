@@ -303,7 +303,7 @@ export default function analyze(match) {
 
     //Call
     Stmt_call(call, _semicolon) {
-      return call.rep();
+      return core.callStatement(call.rep());
     },
 
     //Pass
