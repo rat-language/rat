@@ -38,7 +38,8 @@ const semanticChecks = [
   ["alternate assignment", 'var a: int = 12; a += 2;'],
   ["type equivalence of nested arrays", 'int f(x: [[int]]) {return (x[0][0] + x[0][1]);} print(f([[1],[2]]));'],
   ["variables", 'var x: [[[[int]]]] =[[[[1]]]]; print(x[0][0][0][0]+2);'],
-
+  ["indexing strings", 'var x: str = "hello"; print(x[1]);'],
+  ["indexing arrays", 'var x: [int] = [1,2,3]; print(x[1]);'],
 
   //------------( NOT WORKING )-----------------//
   ["initialize with empty array", "var a:[int] = [];"],
@@ -46,10 +47,10 @@ const semanticChecks = [
   ["assign optionals", "var a: int? = no int; a = some 100;"],
   ["optional types", 'var x:int? = no int; x = some 100;'],
   ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
-  
+
   //------------( POSSIBLY CUT )-----------------//
   // ["dictionaries", `var ints: [str:int] = {"56": 2, "fakeOnes": 3};`],
-  
+
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
 
   //------------( STILL IN CARLOS )-----------------//
@@ -137,7 +138,7 @@ const semanticErrors = [
   `, /'true' is not an iterable object/],
   ["improper array declaration", `var x: [int] = ["12", "13"]; print(x[0]);`, /Cannot assign a \[str\] to a \[int\]/],
   ["improper integer declaration", `var x: int = "12";`, /Cannot assign a str to a int/],
-  
+
   ["int foo ", "int foo() { return false; }", /Cannot assign a bool to a int/],
   //------------( NOT WORKING )-----------------//
 

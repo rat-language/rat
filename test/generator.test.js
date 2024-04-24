@@ -16,7 +16,7 @@ const fixtures = [
   //       var j:int = 4;
   //       i = i + j;
   //       var k: int = 2 * j;
-        
+
   //       int foo(x:int){
   //         return x * 2;
   //       }
@@ -26,7 +26,7 @@ const fixtures = [
   //       let j_2 = 4;
   //       i_1 = (i_1 + j_2);
   //       let k_3 = (2 * j_2);
-        
+
   //       function foo_4(x_5) {
   //         return (x_5 * 2);
   //       }
@@ -46,44 +46,44 @@ const fixtures = [
           }
           
           `,
-          expected: dedent`
+    expected: dedent`
           let i_1 = 12;
         `
-    },
+  },
 
-    {
-        name: "Bool false return",
-        source: `
+  {
+    name: "Bool false return",
+    source: `
         bool foo() {
           return false;
         }
         var x: bool = foo();
         `,
-        expected: dedent`
+    expected: dedent`
         function foo_1() {
           return false;
         }
         let x_2 = foo_1();
         `
-      },
-    {
-        name: "Simple If statements",
-        source: `
+  },
+  {
+    name: "Simple If statements",
+    source: `
         var j:int = 12;
         if (j > 0) { 
           j = j + 1;
         }
         `,
-        expected: dedent`
+    expected: dedent`
         let j_1 = 12;
         if ((j_1 > 0)) {
           j_1 = (j_1 + 1);
         }
         `
-      },
-      {
-        name: "If statements",
-        source: `
+  },
+  {
+    name: "If statements",
+    source: `
         var i:int = 12;
         if (i > 0) { 
           i = i + 1;
@@ -134,7 +134,7 @@ const fixtures = [
       int sqr(x: int) {return (x * x);}
       var z: int = y + sqr(y);
     `,
-    expected: dedent `
+    expected: dedent`
     let y_1 = 3;
     function sqr_2(x_3) {
       return (x_3 * x_3);
@@ -142,6 +142,7 @@ const fixtures = [
     let z_4 = (y_1 + sqr_2(y_1));
     `
   },
+
   // {
   //     name: "call",
   //     source: `
@@ -156,19 +157,54 @@ const fixtures = [
   //     `
   // },
   {
-      name: "for loop",
-      source: `
+    name: "for loop",
+    source: `
       for j in 1...10 {
           if j > 8 {
             break;
           }
         }
       `,
-      expected: dedent`
+    expected: dedent`
       for (let j_1 = 1; j_1 <= 10; j_1++) {
         if ((j_1 > 8)) {
           break;
         }
+      }
+      `
+  },
+  {
+    name: "assign to array element",
+    source: `
+      var x: [int] = [1, 2, 3];
+      x[0] = 4;
+      `,
+    expected: dedent`
+      let x_1 = [1, 2, 3];
+      x_1[0] = 4;
+      `
+  },
+  {
+    name: "empty array",
+    source: `
+      var x: [int] = [];
+      `,
+    expected: dedent`
+      let x_1 = [];
+      `
+  },
+  {
+    name: "short if",
+    source: `
+      var x: int = 0;
+      if (x == 0){
+        print("hello world");
+    }
+      `,
+    expected: dedent`
+      let x_1 = 0;
+      if ((x_1 === 0)) {
+      console.log("hello world");
       }
       `
   }
