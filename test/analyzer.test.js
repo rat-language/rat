@@ -32,12 +32,12 @@ const semanticChecks = [
   // ["short return statement", "void f() { return; }"],
   ["break in nested if", "while false {if true{break;}}"],
   // ["proper array assignment", `var x: [int] = [12, 13]; print(x[0]);`],
-  
+
   ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
   ["subscript exp", 'var a: [int] =[1,2]; print(a[0]);'],
   ["type equivalence of nested arrays", 'int f(x: [[int]]) {return (x[0][0] + x[0][1]);} print(f([[1],[2]]));'],
   ["variables", 'var x: [[[[int]]]] =[[[[1]]]]; print(x[0][0][0][0]+2);'],
-  
+
 
   //------------( NOT WORKING )-----------------//
   ["initialize with empty array", "var a:[int] = [];"],
@@ -100,20 +100,20 @@ const semanticChecks = [
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
   //------------( WORKING )-----------------//
-  ["undeclared id", `var a: int = 1; print(x);`,      /Identifier x not declared/],
-  ["redeclared id", "var x:int = 1; var x:int = 1;",  /Identifier x already declared/],
-  ["assign to const", "const x : int = 1; x = 2;",    /x is read only/],
+  ["undeclared id", `var a: int = 1; print(x);`, /Identifier x not declared/],
+  ["redeclared id", "var x:int = 1; var x:int = 1;", /Identifier x already declared/],
+  ["assign to const", "const x : int = 1; x = 2;", /x is read only/],
   ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Expected a number/],
-  ["unwrap non-optional", "print(1??2);",     /Expected an optional/],
-  ["bad types for +", "print(false+1);",      /Expected a number or string/],
-  ["bad types for -", "print(false-1);",      /Expected a number/],
-  ["bad types for *", "print(false*1);",      /Expected a number/],
-  ["bad types for /", "print(false/1);",      /Expected a number/],
-  ["bad types for **", "print(false**1);",    /Expected a number/],
-  ["bad types for <", "print(false<1);",      /Expected a number or string/],
-  ["bad types for <=", "print(false<=1);",    /Expected a number or string/],
+  ["unwrap non-optional", "print(1??2);", /Expected an optional/],
+  ["bad types for +", "print(false+1);", /Expected a number or string/],
+  ["bad types for -", "print(false-1);", /Expected a number/],
+  ["bad types for *", "print(false*1);", /Expected a number/],
+  ["bad types for /", "print(false/1);", /Expected a number/],
+  ["bad types for **", "print(false**1);", /Expected a number/],
+  ["bad types for <", "print(false<1);", /Expected a number or string/],
+  ["bad types for <=", "print(false<=1);", /Expected a number or string/],
   ["bad types for negation", "print(-true);", /Expected a number/],
-  ["bad types for not", 'print(!"hello");',   /Expected a boolean/],
+  ["bad types for not", 'print(!"hello");', /Expected a boolean/],
   ["assign bad array type", "var x: int = 1; x=[true];", /Cannot assign a \[bool\] to a int/],
   ["assign bad optional type", "var x: int = 1;x=some 2;", /Cannot assign a int\? to a int/],
   ["bad types for >", "print(false>1);", /Expected a number or string/],
@@ -132,8 +132,8 @@ const semanticErrors = [
     print(i);
   }
   `, /'true' is not an iterable object/],
-  ["improper array declaration", `var x: [int] = ["12", "13"]; print(x[0]);`, /Expected a \[int\]/],
-  ["improper integer declaration", `var x: int = "12";`, /Expected a int/],
+  ["improper array declaration", `var x: [int] = ["12", "13"]; print(x[0]);`, /Cannot assign a \[str\] to a \[int\]/],
+  ["improper integer declaration", `var x: int = "12";`, /Cannot assign a str to a int/],
 
   //------------( NOT WORKING )-----------------//
 
@@ -144,8 +144,8 @@ const semanticErrors = [
   // - We don't have a '#' operator
   // ["Non-type in param", "var x:int=1; void f(y:x){}", /Type expected/],
   // - 'id' can't be a type and this will be detected in the syntax check.
-  
-  
+
+
   //------------( STILL IN CARLOS )-----------------//
   // // [
   // //   "break inside function",
@@ -198,7 +198,7 @@ const semanticErrors = [
   // //   /Cannot assign a \(int\)->string to a \(int\)->int/,
   // // ],
   // // ["bad call to sin()", "print(sin(true));", /Cannot assign a boolean to a float/],
-  
+
   // // ["Non-type in return type", "let x=1;function f():x{return 1;}", /Type expected/],
   // // ["Non-type in field type", "let x=1;struct S {y:x}", /Type expected/],
 ]
@@ -215,7 +215,7 @@ describe("The analyzer", () => {
       assert.throws(() => analyze(parse(source)), errorMessagePattern)
     })
   }
-  
+
   // it("produces the expected representation for a trivial program", () => {
   //   assert.deepEqual(
   //     analyze(parse("let x = π + 2.2;")),
