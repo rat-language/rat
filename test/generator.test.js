@@ -12,15 +12,23 @@ const fixtures = [
     {
         name: "while loop",
         source: `
-        var i:int = 0;
-        while (i <= 10){
-          i += 1;
+        var i:int = 12;
+        var j:int = 4;
+        i = i + j;
+        var k: int = 2 * j;
+        
+        int foo(x:int){
+          return x * 2;
         }
         `,
         expected: dedent`
-        let i_1 = 0;
-        while (i_1 <= 10) {
-          i += 1;
+        let i_1 = 12;
+        let j_2 = 4;
+        i_1 = (i_1 + j_2);
+        let k_3 = (2 * j_2);
+
+        function foo_4(x_5) {
+          return (x_5 * 2);
         }
         `
     },

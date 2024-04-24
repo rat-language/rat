@@ -20,7 +20,7 @@ Rat {
                 | Call ";"                                              --call
                 | break ";"                                             --break
                 | pass ";"                                              --pass
-                | return Exp ";"                                        --return 
+                | return Exp ";"                                         --return 
                 | return ";"                                        --shortreturn 
                 | IfStmt
                 | LoopStmt

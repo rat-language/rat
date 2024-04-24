@@ -50,22 +50,22 @@ export default function generate(program) {
       // already checked that we never updated a const, so let is always fine.
       output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`)
     },
-    TypeDeclaration(d) {
-      // The only type declaration in Carlos is the struct! Becomes a JS class.
-      output.push(`class ${gen(d.type)} {`)
-      output.push(`constructor(${d.type.fields.map(gen).join(",")}) {`)
-      for (let field of d.type.fields) {
-        output.push(`this[${JSON.stringify(gen(field))}] = ${gen(field)};`)
-      }
-      output.push("}")
-      output.push("}")
-    },
-    StructType(t) {
-      return targetName(t)
-    },
-    Field(f) {
-      return targetName(f)
-    },
+    // TypeDeclaration(d) {
+    //   // The only type declaration in Carlos is the struct! Becomes a JS class.
+    //   output.push(`class ${gen(d.type)} {`)
+    //   output.push(`constructor(${d.type.fields.map(gen).join(",")}) {`)
+    //   for (let field of d.type.fields) {
+    //     output.push(`this[${JSON.stringify(gen(field))}] = ${gen(field)};`)
+    //   }
+    //   output.push("}")
+    //   output.push("}")
+    // },
+    // StructType(t) {
+    //   return targetName(t)
+    // },
+    // Field(f) {
+    //   return targetName(f)
+    // },
     FunctionDeclaration(d) {
       output.push(`function ${gen(d.fun)}(${d.params.map(gen).join(", ")}) {`)
       d.body.forEach(gen)

@@ -22,7 +22,7 @@ print(y);
 while(i < 4) { x += 1; i += 1; }
 
 var fatrat: [str] = ["f", "a", "t", "r", "a", "t"];
-print(x);
+print(x); 
 i = 0;
 x = 8;
 
