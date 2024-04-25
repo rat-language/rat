@@ -114,14 +114,9 @@ export default function analyze(match) {
     );
   }
 
-  function mustBeAType(e, at) {
-    // This is a rather ugly hack
-    must(e?.kind.endsWith("Type"), "Type expected", at);
-  }
-
-  function mustBeAnArrayType(t, at) {
-    must(t?.kind === "ArrayType", "Must be an array type", at);
-  }
+  // function mustBeAnArrayType(t, at) {
+  //   must(t?.kind === "ArrayType", "Must be an array type", at);
+  // }
 
   // ↓ ↓ NOT IN TOALS CODE ↓ ↓
   function mustHaveIterableType(e, rawStr, at) {
@@ -255,10 +250,6 @@ export default function analyze(match) {
     must(argCount === paramCount, message, at);
   }
 
-  function mustHaveCorrectTypeOnLHS(e, type, at) {
-    must(equivalent(e.type, type), `Expected a ${typeDescription(type)}`, at);
-  }
-
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     Program(statements) {
       return core.program(statements.children.map((s) => s.rep()));
@@ -354,11 +345,12 @@ export default function analyze(match) {
       const paramTypes = params.map((param) => param.type);
       // I'm using this for now, I didn't want to get rid of the null coalescing until I fully understood what was happening
       let returnType;
-      try {
-        returnType = type.rep() ?? VOID;
-      } catch (e) {
-        returnType = type.children?.[0]?.rep() ?? VOID;
-      }
+      returnType = type.rep() ?? VOID;
+      // try {
+      // } catch (e) {
+        // !! WHY : was it like this in carlos? why did types need children?
+      //   returnType = type.children?.[0]?.rep() ?? VOID;
+      // }
       // const returnType = type.children?.[0]?.rep() ?? type.rep() ?? VOID;
       fun.type = core.functionType(paramTypes, returnType);
       // Analyze body while still in child context
@@ -701,9 +693,6 @@ export default function analyze(match) {
       return core.optionalType(baseType.rep());
     },
 
-    Type_promise(baseType, _promise) {
-      return core.promiseType(baseType.rep());
-    },
     Type_array(_open, baseType, _close) {
       return core.arrayType(baseType.rep());
     },
@@ -769,7 +758,6 @@ export default function analyze(match) {
     },
 
     id(_firstChar, _restChars) {
-      console.log("we are inside id")
       return this.sourceString;
     },
 

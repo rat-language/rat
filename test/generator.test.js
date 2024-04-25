@@ -10,7 +10,7 @@ function dedent(s) {
 
 const fixtures = [
   {
-    name: "while loop",
+    name: "Simple program",
     source: `
         var i:int = 12;
         var j:int = 4;
@@ -33,7 +33,7 @@ const fixtures = [
         `
   },
   {
-    name: "whilllle",
+    name: "while false",
     source: `
         var i:int = 12;
 
@@ -49,6 +49,30 @@ const fixtures = [
     expected: dedent`
           let i_1 = 12;
         `
+  },
+  
+  {
+    name: "simple while loop",
+    source: `
+        var i:int = 12;
+
+        while (i > 0) {
+            i -= 1;
+            if (i == 5) {
+              break;
+            }
+          }
+          
+          `,
+    expected: dedent`
+          let i_1 = 12;
+          while ((i_1 > 0)) {
+            i_1 = (i_1 - 1);
+            if ((i_1 === 5)) {
+              break;
+            }
+          }
+          `
   },
 
   {
@@ -173,6 +197,29 @@ const fixtures = [
       }
       `,
   },
+  {
+    name: "for loop (collections)",
+    source: `
+      var nums: [int] = [1, 2, 3];
+      for num in nums {
+        print(num);
+      }
+      var msg: str = "goodbye";
+      for letter in msg {
+        print(letter);
+      }
+      `,
+    expected: dedent`
+      let nums_1 = [1,2,3];
+      for (let num_2 of nums_1) {
+        console.log(num_2);
+      }
+      let msg_3 = "goodbye";
+      for (let letter_4 of msg_3) {
+        console.log(letter_4);
+      }
+      `,
+  },
 
   {
     name: "assign to array element",
@@ -201,7 +248,7 @@ const fixtures = [
       if (x == 0){
         print("hello world");
     }
-      `,
+    `,
     expected: dedent`
       let x_1 = 0;
       if ((x_1 === 0)) {
@@ -250,7 +297,18 @@ const fixtures = [
         console.log(e_3);
       }
       `
-  }
+  },
+  {
+    name: "alternate assignment",
+    source: `
+        var i:int = 12;
+        i += 12;
+        `,
+    expected: dedent`
+        let i_1 = 12;
+        i_1 = (i_1 + 12);
+        `
+  },
 ]
 
 describe("The code generator", () => {

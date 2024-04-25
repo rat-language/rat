@@ -45,18 +45,17 @@ const semanticChecks = [
   ["short return", "void foo() {\nreturn;\n}\nfoo();"],
   ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nvar r: int = foo();\n} catch(e:str) {\nprint(e);\n}"],
 
-  //------------( NOT WORKING )-----------------//
   ["initialize with empty array", "var a:[int] = [];"],
   ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
   ["assign optionals", "var a: int? = no int; a = some 100;"],
   ["optional types", 'var x:int? = no int; x = some 100;'],
   ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
   ["float type", "var _grams: float = 2.01;"],
-
+  //------------( NOT WORKING )-----------------//
+  ["Logical Ors", "var a: bool = (true || false);"],
 
   //------------( POSSIBLY CUT )-----------------//
   // ["dictionaries", `var ints: [str:int] = {"56": 2, "fakeOnes": 3};`],
-
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],
 
   //------------( STILL IN CARLOS )-----------------//

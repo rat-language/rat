@@ -104,6 +104,7 @@ export function index(iterable, index) {
 
 //------------------------------- (TYPES) ---------------------------------//
 export function functionType(paramTypes, returnType) {
+  // paramTypes suppposed to be an array of something
   return { kind: "FunctionType", paramTypes, returnType };
 }
 

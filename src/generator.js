@@ -22,7 +22,7 @@ export default function generate(program) {
     [standardLibrary.bytes, (s) => `[...Buffer.from(${s}, "utf8")]`],
     [standardLibrary.codepoints, (s) => `[...(${s})].map(s=>s.codePointAt(0))`],
   ]);
-
+  
   // Variable and function names in JS will be suffixed with _1, _2, _3,
   // etc. This is because "switch", for example, is a legal name in Carlos,
   // but not in JS. So, the Carlos variable "switch" must become something
@@ -147,8 +147,6 @@ export default function generate(program) {
         return operand;
       } else if (e.op === "#") {
         return `${operand}.length`;
-      } else if (e.op === "random") {
-        return `((a=>a[~~(Math.random()*a.length)])(${operand}))`;
       }
       return `${e.op}(${operand})`;
     },
@@ -195,21 +193,6 @@ export default function generate(program) {
       // gen on the p.argument to fully fill out the tree before printing
       output.push(`console.log(${gen(p.argument)});`);
     },
-    ConstructorCall(c) {
-      return `new ${gen(c.callee)}(${c.args.map(gen).join(", ")})`;
-    },
-    // Number(e) {
-    //   return e
-    // },
-    // BigInt(e) {
-    //     return e
-    // },
-    // Boolean(e) {
-    //     return e
-    // },
-    // String(e) {
-    //     return e
-    // },
   };
 
   gen(program);

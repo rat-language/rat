@@ -61,3 +61,35 @@ statement that the expression belongs to, has to be traced all the way through
 
 exact functionality represented in javascript code
 gen on the p.argument to fully fill out the tree before printing
+
+
+
+
+- Functions
+- Optional Handling
+- Standard Library Functionality
+- ErrorTypes for Try catch ??
+
+
+## Currently uncovered in analyzer.js:
+musts:
+- assignable (one line in this function)
+- typeDescription (VoidType, DictionaryType)
+
+builder:
+- Conversion
+- Dictlit_dict
+- DictLit_emptydict
+- Binding
+- Type_dictionary
+- id
+
+
+idea: 
+- may want to add more to the `Assignment(s)` function in generate, so that `+= , -=, etc.` would match javascript. this could also help us with appending to arrays in a similar way to how python does it. (Something carlos doesn't have).
+
+
+## Currently uncovered in generator.js:
+- UnaryExpression(e)
+- EmptyOptional(e)
+- some val
