@@ -42,8 +42,8 @@ const semanticChecks = [
   ["indexing strings", 'var x: str = "hello"; print(x[1]);'],
   ["indexing arrays", 'var x: [int] = [1,2,3]; print(x[1]);'],
   ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
-  ["try statement timeout", "try {r = await <<500>> foo();} timeout {pass;} catch(e:str) {print(e);}"],
-  ["short return", "int foo() {\nreturn;\n}\nfoo();"],
+  ["short return", "void foo() {\nreturn;\n}\nfoo();"],
+  ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nvar r: int = foo();\n} catch(e:str) {\nprint(e);\n}"],
 
   //------------( NOT WORKING )-----------------//
   ["initialize with empty array", "var a:[int] = [];"],

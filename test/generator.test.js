@@ -209,19 +209,46 @@ const fixtures = [
       }
       `
   },
+  // test for this:   ["short return", "void foo() {\nreturn;\n}\nfoo();"],
   {
     name: "short return",
     source: `
-      int foo() {
+      void foo() {
+        print("hello");
         return;
       }
       foo();
       `,
     expected: dedent`
       function foo_1() {
+        console.log("hello");
         return;
       }
       foo_1();
+      `
+  },
+  // test for this:   ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nvar r: int = foo();\n} catch(e:str) {\nprint(e);\n}"],
+  {
+    name: "try catch",
+    source: `
+      int foo() {
+        return 10;
+      }
+      try {
+        var r: int = foo();
+      } catch(e:str) {
+        print(e);
+      }
+      `,
+    expected: dedent`
+      function foo_1() {
+        return 10;
+      }
+      try {
+        let r_2 = foo_1();
+      } catch (e_3) {
+        console.log(e_3);
+      }
       `
   }
 ]

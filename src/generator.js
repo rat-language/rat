@@ -170,14 +170,17 @@ export default function generate(program) {
         : `${gen(c.callee)}(${c.args.map(gen).join(", ")})`; // analyzing a statement, will become output.push... anything evaluating should be returned
       // Calls in expressions vs in statements are handled differently
       if (c.callee.type.returnType !== voidType) {
-        // output.push(`${targetCode};`) // Not sure about this
         return targetCode;
       }
       output.push(`${targetCode};`);
     },
     CallStatement(c) {
+      if (c.call.callee.type.returnType === voidType) {
+        return gen(c.call);
+      }
       output.push(`${gen(c.call)};`);
     },
+
     PrintStatement(p) {
       // exact functionality represented in javascript code
       // gen on the p.argument to fully fill out the tree before printing

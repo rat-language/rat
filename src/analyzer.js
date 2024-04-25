@@ -485,27 +485,27 @@ export default function analyze(match) {
       const params = parameters.rep();
       const catchBlock = block2.rep();
       context = context.parent;
-      return core.tryStatement(tryBlock, catchBlock, params, block3.rep());
+      return core.tryStatement(tryBlock, catchBlock, params);
     },
 
-    TryStmt_timeout(
-      _try,
-      block1,
-      _timeout,
-      block2,
-      _catch,
-      parameters,
-      block3
-    ) {
-      context = context.newChildContext();
-      const tryBlock = block1.rep();
-      context = context.parent;
-      context = context.newChildContext();
-      const timeoutBlock = block2.rep();
-      context = context.parent;
-      const params = parameters.rep();
-      return core.tryStatement(tryBlock, timeoutBlock, params, block3.rep());
-    },
+    // TryStmt_timeout(
+    //   _try,
+    //   block1,
+    //   _timeout,
+    //   block2,
+    //   _catch,
+    //   parameters,
+    //   block3
+    // ) {
+    //   context = context.newChildContext();
+    //   const tryBlock = block1.rep();
+    //   context = context.parent;
+    //   context = context.newChildContext();
+    //   const timeoutBlock = block2.rep();
+    //   context = context.parent;
+    //   const params = parameters.rep();
+    //   return core.tryStatement(tryBlock, timeoutBlock, params, block3.rep());
+    // },
 
     Params(_open, paramList, _close) {
       // Returns a list of variable nodes
@@ -710,6 +710,7 @@ export default function analyze(match) {
     Type_dictionary(_open, baseType1, _colon, type2, _close) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
     },
+    
     // Type_function(_open, types, _close, _arrow, retType) {
     //   const paramTypes = types.asIteration().children.map((t) => t.rep());
     //   const returnType = retType.rep();

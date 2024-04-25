@@ -20,7 +20,8 @@ const syntaxChecks = [
   ["coalescing operator", "var boss:str? = some \"Tina\";\nprint (boss ?? \"No boss here\");"],
   ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
   ["await call", "try {r = await <<500>> foo();} timeout {pass;} catch(e:str) {print(e);}"],
-  ["short return", "int foo() {\nreturn;\n}\nfoo();"]
+  ["short return", "void foo() {\nreturn;\n}\nfoo();"],
+  ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nvar r: int = foo();\n} catch(e:str) {\nprint(e);\n}"]
 ]
 
 // SYNTAX ERRORS NEED TO BE CHANGED EXTENSIVELY
