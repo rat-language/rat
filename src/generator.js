@@ -181,6 +181,15 @@ export default function generate(program) {
       output.push(`${gen(c.call)};`);
     },
 
+    // Try statement working, doesnt use finally clause. THIS IS MESSED UP
+    TryStatement(t) {
+      output.push("try {");
+      t.body.forEach(gen);
+      output.push("} catch (e) {");
+      t.catchClause.forEach(gen);
+      output.push("}");
+    },
+
     PrintStatement(p) {
       // exact functionality represented in javascript code
       // gen on the p.argument to fully fill out the tree before printing
