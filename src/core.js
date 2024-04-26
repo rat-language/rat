@@ -76,8 +76,8 @@ export function shortReturnStatement() {
   return { kind: "ShortReturnStatement" };
 }
 
-export function tryStatement(body, catchClause, finallyClause) {
-  return { kind: "TryStatement", body, catchClause, finallyClause };
+export function tryStatement(body, catchClause, errors) {
+  return { kind: "TryStatement", body, catchClause, errors};
 }
 
 // export function await_exp(exp) {
@@ -120,26 +120,31 @@ export function arrayType(baseType) {
   return { kind: "ArrayType", baseType };
 }
 
-export function dictionaryType(keyBaseType, baseType) {
-  return { kind: "DictionaryType", keyBaseType, baseType };
-}
 
 export function arrayLiteral(elements) {
   // TODO: Modify to accept 'type' so that it tracks the basetype
   return { kind: "ArrayLiteral", elements, type: arrayType(elements[0].type) };
 }
 
-// export function arrayExpression(elements) {
-//   return { kind: "ArrayExpression", elements, type: arrayType(elements[0].type) }
-// }
+export function dictionaryType(keyBaseType, baseType) {
+  return { kind: "DictionaryType", keyBaseType, baseType };
+}
 
 export function dictionaryLiteral(elements) {
-  return {
-    kind: "DictionaryLiteral",
-    elements,
-    type: dictionaryType(elements[0].type),
-  };
+  if (elements.length === 0) {
+    return { kind: "DictionaryLiteral", elements: [], type: dictionaryType('any', 'any') };
+  }
+  let keyType = elements[0].key.type;
+  let valueType = elements[0].value.type;
+  for (let entry of elements) {
+    if (entry.key.type !== keyType || entry.value.type !== valueType) {
+      throw new Error("Inconsistent key or value types in dictionary literal");
+    }
+  }
+  return { kind: "DictionaryLiteral", elements: elements, type: dictionaryType(keyType, valueType) };
 }
+
+
 
 export function dictionaryEntry(key, value) {
   return { kind: "DictionaryEntry", key, value };

@@ -81,18 +81,19 @@ Rat {
                 | strlit
                 | id                                                    --id
                 | Parens
+
     ArrayLit    = "[" "]"                                               --emptyarray
                 | "[" NonemptyListOf<Exp, ",">"]"                       --array
                 
     DictLit     = "{" "}"                                               --emptydict
-                | "{" ListOf<Binding,",">"}"                            --dict
+                | "{" NonemptyListOf<DictEntry,",">"}"                            --dict
     Parens      = "(" Exp ")"
     //key:value pairs for dictionaries
-    Binding     = Exp ":" Exp
+    DictEntry     = Primary ":" Exp
     op          = "**" | "*" | "/" | "%" |"+" | "-"
     Type        = Type "?"                                              --optional
                 |"[" Type "]"                                           --array
-                | "[" Type":"Type"]"                                    --dictionary
+                | "{" Type":"Type"}"                                    --dictionary
                 | int | float | str | bool | anything
                 | "(" ListOf<Type, ","> ")" "->" Type                   --function
     //KEYWORDS:

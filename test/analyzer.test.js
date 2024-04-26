@@ -54,6 +54,10 @@ const semanticChecks = [
   //------------( NOT WORKING )-----------------//
   ["Logical Ors", "var a: bool = (true || false);"],
 
+  ["Dictionary", `var ints: {str:int} = {"56": 2, "fakeOnes": 3};`],
+ 
+  ["Empty Dictionary", `var ints: {str:int} = {};`],
+
   //------------( POSSIBLY CUT )-----------------//
   // ["dictionaries", `var ints: [str:int] = {"56": 2, "fakeOnes": 3};`],
   // ["complex array types", "void f(x: [[[int?]]?]) {}"],

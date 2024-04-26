@@ -232,6 +232,17 @@ const fixtures = [
       x_1[0] = 4;
       `
   },
+ 
+  {
+    name: "Dictionaries",
+    source: `
+      var x: {str: int} = {"hi": 14, "lo": 2};
+      `,
+    expected: dedent`
+      let x_1 = {"hi": 14, "lo": 2};
+    
+      `
+  },
   {
     name: "empty array",
     source: `

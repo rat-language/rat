@@ -105,12 +105,7 @@ export default function analyze(match) {
     // Used to check the elements of an array expression, and the two
     // arms of a conditional expression, among other scenarios.
     // perhaps instead
-    must(
-      expressions
-        .slice(1)
-        .every((e) => equivalent(e.type, expressions[0].type)),
-      "Not all elements have the same type",
-      at
+    must(expressions.slice(1).every((e) => equivalent(e.type, expressions[0].type)),"Not all elements have the same type", at
     );
   }
 
@@ -122,7 +117,7 @@ export default function analyze(match) {
   function mustHaveIterableType(e, rawStr, at) {
     must(
       (e.type?.kind === "ArrayType") |
-      (e.type?.kind === "DictType") |
+      (e.type?.kind === "DictionaryType") |
       (e.type === STRING),
       `'${rawStr}' is not an iterable object`,
       at
@@ -169,10 +164,14 @@ export default function analyze(match) {
           assignable(t, fromType.paramTypes[i])
         )) ||
       (fromType?.kind === "ArrayType" &&
-          toType?.kind === "ArrayType" &&
-          (fromType.baseType === ANY || assignable(fromType.baseType, toType.baseType)))
+        toType?.kind === "ArrayType" &&
+        (fromType.baseType === ANY || assignable(fromType.baseType, toType.baseType))) ||
+      (fromType?.kind === "DictionaryType" && toType?.kind === "DictionaryType" &&
+        ((fromType.keyBaseType === ANY && fromType.baseType === ANY) || // This is the condition for an empty or any-type dictionary
+         (assignable(fromType.keyBaseType, toType.keyBaseType) && assignable(fromType.baseType, toType.baseType))))
     );
   }
+  
 
   function typeDescription(type) {
     // TODO: add cases for promise type, dictionary type, and noneType (variant of void type)
@@ -196,18 +195,14 @@ export default function analyze(match) {
       case "ArrayType":
         return `[${typeDescription(type.baseType)}]`;
       case "DictionaryType":
-        return `[${typeDescription(type.keyBaseType)}:${typeDescription(
-          type.baseType
-        )}]`;
+        return `{${typeDescription(type.keyBaseType)}:${typeDescription(type.baseType)}}`;
       case "OptionalType":
         return `${typeDescription(type.baseType)}?`;
     }
   }
 
   function mustBeAssignable(e, { toType: type }, at) {
-    const message = `Cannot assign a ${typeDescription(
-      e.type
-    )} to a ${typeDescription(type)}`;
+    const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(type)}`;
     must(assignable(e.type, type), message, at);
   }
 
@@ -264,8 +259,13 @@ export default function analyze(match) {
       const initializer = exp.rep();
       const readOnly = modifier.sourceString === "const";
       const varType = type.rep();
+      if (initializer.kind === "DictionaryLiteral" && initializer.elements.length === 0) {
+        initializer.type = varType;  // Set the type of the initializer to the declared type
+      }
+      
       const variable = core.variable(id.sourceString, readOnly, varType);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      
       // if (initializer.kind === "ArrayLiteral") {
       //   initializer.elements.forEach(element => {
       //     mustBeAssignable(element, { toType: varType.baseType }, { at: exp });
@@ -671,20 +671,27 @@ export default function analyze(match) {
     },
 
     DictLit_dict(_open, bindings, _close) {
-      return core.dictionaryLiteral(
-        bindings.asIteration().children.map((b) => b.rep())
-      );
-    },
+      const entries = bindings.asIteration().children.map((b) => b.rep());
 
-    DictLit_emptydict(_open, _close) {
-      return core.emptyDictLiteral();
+      return core.dictionaryLiteral(bindings.asIteration().children.map((b) => b.rep())
+    );
+  },
+  
+  DictLit_emptydict(_open, _close) {
+    return core.dictionaryLiteral([])
+    // return core.emptyDictLiteral();
     },
 
     Parens(_open, exp, _close) {
       return exp.rep();
     },
     //Dictionary stuff
-    Binding(key, _colon, value) {
+    DictEntry(key, _colon, value) {
+      const dictkey = key.rep();
+      const dictvalue = value.rep();
+      
+
+
       return core.dictionaryEntry(key.rep(), value.rep());
     },
     // arr1 = [Int]()
@@ -757,9 +764,9 @@ export default function analyze(match) {
       return VOID;
     },
 
-    id(_firstChar, _restChars) {
-      return this.sourceString;
-    },
+    // id(_firstChar, _restChars) {
+    //   return this.sourceString;
+    // },
 
     // _terminal() {
     //   return this.sourceString;

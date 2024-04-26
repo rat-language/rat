@@ -159,6 +159,19 @@ export default function generate(program) {
     ArrayLiteral(e) {
       return `[${e.elements.map(gen).join(",")}]`;
     },
+    DictionaryLiteral(d) {
+      //To demonstrate, let's say you have a dictionary declaration in your source language like:
+      // var myDict = {"age": 25, "name": "John"};
+      //let myDict = {age: 25, name: "John"};
+
+      //... this could be a problem later on
+      const entries = d.elements.map(({ key, value }) => `${gen(key)}: ${gen(value)}`);
+      return `{${entries.join(", ")}}`;
+    },
+    DictionaryEntry(e) {
+      // This might be called as part of DictionaryLiteral or other contexts where a key-value pair is needed
+      return `${gen(e.key)}: ${gen(e.value)}`;
+    },
     EmptyArray(e) {
       return "[]";
     },
@@ -183,7 +196,7 @@ export default function generate(program) {
     TryStatement(t) {
       output.push("try {");
       t.body.forEach(gen);
-      output.push("} catch (e) {");
+      output.push(`} catch (${t.errors.map(gen).join(", ")}) {`);
       t.catchClause.forEach(gen);
       output.push("}");
     },

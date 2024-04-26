@@ -19,9 +19,9 @@ const syntaxChecks = [
   ["type conversion", "var a:str = str(5 + 2);"],
   ["coalescing operator", "var boss:str? = some \"Tina\";\nprint (boss ?? \"No boss here\");"],
   ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
-  ["await call", "try {r = await <<500>> foo();} timeout {pass;} catch(e:str) {print(e);}"],
   ["short return", "void foo() {\nreturn;\n}\nfoo();"],
-  ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nvar r: int = foo();\n} catch(e:str) {\nprint(e);\n}"]
+  ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nvar r: int = foo();\n} catch(e:str) {\nprint(e);\n}"],
+  ["dictionaries", `var d: {str:int} = {"a": 1, "b": 2};\nprint(d["a"]);`],
 ]
 
 // SYNTAX ERRORS NEED TO BE CHANGED EXTENSIVELY

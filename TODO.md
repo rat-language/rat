@@ -93,3 +93,13 @@ idea:
 - UnaryExpression(e)
 - EmptyOptional(e)
 - some val
+
+
+var z: {str:int} = {
+  "fucksgiven": 0, 
+  "bodycount": 13+4
+  }
+var x: {int: str} = {
+   0: "fucksgiven",
+   12: "bodycount"
+  }
