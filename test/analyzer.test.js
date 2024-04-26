@@ -51,12 +51,14 @@ const semanticChecks = [
   ["optional types", ' int? x = no int; x = some 100;'],
   ["simple function call", "int sqr(x: int) {return (x * x);}\n int y = sqr(3);"],
   ["float type", "float _grams = 2.01;"],
+  ["float type", "[float] numbahs = [1.0,2.0,3.0,4.2]; print(#numbahs);"],
   //------------( NOT WORKING )-----------------//
   ["Logical Ors", " bool a = (true || false);"],
 
   ["Dictionary", `{str:int} ints = {"56": 2, "fakeOnes": 3};`],
  
   ["Empty Dictionary", `{str:int} ints = {};`],
+  ["assigning to a function", `int foo(y:float){return 21;}\n(float)->int x = foo;`]
 
 
   //------------( STILL IN CARLOS )-----------------//
@@ -136,6 +138,7 @@ const semanticErrors = [
   ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
   ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
   ["non-integer low range", "for i in true...2 {}", /Expected an integer/],
+  ["non-integer high range", "for i in 1..<false {}", /Expected an integer/],
   ["non-integer high range", "for i in 1..<false {}", /Expected an integer/],
   ["for loop over non-iterable value", `
   for i in true {

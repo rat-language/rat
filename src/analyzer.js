@@ -160,11 +160,8 @@ export default function analyze(match) {
         toType?.kind === "FunctionType" &&
         assignable(fromType.returnType, toType.returnType) &&
         fromType.paramTypes.length === toType.paramTypes.length &&
-        toType.paramTypes.every((t, i) =>
-          assignable(t, fromType.paramTypes[i])
-        )) ||
-      (fromType?.kind === "ArrayType" &&
-        toType?.kind === "ArrayType" &&
+        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i]))) ||
+      (fromType?.kind === "ArrayType" && toType?.kind === "ArrayType" &&
         (fromType.baseType === ANY || assignable(fromType.baseType, toType.baseType))) ||
       (fromType?.kind === "DictionaryType" && toType?.kind === "DictionaryType" &&
         ((fromType.keyBaseType === ANY && fromType.baseType === ANY) || // This is the condition for an empty or any-type dictionary
@@ -534,7 +531,10 @@ export default function analyze(match) {
     Factor_unary(unaryOp, exp) {
       const [op, operand] = [unaryOp.sourceString, exp.rep()];
       let type;
-      if (op === "-") {
+      if (op === "#") {
+        mustHaveIterableType(operand, { at: exp });
+        type = operand.type;
+      } else if (op === "-") {
         mustHaveNumericType(operand, { at: exp });
         type = operand.type;
       } else if (op === "!") {
@@ -608,15 +608,15 @@ export default function analyze(match) {
       return core.binary(op, left, right, left.type);
     },
 
-    // Primary_wrapped(_some, exp) {
-
-    // },
-
     Primary_index(exp1, _open, exp2, _close) {
       const [iterable, index] = [exp1.rep(), exp2.rep()];
       // mustHaveArrayType(array, { at: exp1 });
       mustHaveIterableType(iterable, exp1.sourceString, { at: exp1 });
-      mustHaveIntegerType(index, { at: exp2 });
+      if (iterable.type?.kind === "DictionaryType") {
+        mustBeAssignable(index,{ toType: iterable.type.keyBaseType }, { at: exp2 });
+      } else {
+        mustHaveIntegerType(index, { at: exp2 });
+      }
       return core.index(iterable, index);
     },
 
@@ -686,10 +686,7 @@ export default function analyze(match) {
     DictEntry(key, _colon, value) {
       const dictkey = key.rep();
       const dictvalue = value.rep();
-      
-
-
-      return core.dictionaryEntry(key.rep(), value.rep());
+      return core.dictionaryEntry(dictkey, dictvalue);
     },
     // arr1 = [Int]()
     //-------------------- (TYPES) -------------------//
@@ -704,11 +701,11 @@ export default function analyze(match) {
       return core.dictionaryType(baseType1.rep(), type2.rep());
     },
     
-    // Type_function(_open, types, _close, _arrow, retType) {
-    //   const paramTypes = types.asIteration().children.map((t) => t.rep());
-    //   const returnType = retType.rep();
-    //   return core.functionType(paramTypes, returnType);
-    // },
+    Type_function(_open, types, _close, _arrow, retType) {
+      const paramTypes = types.asIteration().children.map((t) => t.rep());
+      const returnType = retType.rep();
+      return core.functionType(paramTypes, returnType);
+    },
 
     Primary_emptyoptional(_no, type) {
       return core.emptyOptional(type.rep());

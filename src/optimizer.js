@@ -197,7 +197,7 @@ const optimizers = {
     return e
   },
   SubscriptExpression(e) {
-    e.array = optimize(e.array)
+    e.array = optimize(e.iterable)
     e.index = optimize(e.index)
     return e
   },

@@ -102,7 +102,7 @@ Rat {
                 |"[" Type "]"                                           --array
                 | "{" Type":"Type"}"                                    --dictionary
                 | int | float | str | bool | anything
-                | "(" ListOf<Type, ","> ")" "->" Type                   --function
+                | "(" ListOf<Type, ","> ")" "->" (void|Type)                   --function
     //KEYWORDS:
     print       = "print"   ~idchar
     int         = "int"     ~idchar

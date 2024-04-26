@@ -146,6 +146,9 @@ export default function generate(program) {
       if (e.op === "some") {
         return operand;
       } else if (e.op === "#") {
+        if (e.type?.kind === "DictionaryType"){
+          return `Object.keys(${operand}).length`;
+        }
         return `${operand}.length`;
       }
       return `${e.op}(${operand})`;

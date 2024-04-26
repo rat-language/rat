@@ -107,8 +107,15 @@ Still need to implement:
 
 
 
-var x: int = 12;
 
-int x = 12;
 
-const int x = 12;
+code we need to get to work:
+```rat
+{str:int} myDict = {"hi":18, "lo":2};
+
+print(myDict["hi"]);
+myDict["med"] = 10;
+print(myDict);
+print()
+
+```

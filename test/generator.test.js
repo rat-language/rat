@@ -320,6 +320,34 @@ const fixtures = [
         i_1 = (i_1 + 12);
         `
   },
+  
+  {
+    name: "iterable manipulation",
+    source: `
+        str x = "hello";
+        [int] y = [1, 2, 3];
+        {str: int} z = {"hi": 14, "lo": 2};
+        print(#x);
+        print(#y);
+        print(#z);
+        print(x[1]);
+        print(y[1]);
+        print(z["hi"]);
+
+        `,
+    expected: dedent`
+        let x_1 = "hello";
+        let y_2 = [1,2,3];
+        let z_3 = {"hi": 14, "lo": 2};
+        console.log(x_1.length);
+        console.log(y_2.length);
+        console.log(Object.keys(z_3).length);
+        console.log(x_1[1]);
+        console.log(y_2[1]);
+        console.log(z_3["hi"]);
+        `
+  },
+
 ]
 
 describe("The code generator", () => {
