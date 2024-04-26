@@ -12,10 +12,10 @@ const fixtures = [
   {
     name: "Simple program",
     source: `
-        var i:int = 12;
-        var j:int = 4;
+        int i = 12;
+        int j = 4;
         i = i + j;
-        var k:int = 2 * j;
+        int k = 2 * j;
         
         int foo(x:int){
           return x * 2;
@@ -35,10 +35,10 @@ const fixtures = [
   {
     name: "while false",
     source: `
-        var i:int = 12;
+        int i = 12;
 
         while (false) {
-            var j: bool = true;
+            bool j = true;
             i = i - 1;
             if (i == 5) {
               break;
@@ -50,11 +50,11 @@ const fixtures = [
           let i_1 = 12;
         `
   },
-  
+
   {
     name: "simple while loop",
     source: `
-        var i:int = 12;
+        int i = 12;
 
         while (i > 0) {
             i -= 1;
@@ -81,7 +81,7 @@ const fixtures = [
         bool foo() {
           return false;
         }
-        var x: bool = foo();
+        bool x = foo();
         `,
     expected: dedent`
         function foo_1() {
@@ -93,7 +93,7 @@ const fixtures = [
   {
     name: "Simple If statements",
     source: `
-        var j:int = 12;
+        int j = 12;
         if (j > 0) { 
           j = j + 1;
         }
@@ -108,7 +108,7 @@ const fixtures = [
   {
     name: "If statements",
     source: `
-        var i:int = 12;
+        int i = 12;
         if (i > 0) { 
           i = i + 1;
         } else if (i == 0) {
@@ -133,8 +133,8 @@ const fixtures = [
     name: "Indexing",
     // var y: int = x[0];
     source: `
-    var x: [int] = [3, 10, 100];
-    var y: int = x[0];
+    [int] x = [3, 10, 100];
+    int y = x[0];
       `,
     // let y_2 = x_1[0];
     expected: dedent`
@@ -168,9 +168,9 @@ const fixtures = [
   {
     name: "Call in Expression",
     source: `
-      var y: int = 3;
+      int y = 3;
       int sqr(x: int) {return (x * x);}
-      var z: int = y + sqr(y);
+      int z = y + sqr(y);
     `,
     expected: dedent`
     let y_1 = 3;
@@ -200,11 +200,11 @@ const fixtures = [
   {
     name: "for loop (collections)",
     source: `
-      var nums: [int] = [1, 2, 3];
+      [int] nums = [1, 2, 3];
       for num in nums {
         print(num);
       }
-      var msg: str = "goodbye";
+      str msg = "goodbye";
       for letter in msg {
         print(letter);
       }
@@ -224,7 +224,7 @@ const fixtures = [
   {
     name: "assign to array element",
     source: `
-      var x: [int] = [1, 2, 3];
+      [int] x = [1, 2, 3];
       x[0] = 4;
       `,
     expected: dedent`
@@ -232,11 +232,11 @@ const fixtures = [
       x_1[0] = 4;
       `
   },
- 
+
   {
     name: "Dictionaries",
     source: `
-      var x: {str: int} = {"hi": 14, "lo": 2};
+      {str: int} x = {"hi": 14, "lo": 2};
       `,
     expected: dedent`
       let x_1 = {"hi": 14, "lo": 2};
@@ -246,7 +246,7 @@ const fixtures = [
   {
     name: "empty array",
     source: `
-      var x: [int] = [];
+      [int] x = [];
       `,
     expected: dedent`
       let x_1 = [];
@@ -255,7 +255,7 @@ const fixtures = [
   {
     name: "short if",
     source: `
-      var x: int = 0;
+      int x = 0;
       if (x == 0){
         print("hello world");
     }
@@ -293,7 +293,7 @@ const fixtures = [
         return 10;
       }
       try {
-        var r: int = foo();
+        int r = foo();
       } catch(e:str) {
         print(e);
       }
@@ -312,7 +312,7 @@ const fixtures = [
   {
     name: "alternate assignment",
     source: `
-        var i:int = 12;
+        int i = 12;
         i += 12;
         `,
     expected: dedent`
