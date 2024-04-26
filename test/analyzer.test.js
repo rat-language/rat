@@ -52,7 +52,7 @@ const semanticChecks = [
   ["simple function call", "int sqr(x: int) {return (x * x);}\n int y = sqr(3);"],
   ["float type", "float _grams = 2.01;"],
   //------------( NOT WORKING )-----------------//
-  ["Logical Ors", " bool a= (true || false);"],
+  ["Logical Ors", " bool a = (true || false);"],
 
   ["Dictionary", `{str:int} ints = {"56": 2, "fakeOnes": 3};`],
  

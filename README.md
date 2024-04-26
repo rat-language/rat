@@ -14,7 +14,7 @@ Originally, following a decent amount of Pythonic structure, we began thinking o
 **(2.1) PROGRAMS:**
 **Programs** written in rat will consist of one or more statements
 ```rat
-var i:int = 0;        # variable declaration
+int i = 0;        # variable declaration
 while (i <= 10){      # While statement
   print(i);           # print statement
   i += 1;             # augmented assignment statement 
@@ -33,12 +33,12 @@ So far, our language supports the following types:
 - `Type^` Promise Type to be used with asynchronous functions
 
 ```{rat}
-var u:bool = false;
-var v:int = 1;
-var w:float = 2.0;
-var x:str = "three";
-var y:[int] = [4,5];
-var z: { str:float } = { "six":6.0, "seven":7.0 };
+bool u = false;
+int v = 1;
+float w = 2.0;
+str x = "three";
+[int] y  = [4,5];
+{str:float } z = { "six":6.0, "seven":7.0 };
 ```
 **(2.3) DECLARATIONS:**
 Rat language supports declarations which bind identifiers to one of the following:
@@ -52,8 +52,8 @@ float foo(x:float, y:float){    # function + parameter declaration
   return x**2 + y**2;
 }
 
-var z: float = foo(3.0, 4.0);   # variable declaration
-const w:float = sqrt(z);        # constant variable declaration
+float z = foo(3.0, 4.0);   # variable declaration
+const float w = sqrt(z);        # constant variable declaration
 ```
 
 **(2.4) STATEMENTS:**
@@ -110,16 +110,16 @@ console.log("Hello, World");
 ```rat
 void fizzbuzz(n:int){
   for i in 0...n {
-  	var fbnum:str = "";
+  	str fbnum = "";
     if ((i % 3==0) || (i % 5 == 0)){
       if (i % 3 == 0){ fbnum += "Fizz"; }
       if (i % 5==0){ fbnum += "Buzz"; }
-  	}else{ fbnum = str(i); }
+  	}else{fbnum = str(i);}
     print(fbnum);
  }
 }
 
-# prints fizzbuzz up to 16 in this case
+// prints fizzbuzz up to 16 in this case
 fizzbuzz(16);
 ```
 
@@ -142,7 +142,7 @@ function fizzBuzz(n) {
 **factorial.rat**
 ```rat
 int factorial(n:int){
-    var value:int = 1;
+    int value = 1;
     if (n != 0 && n != 1){
         for i in 2...n {
             value *= i;
@@ -168,10 +168,10 @@ function factorial(n) {
 **fibonacci.rat**
 ```rat
 int fib(n:int){
-    # returns the nth value of the fibonacci sequence
-    var a:int = 0;
-    var b:int = 1;
-    var c:int = 0;
+    // returns the nth value of the fibonacci sequence
+    int a = 0;
+    int b = 1;
+    int c = 0;
 
     if (n == 0){
         return a;
@@ -208,9 +208,9 @@ bool prime(n:int){
     if (n <= 1) { return false; }
     if (n <= 3) { return true; }
     if (n % 2 == 0) || (n % 3 == 0) { return false; }
-    var i:int = 5;
+    int i = 5;
     while i*i <= n {
-    	if (n % i==0) || (n % (i+2)==0) {
+    	if (n%i==0) || (n%(i+2) ==0) {
         	return false;
         }
         i += 6;
