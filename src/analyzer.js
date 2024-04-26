@@ -672,14 +672,11 @@ export default function analyze(match) {
 
     DictLit_dict(_open, bindings, _close) {
       const entries = bindings.asIteration().children.map((b) => b.rep());
-
-      return core.dictionaryLiteral(bindings.asIteration().children.map((b) => b.rep())
-    );
+      return core.dictionaryLiteral(entries);
   },
   
   DictLit_emptydict(_open, _close) {
     return core.dictionaryLiteral([])
-    // return core.emptyDictLiteral();
     },
 
     Parens(_open, exp, _close) {

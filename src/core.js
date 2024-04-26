@@ -144,8 +144,6 @@ export function dictionaryLiteral(elements) {
   return { kind: "DictionaryLiteral", elements: elements, type: dictionaryType(keyType, valueType) };
 }
 
-
-
 export function dictionaryEntry(key, value) {
   return { kind: "DictionaryEntry", key, value };
 }

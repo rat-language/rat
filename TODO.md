@@ -78,10 +78,6 @@ musts:
 
 builder:
 - Conversion
-- Dictlit_dict
-- DictLit_emptydict
-- Binding
-- Type_dictionary
 - id
 
 
@@ -103,3 +99,16 @@ var x: {int: str} = {
    0: "fucksgiven",
    12: "bodycount"
   }
+
+
+Still need to implement:
+- Dictionary indexing
+- moving the code in core over to the analyzer for the dictionary
+
+
+
+var x: int = 12;
+
+int x = 12;
+
+const int x = 12;
