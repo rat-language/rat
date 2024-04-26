@@ -1,16 +1,16 @@
-# Doing simple syntax experiments for rat parser
-# I'm just testing these out in the general order I see them on the rat.ohm file
+// Doing simple syntax experiments for rat parser
+// I'm just testing these out in the general order I see them on the rat.ohm file
 
-# print statement
+// print statement
 print("testing some rat language");
 
-let x = [int]()
-var x: [int] = []
 
-# testing out the variable declaration
-var x : int = 8;
-var i : int = 0;
-const y : int = 10;
+[int] x  = [];
+
+// testing out the variable declaration
+int x = 8;
+int i = 0;
+const int y = 10;
 
 print("x = ");
 
@@ -21,15 +21,15 @@ print(y);
 
 while(i < 4) { x += 1; i += 1; }
 
-var fatrat: [str] = ["f", "a", "t", "r", "a", "t"];
+[str] fatrat = ["f", "a", "t", "r", "a", "t"];
 print(x); 
 i = 0;
 x = 8;
 
-# for loop iterable object
+// for loop iterable object
 for letter in fatrat { print(letter); }
 
-# for loop inclusive range
+// for loop inclusive range
 for j in 1...10 {
   print(j);
   if j > 8 {
@@ -37,12 +37,12 @@ for j in 1...10 {
   }
 }
 
-# for loop exclusive range
+// for loop exclusive range
 for j in 1..<5{
   print(j);
 }
 
-# if statement syntax
+// if statement syntax
 if x < 4 {
   print("x is less than 4");
 } else if x < 7 {
@@ -51,27 +51,27 @@ if x < 4 {
   pass;
 }
 
-# printing a dictionary
+// printing a dictionary
 print({ "AZ": "Phoenix", "FL":"Tallahasee" });
 
-# dictionaries
-var m: [int:bool] = {3:false};
+// dictionaries
+{int:bool} m = {3:false};
 
-# Implementing Optional Type
-var boss: str? = some "Tina";		# ? indicates optional, some wraps variable in optional
-boss = None;                              # no indicates a null or None type
+// Implementing Optional Type
+str? boss = some "Tina";		// ? indicates optional, some wraps variable in optional
+boss = no str;                              // no indicates a null or None type
 
-# new line escapes
+// new line escapes
 print("Hello \n World");
 
-# printing the index of an iterable object
-var a:[bool] = [true, false, true];
+// printing the index of an iterable object
+[bool] a = [true, false, true];
 print (a[1]);
 
 
-# IF YOU HAVE AN OPINION, YOU KNOW WHERE TO FIND ME
+// IF YOU HAVE AN OPINION, YOU KNOW WHERE TO FIND ME
 [int] f(x:int) {
-  var f_arr: [int] = [];
+  [int] f_arr = [];
   for i in 0...x {
   	f_arr += [[]];
     for j in 0..<7 {
@@ -81,32 +81,13 @@ print (a[1]);
   return f_arr;
 }
 
-# For when a function returns an array, and we want to index the array in place.
+// For when a function returns an array, and we want to index the array in place.
 print( f(x)[1][5] );
 
 
-# Indexable Dictionaries
+// Indexable Dictionaries
 print ({ "CA": "Sacramento", "AK":"Juneau" }["CA"]); 
 
 
-var z : int = x + y;        # z = 22
-z = z + 1;                  # z = 23
-
-try {
-  # r awaits for 500 ms before quitting
-  r = await <<500>> foo();
-} timeout {
-  # if timeout occurs (more than 500 ms), run this block
-  print("ran out of time");
-} catch(e:str) {
-  # if a different error occurs, do this instead
-  print(e);
-}
-
-
-try {
-  r = await foo();
-} catch(e:str) {
-  # if a different error occurs, do this instead
-  print(e);
-}
+int z = x + y;        // z = 22
+z = z + 1;                  // z = 23

@@ -6,17 +6,17 @@ import { program, variableDeclaration, variable, binary, floatType } from "../sr
 // Programs that are semantically correct
 const semanticChecks = [
   //------------( WORKING )-----------------//
-  ["variable declarations", 'const x:int = 1; var y: bool = false;'],
-  ["increment and decrement", "var x: int = 10; x -= 1; x += 1;"],
+  ["variable declarations", 'int x = 1; bool y = false;'],
+  ["increment and decrement", " int x = 10; x -= 1; x += 1;"],
   ["??", "print(some 5 ?? 0);"],
   ["nested ??", "print(some 5 ?? 8 ?? 0);"],
   ["relations", 'print( 1 <= 2 && "x" > "y" && 3.5 < 1.2);'],
   ["long if", "if true {print(1);} else {print(3);}"],
-  ["else if", "var x: int = 2; if x == 3 { print (true); } else if x <= 3 {pass;}"],
+  ["else if", " int x = 2; if x == 3 { print (true); } else if x <= 3 {pass;}"],
   ["for exclusive", "for j in 1..<10 {print(j);}"],
   ["for inclusive", "for i in 1...10 {print(i);}"],
   ["for loop over existing collection", `
-  var ints: [int] = [1,2,3,4,5,6,7,8,9,10];
+  [int] ints = [1,2,3,4,5,6,7,8,9,10];
   for i in ints {
     print(i);
   }
@@ -26,41 +26,38 @@ const semanticChecks = [
   ["for over collection", "for i in [2,3,5] {print(1);}"],
   ["ok to == arrays", "print([1]==[5,8]);"],
   ["ok to != arrays", "print([1]!=[5,8]);"],
-  ["outer variable", 'var x: int =1; while(false) {print(x);}'],
+  ["outer variable", ' int x = 1; while(false) {print(x);}'],
   ["return statement", "bool? f() { return some true; }"],
   ["short return statement", `void f() { print("this will return nothing"); return; }`],
   // ["short return statement", "void f() { return; }"],
   ["break in nested if", "while false {if true{break;}}"],
-  ["string indexing", `var x: str = "hello"; print(x[0]);`],
-  // ["proper array assignment", `var x: [int] = [12, 13]; print(x[0]);`],
+  ["string indexing", ` str x = "hello"; print(x[0]);`],
+  // ["proper array assignment", ` [int]x = [12, 13]; print(x[0]);`],
 
-  ["assign to array element", "var a: [int] = [1,2,3]; a[1] = 100;"],
-  ["subscript exp", 'var a: [int] =[1,2]; print(a[0]);'],
-  ["alternate assignment", 'var a: int = 12; a += 2;'],
+  ["assign to array element", " [int] a = [1,2,3]; a[1] = 100;"],
+  ["subscript exp", ' [int] a = [1,2]; print(a[0]);'],
+  ["alternate assignment", ' int a = 12; a += 2;'],
   ["type equivalence of nested arrays", 'int f(x: [[int]]) {return (x[0][0] + x[0][1]);} print(f([[1],[2]]));'],
-  ["variables", 'var x: [[[[int]]]] =[[[[1]]]]; print(x[0][0][0][0]+2);'],
-  ["indexing strings", 'var x: str = "hello"; print(x[1]);'],
-  ["indexing arrays", 'var x: [int] = [1,2,3]; print(x[1]);'],
+  ["variables", ' [[[[int]]]] x = [[[[1]]]]; print(x[0][0][0][0]+2);'],
+  ["indexing strings", ' str x = "hello"; print(x[1]);'],
+  ["indexing arrays", ' [int] x = [1,2,3]; print(x[1]);'],
   ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
   ["short return", "void foo() {\nreturn;\n}\nfoo();"],
-  ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nvar r: int = foo();\n} catch(e:str) {\nprint(e);\n}"],
+  ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nint r = foo();\n} catch(e:str) {\nprint(e);\n}"],
 
-  ["initialize with empty array", "var a:[int] = [];"],
-  ["assign arrays", "var a : [int] = []; var b : [int] =[1]; a = b; b = a;"],
-  ["assign optionals", "var a: int? = no int; a = some 100;"],
-  ["optional types", 'var x:int? = no int; x = some 100;'],
-  ["simple function call", "int sqr(x: int) {return (x * x);}\n var y:int = sqr(3);"],
-  ["float type", "var _grams: float = 2.01;"],
+  ["initialize with empty array", "[int] a = [];"],
+  ["assign arrays", "[int] a = [];[int] b =[1]; a = b; b = a;"],
+  ["assign optionals", " int? a = no int; a = some 100;"],
+  ["optional types", ' int? x = no int; x = some 100;'],
+  ["simple function call", "int sqr(x: int) {return (x * x);}\n int y = sqr(3);"],
+  ["float type", "float _grams = 2.01;"],
   //------------( NOT WORKING )-----------------//
-  ["Logical Ors", "var a: bool = (true || false);"],
+  ["Logical Ors", " bool a= (true || false);"],
 
-  ["Dictionary", `var ints: {str:int} = {"56": 2, "fakeOnes": 3};`],
+  ["Dictionary", `{str:int} ints = {"56": 2, "fakeOnes": 3};`],
  
-  ["Empty Dictionary", `var ints: {str:int} = {};`],
+  ["Empty Dictionary", `{str:int} ints = {};`],
 
-  //------------( POSSIBLY CUT )-----------------//
-  // ["dictionaries", `var ints: [str:int] = {"56": 2, "fakeOnes": 3};`],
-  // ["complex array types", "void f(x: [[[int?]]?]) {}"],
 
   //------------( STILL IN CARLOS )-----------------//
   // // ["shifts", "print(1<<3<<5<<8>>2>>0);"],
@@ -113,10 +110,10 @@ const semanticChecks = [
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
   //------------( WORKING )-----------------//
-  ["undeclared id", `var a: int = 1; print(x);`, /Identifier x not declared/],
-  ["redeclared id", "var x:int = 1; var x:int = 1;", /Identifier x already declared/],
-  ["assign to const", "const x : int = 1; x = 2;", /x is read only/],
-  ["assign bad type", "var x: bool = true;var y: int = 1;print(x*y);", /Expected a number/],
+  ["undeclared id", ` int a = 1; print(x);`, /Identifier x not declared/],
+  ["redeclared id", " int x = 1;  int x= 1;", /Identifier x already declared/],
+  ["assign to const", "const int x = 1; x = 2;", /x is read only/],
+  ["assign bad type", " bool x = true; int y = 1; print(x*y);", /Expected a number/],
   ["unwrap non-optional", "print(1??2);", /Expected an optional/],
   ["bad types for +", "print(false+1);", /Expected a number or string/],
   ["bad types for -", "print(false-1);", /Expected a number/],
@@ -127,8 +124,8 @@ const semanticErrors = [
   ["bad types for <=", "print(false<=1);", /Expected a number or string/],
   ["bad types for negation", "print(-true);", /Expected a number/],
   ["bad types for not", 'print(!"hello");', /Expected a boolean/],
-  ["assign bad array type", "var x: int = 1; x=[true];", /Cannot assign a \[bool\] to a int/],
-  ["assign bad optional type", "var x: int = 1;x=some 2;", /Cannot assign a int\? to a int/],
+  ["assign bad array type", " int x = 1; x = [true];", /Cannot assign a \[bool\] to a int/],
+  ["assign bad optional type", " int x = 1;x = some 2;", /Cannot assign a int\? to a int/],
   ["bad types for >", "print(false>1);", /Expected a number or string/],
   ["bad types for >=", "print(false>=1);", /Expected a number or string/],
   ["bad types for ==", "print(2==2.0);", /not have the same type/],
@@ -145,8 +142,8 @@ const semanticErrors = [
     print(i);
   }
   `, /'true' is not an iterable object/],
-  ["improper array declaration", `var x: [int] = ["12", "13"]; print(x[0]);`, /Cannot assign a \[str\] to a \[int\]/],
-  ["improper integer declaration", `var x: int = "12";`, /Cannot assign a str to a int/],
+  ["improper array declaration", ` [int] x = ["12", "13"]; print(x[0]);`, /Cannot assign a \[str\] to a \[int\]/],
+  ["improper integer declaration", ` int x = "12";`, /Cannot assign a str to a int/],
 
   ["int foo ", "int foo() { return false; }", /Cannot assign a bool to a int/],
   //------------( NOT WORKING )-----------------//
@@ -156,7 +153,7 @@ const semanticErrors = [
   // NOTE: These are not valid in our language, the reasons why can be found below them
   // // ["bad types for length", "print(#false);", /Expected an array/],
   // - We don't have a '#' operator
-  // ["Non-type in param", "var x:int=1; void f(y:x){}", /Type expected/],
+  // ["Non-type in param", "int=x1; void f(y:x){}", /Type expected/],
   // - 'id' can't be a type and this will be detected in the syntax check.
 
 
@@ -178,7 +175,7 @@ const semanticErrors = [
   // // ["non-boolean if test", "if 1 {} else {}", /Expected a boolean/],
   // // ["non-boolean while test", "while 1 {}", /Expected a boolean/],
   // // ["non-integer repeat", 'repeat "1" {}', /Expected an integer/],
-  // ["non-integer index", "var a: [int] = [];print(a[false]);", /Expected an integer/],
+  // ["non-integer index", " [int]a = [];print(a[false]);", /Expected an integer/],
   // // ["no such field", "struct S{} let x=S(); print(x.y);", /No such field/],
   // // ["diff type array elements", "print([3,3.0]);", /Not all elements have the same type/],
   // // ["shadowing", "let x = 1;\nwhile true {let x = 1;}", /Identifier x already declared/],

@@ -1,6 +1,6 @@
 void fizzbuzz(n:int){
   for i in 0...n {
-  	var fbnum:str = "";
+  	str fbnum = "";
     if ((i % 3==0) || (i % 5 == 0)){
       if (i % 3 == 0){ fbnum += "Fizz"; }
       if (i % 5==0){ fbnum += "Buzz"; }
@@ -9,5 +9,5 @@ void fizzbuzz(n:int){
  }
 }
 
-# prints fizzbuzz up to 16 in this case
+// prints fizzbuzz up to 16 in this case
 fizzbuzz(16);

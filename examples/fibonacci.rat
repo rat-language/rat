@@ -1,8 +1,8 @@
 int fib(n:int){
-    # returns the nth value of the fibonacci sequence
-    var a:int = 0;
-    var b:int = 1;
-    var c:int = 0;
+    // returns the nth value of the fibonacci sequence
+    int a = 0;
+    int b = 1;
+    int c = 0;
 
     if (n == 0){
         return a;

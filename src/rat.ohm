@@ -1,5 +1,11 @@
 //rat.ohm
 /*
+Rat v1.3.0
+Changes:
+- changed variable declarations to be less verbose.
+- added a length operator for iterables
+- changed comment syntax
+
 Rat v1.2.0
 Changes:
 - Types no longer keywords (analyzer will handle this)
@@ -14,7 +20,8 @@ Rat {
     // here, we define valid statements
     //=========== (VALID STATEMENTS) ============== //
     Stmt        = print "("Exp ")" ";"                                  --print
-                | (const|var) id ":" Type "=" Exp ";"              --vardec
+                // | (const|var) id ":" Type "=" Exp ";"              --vardec
+                | const? Type id "=" Exp ";"              --vardec
                 | FuncDecl
                 | Primary op? "=" Exp ";"                               --assign
                 | Call ";"                                              --call
@@ -40,9 +47,10 @@ Rat {
     IfStmt      = if Exp Block else Block                               --else
                 | if Exp Block else IfStmt                              --elseif
                 | if Exp Block                                          --if
-    TryStmt     = try Block timeout Block catch Params Block            --timeout
-                | try Block catch Params Block                          --catch
-
+    TryStmt     =  try Block catch Params Block                          --catch
+    
+    // catch(e:Error) { ... }
+    
     Params      = "("ListOf<Param, ",">")"
     Param       = id ":" Type
     Block       = "{" Stmt* "}"
@@ -50,7 +58,6 @@ Rat {
     // lowest precedence
     Exp         = Exp "??" Exp0                                         --unwrap
                 | Exp0
-                | await ("<<" Exp  ">>" )? ( one | all )? Exp           --await
     Exp0        = Exp "||" Disjunct                                     --logicalor
                 | Disjunct
     Disjunct    = Disjunct "&&" Conjunct                                --logicaland
@@ -66,9 +73,9 @@ Rat {
     // Right associativity + Highest precedence
     Factor      = Primary "**" Factor                                   --exponent
                 | Primary
-                | ("-" | "!" | some ) Primary                           --unary
+                | ("#" | "-" | "!" | some ) Primary                           --unary
     // possible assignables to variables
-    Primary     = true 
+    Primary= true 
                 | false
                 | floatlit 
                 | intlit 
@@ -116,13 +123,10 @@ Rat {
     return      = "return"  ~idchar
     some        = "some"    ~idchar
     pass        = "pass"    ~idchar
-    await       = "await"   ~idchar
+    // await       = "await"   ~idchar
     try         = "try"     ~idchar
     catch       = "catch"   ~idchar
-    one         = "one"     ~idchar
     void        = "void"    ~idchar
-    all         = "all"     ~idchar
-    timeout     = "timeout" ~idchar
     no          = "no"      ~idchar
 
     // await used for asynchronous functions that perform a call that is promised to return a value
@@ -133,8 +137,7 @@ Rat {
 
     keyword     = print | true | false | pass
                 | while | for | if | else | else | return
-                | some  | void | await | one | all
-                | int | float | str | bool
+                | some  | void | int | float | str | bool
 
     //allows you to name your variables
     id          = ~keyword (letter| "_") idchar*
@@ -151,5 +154,5 @@ Rat {
                 |"\\\""
                 |"\\u{" hexDigit hexDigit? hexDigit? hexDigit? hexDigit? hexDigit?"}"   --usecape
                 |~"\"" ~"\n" ~"\\" any                                  --regular
-    space       += "#" (~"\n" any)*                                     --comment
+    space       += "//" (~"\n" any)*                                     --comment
 }

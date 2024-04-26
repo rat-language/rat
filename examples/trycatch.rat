@@ -1,5 +1,0 @@
-void foo() {
-print("hello world");
-return;
-}
-foo();

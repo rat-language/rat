@@ -15,7 +15,7 @@ const fixtures = [
         var i:int = 12;
         var j:int = 4;
         i = i + j;
-        var k: int = 2 * j;
+        var k:int = 2 * j;
         
         int foo(x:int){
           return x * 2;

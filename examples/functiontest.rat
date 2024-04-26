@@ -1,4 +1,4 @@
 int sqr(x: int) {
 return (x * x);
 }
-var y:int = sqr(3);
+int y = sqr(3);

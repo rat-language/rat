@@ -255,7 +255,7 @@ export default function analyze(match) {
       return core.printStatement(exp.rep());
     },
 
-    Stmt_vardec(modifier, id, _colon, type, _eq, exp, _semicolon) {
+    Stmt_vardec(modifier, type, id, _eq, exp, _semicolon) {
       const initializer = exp.rep();
       const readOnly = modifier.sourceString === "const";
       const varType = type.rep();

@@ -1,5 +1,5 @@
 int factorial(n:int){
-    var value: int = 1;
+    int value = 1;
     if (n != 0 && n != 1){
         for i in 2...n {
             value *= i;
