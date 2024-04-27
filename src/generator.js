@@ -148,7 +148,7 @@ export default function generate(program) {
       if (e.op === "some") {
         return operand;
       } else if (e.op === "#") {
-        if (e.type?.kind === "DictionaryType"){
+        if (e.operand.type.kind === "DictionaryType"){
           return `Object.keys(${operand}).length`;
         }
         return `${operand}.length`;
@@ -170,8 +170,11 @@ export default function generate(program) {
       //let myDict = {age: 25, name: "John"};
 
       //... this could be a problem later on
-      const entries = d.elements.map(({ key, value }) => `${gen(key)}: ${gen(value)}`);
+      const entries = d.elements.map(element => gen(element));
       return `{${entries.join(", ")}}`;
+    },
+    DictionaryEntry(e){
+      return `${gen(e.key)}: ${gen(e.value)}`;
     },
     
     EmptyArray(e) {

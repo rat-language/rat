@@ -22,7 +22,7 @@
 import * as core from "./core.js"
 
 export default function optimize(node) {
-  return optimizers?.[node.kind]?.(node) ?? node
+  return optimizers?.[node?.kind]?.(node) ?? node
 }
 
 const optimizers = {
@@ -35,23 +35,13 @@ const optimizers = {
     d.initializer = optimize(d.initializer)
     return d
   },
-  // TypeDeclaration(d) {
-  //   d.type = optimize(d.type)
-  //   return d
-  // },
+
   FunctionDeclaration(d) {
     d.fun = optimize(d.fun)
     if (d.body) d.body = d.body.flatMap(optimize)
     return d
   },
-  // Increment(s) {
-  //   s.variable = optimize(s.variable)
-  //   return s
-  // },
-  // Decrement(s) {
-  //   s.variable = optimize(s.variable)
-  //   return s
-  // },
+
   Assignment(s) {
     s.source = optimize(s.source)
     s.target = optimize(s.target)
@@ -100,15 +90,7 @@ const optimizers = {
     s.body = s.body.flatMap(optimize)
     return s
   },
-  // RepeatStatement(s) {
-  //   s.count = optimize(s.count)
-  //   if (s.count === 0) {
-  //     // repeat 0 times is a no-op
-  //     return []
-  //   }
-  //   s.body = s.body.flatMap(optimize)
-  //   return s
-  // },
+
   ForRangeStatement(s) {
     s.iterator = optimize(s.iterator)
     s.low = optimize(s.low)
@@ -133,15 +115,7 @@ const optimizers = {
     }
     return s
   },
-  // Conditional(e) {
-  //   e.test = optimize(e.test)
-  //   e.consequent = optimize(e.consequent)
-  //   e.alternate = optimize(e.alternate)
-  //   if (e.test.constructor === Boolean) {
-  //     return e.test ? e.consequent : e.alternate
-  //   }
-  //   return e
-  // },
+
   BinaryExpression(e) {
     e.op = optimize(e.op)
     e.left = optimize(e.left)
@@ -210,7 +184,7 @@ const optimizers = {
     // TODO: Fix it, lmao
     // entries is a dictionary, and I want to just optimize the values
     // this below is the same code as the above array, of course it will not work
-    e.entries = e.entries.map(optimize)
+    e.entries = optimize(e.entries)
     return e
   },
   DictionaryEntry(e) {
@@ -218,14 +192,15 @@ const optimizers = {
     e.value = optimize(e.value)
     return e
   },
+  DictionaryType(e){
+    e.keyType = optimize(e.keyType)
+    e.valueType = optimize(e.valueType)
+    return e
+  },
   FunctionCall(c) {
     c.callee = optimize(c.callee)
     c.args = c.args.map(optimize)
     return c
   },
-  // ConstructorCall(c) {
-  //   c.callee = optimize(c.callee)
-  //   c.args = c.args.map(optimize)
-  //   return c
-  // },
+
 }
