@@ -197,7 +197,7 @@ const optimizers = {
     e.valueType = optimize(e.valueType)
     return e
   },
-  FunctionCall(c) {
+  Call(c) {
     c.callee = optimize(c.callee)
     c.args = c.args.map(optimize)
     return c

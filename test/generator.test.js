@@ -34,7 +34,7 @@ const fixtures = [
         `
   },
   {
-    name: "while false",
+    name: "while false optimize",
     source: `
         int i = 12;
         while (false) {
@@ -340,7 +340,7 @@ const fixtures = [
     source: `
         str x = "hello";
         [int] y = [1, 2, 3];
-        {str: int} z = {"hi": 14, "lo": 2};
+        {str: int} z = {"hi": 7*2, "lo": 2};
         print(#x);
         print(#y);
         print(#z);
@@ -417,6 +417,15 @@ const fixtures = [
   },
   {
     name: "Some Operator",
+    source: `
+      int? x = some 3;
+      `,
+    expected: dedent`
+      let x_1 = 3;
+      `
+  },
+  {
+    name: "Function optimize",
     source: `
       int? x = some 3;
       `,

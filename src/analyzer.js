@@ -438,16 +438,6 @@ export default function analyze(match) {
     Args(_open, expList, _close) {
       return expList.asIteration().children;
     },
-
-    // Conversion(type, _open, exp, _close) {
-    //   const target = type.rep();
-    //   const source = exp.rep();
-    //   // TODO: Add a way to determine whether the type can be converted
-    //   mustBeAssignable(source, { toType: target }, { at: exp });
-    //   return core.conversion(target, source);
-    // },
-
-    // //If
     IfStmt_if(_if, exp, block) {
       const test = exp.rep();
       mustHaveBooleanType(test, { at: exp });
@@ -489,25 +479,6 @@ export default function analyze(match) {
       context = context.parent;
       return core.tryStatement(tryBlock, catchBlock, params);
     },
-
-    // TryStmt_timeout(
-    //   _try,
-    //   block1,
-    //   _timeout,
-    //   block2,
-    //   _catch,
-    //   parameters,
-    //   block3
-    // ) {
-    //   context = context.newChildContext();
-    //   const tryBlock = block1.rep();
-    //   context = context.parent;
-    //   context = context.newChildContext();
-    //   const timeoutBlock = block2.rep();
-    //   context = context.parent;
-    //   const params = parameters.rep();
-    //   return core.tryStatement(tryBlock, timeoutBlock, params, block3.rep());
-    // },
 
     Params(_open, paramList, _close) {
       // Returns a list of variable nodes
