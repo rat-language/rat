@@ -1,6 +1,6 @@
 # Homework 5
 -----------
-### 1.
+## 1.
 
 #### A. /^[ABCEGHJKLMNPRSTVXY][0-9][ABCEGHJKLMNPRSTVWXYZ]\s[0-9[ABCEGHJKLMNPRSTVWXYZ][0-9]$/ 
  
