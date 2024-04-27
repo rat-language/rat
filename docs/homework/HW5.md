@@ -28,4 +28,21 @@
  
 #### J. /^(?:[rfbu]{0,2})?((?:"""(?:\\"|\\?[^"]|""?(?!"))*""")|(?:'''(?:\\'|\\?[^']|''?(?!'))*''')|(?:"(?:\\"|[^"\r\n])*")|(?:'(?:\\'|[^'\r\n])*'))$/ 
 
+
+## 2.
+
+Given input <M, w>, we create two Turing machines, M1 and M2, as follows:
+
+M1: It emulates M on input w. If M halts, M1 accepts; otherwise, it enters an infinite loop.
+
+M2: Rejects all inputs.
+
+To tackle the Halting Problem, we utilize a Decider for {M1{}M2 | L(M1) = L(M2)} in the following manner:
+
+Concatenate M1 and M2 (i.e., M1{}M2) and input it into the supposed decider D.
+
+If D accepts M1{}M2, then M halts on input w.
+
+If D rejects M1{}M2, then M does not halt on input w.  
+
  
