@@ -133,15 +133,15 @@ const optimizers = {
     }
     return s
   },
-  Conditional(e) {
-    e.test = optimize(e.test)
-    e.consequent = optimize(e.consequent)
-    e.alternate = optimize(e.alternate)
-    if (e.test.constructor === Boolean) {
-      return e.test ? e.consequent : e.alternate
-    }
-    return e
-  },
+  // Conditional(e) {
+  //   e.test = optimize(e.test)
+  //   e.consequent = optimize(e.consequent)
+  //   e.alternate = optimize(e.alternate)
+  //   if (e.test.constructor === Boolean) {
+  //     return e.test ? e.consequent : e.alternate
+  //   }
+  //   return e
+  // },
   BinaryExpression(e) {
     e.op = optimize(e.op)
     e.left = optimize(e.left)
@@ -201,12 +201,21 @@ const optimizers = {
     e.index = optimize(e.index)
     return e
   },
-  ArrayExpression(e) {
+  ArrayLiteral(e) {
+    // elements here are an array,
     e.elements = e.elements.map(optimize)
     return e
   },
-  DictionaryExpression(e) {
+  DictionaryLiteral(e) {
+    // TODO: Fix it, lmao
+    // entries is a dictionary, and I want to just optimize the values
+    // this below is the same code as the above array, of course it will not work
     e.entries = e.entries.map(optimize)
+    return e
+  },
+  DictionaryEntry(e) {
+    e.key = optimize(e.key)
+    e.value = optimize(e.value)
     return e
   },
   FunctionCall(c) {

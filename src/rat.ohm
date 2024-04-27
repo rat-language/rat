@@ -91,7 +91,7 @@ Rat {
                 | "[" NonemptyListOf<Exp, ",">"]"                       --array
                 
     DictLit     = "{" "}"                                               --emptydict
-                | "{" NonemptyListOf<DictEntry,",">"}"                            --dict
+                | "{" NonemptyListOf<DictEntry,",">"}"                  --dict
     Parens      = "(" Exp ")"
     //key:value pairs for dictionaries
     DictEntry     = Primary ":" Exp

@@ -152,7 +152,6 @@ export function emptyArrayLiteral() {
   return { kind: "EmptyArray", type: arrayType(anyType) };
 }
 
-
 export function emptyDictLiteral(type1, type2) {
   return { kind: "EmptyDictionary", type1, type2 };
 }

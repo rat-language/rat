@@ -63,7 +63,7 @@ const semanticChecks = [
   ["Equivalence for Function Types", `int foo(y:float){return 21;}\n(float)->int x = foo;\nint bar(y:float){return 50;}\nx = bar;\n`],
   ["assigning to a function", `int foo(y:float){return 21;}\n(float)->int x = foo;`],
   ["declarations", `int x = 12;\nfloat y = 3.14;\nstr z = "hello";\nbool a = true;\nanything b = 12;\nint foo(x:int, y:float) { return 12; }\n[int] c = [1, 2, 3];\n{str: int} d = {"hi": 14, "lo": 2};`],
-
+  ["standard library", "print(π);"],
   //------------( STILL IN CARLOS )-----------------//
   // // ["shifts", "print(1<<3<<5<<8>>2>>0);"],
   // // ["arithmetic", "let x=1;print(2*3+5**-3/2-5%8);"],

@@ -32,7 +32,6 @@ class Context {
       locals: new Map(Object.entries(core.standardLibrary)),
     });
   }
-
   newChildContext(props) {
     return new Context({ ...this, ...props, parent: this, locals: new Map() });
   }
@@ -216,9 +215,6 @@ export default function analyze(match) {
     const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(type)}`;
     must(assignable(e.type, type), message, at);
   }
-
-
-// Cannot assign a ()->void to a int
 
   function mustNotBeReadOnly(entity, at) {
     must(!entity.readOnly, `${entity.name} is read only`, at);
@@ -529,28 +525,18 @@ export default function analyze(match) {
       return statements.children.map((s) => s.rep());
     },
     //==================== (EXPRESSIONS) ====================//
-
     Exp_unwrap(exp1, elseOp, exp2) {
-      const [optional, op, alternate] = [
-        exp1.rep(),
-        elseOp.sourceString,
-        exp2.rep(),
-      ];
+      const [optional, op, alternate] = [exp1.rep(), elseOp.sourceString, exp2.rep()];
       mustHaveAnOptionalType(optional, { at: exp1 });
-      mustBeAssignable(
-        alternate,
-        { toType: optional.type.baseType },
-        { at: exp2 }
-      );
+      mustBeAssignable(alternate, { toType: optional.type.baseType }, { at: exp2 });
       return core.binary(op, optional, alternate, optional.type);
     },
-
     Factor_unary(unaryOp, exp) {
       const [op, operand] = [unaryOp.sourceString, exp.rep()];
       let type;
       if (op === "#") {
         mustHaveIterableType(operand, { at: exp });
-        type = operand.type;
+        type = INT;
       } else if (op === "-") {
         mustHaveNumericType(operand, { at: exp });
         type = operand.type;
@@ -562,11 +548,6 @@ export default function analyze(match) {
       }
       return core.unary(op, operand, type);
     },
-
-    // Exp_await(_await, _open, exp, _close, _oneall, _exp) {
-    //   return core.await_exp(exp.rep())
-    // },
-
     Exp0_logicalor(exp1, _or, exp2) {
       let left = exp1.rep();
       mustHaveBooleanType(left, { at: exp1 });
@@ -577,7 +558,6 @@ export default function analyze(match) {
       }
       return left;
     },
-
     Disjunct_logicaland(exp, _and, exps) {
       let left = exp.rep();
       mustHaveBooleanType(left, { at: exp });

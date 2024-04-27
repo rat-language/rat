@@ -49,6 +49,22 @@ const fixtures = [
           let i_1 = 12;
         `
   },
+  
+  {
+    name: "Binary Expressions",
+    source: `
+        float x = -12.0;
+        bool i = true && (x > 0.1);
+        bool j = false || (x < 0.0);
+          `,
+    expected: dedent`
+          let x_1 = -12;
+          let i_2 = (x_1 > 0.1);
+          let j_3 = (x_1 < 0);
+
+        `
+  },
+
   {
     name: "simple while loop",
     source: `
@@ -328,6 +344,7 @@ const fixtures = [
         print(#x);
         print(#y);
         print(#z);
+        int w = #z;
         print(x[1]);
         print(y[1]);
         print(z["hi"]);
@@ -340,6 +357,7 @@ const fixtures = [
         console.log(x_1.length);
         console.log(y_2.length);
         console.log(Object.keys(z_3).length);
+        let w_4 = Object.keys(z_3).length;
         console.log(x_1[1]);
         console.log(y_2[1]);
         console.log(z_3["hi"]);
@@ -354,9 +372,11 @@ const fixtures = [
     name: "Empty Optional",
     source: `
       str? x = no str;
+      str y = x ?? "default";
       `,
     expected: dedent`
       let x_1 = undefined;
+      let y_2 = "default";
       `
   },
   {
