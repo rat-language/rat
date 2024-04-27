@@ -3,6 +3,7 @@ import parse from "../src/parser.js";
 import analyze from "../src/analyzer.js";
 import optimize from "../src/optimizer.js";
 import generate from "../src/generator.js";
+import exp from "node:constants";
 
 function dedent(s) {
   return `${s}`.replace(/(?<=\n)\s+/g, "").trim();
@@ -383,7 +384,45 @@ const fixtures = [
       let d_10 = {"hi": 14, "lo": 2};
       `
   },
-
+  {
+    name: "Unary Expression",
+    source: `
+      print (-3); 
+      print (!false);
+      `,
+    expected: dedent`
+      console.log(-(3));
+      console.log(!(false));
+      `
+  },
+  {
+    name: "Some Operator",
+    source: `
+      int? x = some 3;
+      `,
+    expected: dedent`
+      let x_1 = 3;
+      `
+  },
+  {
+    name: "Dictionary Entry",
+    source: `
+      {str: int} x = {"hi": 14, "lo": 2};
+      
+      `,
+    expected: dedent`
+      let x_1 = {"hi": 14, "lo": 2};
+      `
+  },
+  {
+    name: "Dictionary",
+    source: `
+      {str:int} ints = {"56": 2, "fakeOnes": 3};
+      `,
+    expected: dedent`
+      let ints_1 = {"56": 2, "fakeOnes": 3};
+      `
+  },
 
 ]
 

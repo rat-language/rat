@@ -134,9 +134,11 @@ export default function generate(program) {
       s.body.forEach(gen);
       output.push("}");
     },
+
     // Conditional(e) {
     //   return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`
     // },
+
     BinaryExpression(e) {
       const op = { "==": "===", "!=": "!==" }[e.op] ?? e.op;
       return `(${gen(e.left)} ${op} ${gen(e.right)})`;
@@ -171,10 +173,7 @@ export default function generate(program) {
       const entries = d.elements.map(({ key, value }) => `${gen(key)}: ${gen(value)}`);
       return `{${entries.join(", ")}}`;
     },
-    DictionaryEntry(e) {
-      // This might be called as part of DictionaryLiteral or other contexts where a key-value pair is needed
-      return `${gen(e.key)}: ${gen(e.value)}`;
-    },
+    
     EmptyArray(e) {
       return "[]";
     },

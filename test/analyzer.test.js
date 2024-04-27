@@ -44,6 +44,7 @@ const semanticChecks = [
   ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
   ["short return", "void foo() {\nreturn;\n}\nfoo();"],
   ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nint r = foo();\n} catch(e:str) {\nprint(e);\n}"],
+  ["empty optional", `str? x = no str;`],
 
   ["initialize with empty array", "[int] a = [];"],
   ["assign arrays", "[int] a = [];[int] b =[1]; a = b; b = a;"],
@@ -56,8 +57,10 @@ const semanticChecks = [
   ["Logical Ors", " bool a = (true || false);"],
 
   ["Dictionary", `{str:int} ints = {"56": 2, "fakeOnes": 3};`],
+  ["Empty Dictionary", `{str:int} ints = {};`],
 
   ["Empty Dictionary", `{str:int} ints = {};`],
+  ["Equivalence for Function Types", `int foo(y:float){return 21;}\n(float)->int x = foo;\nint bar(y:float){return 50;}\nx = bar;\n`],
   ["assigning to a function", `int foo(y:float){return 21;}\n(float)->int x = foo;`],
   ["declarations", `int x = 12;\nfloat y = 3.14;\nstr z = "hello";\nbool a = true;\nanything b = 12;\nint foo(x:int, y:float) { return 12; }\n[int] c = [1, 2, 3];\n{str: int} d = {"hi": 14, "lo": 2};`],
 
