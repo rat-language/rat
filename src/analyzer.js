@@ -85,9 +85,9 @@ export default function analyze(match) {
     must(e.type === INT, "Expected an integer", at);
   }
 
-  function mustHaveArrayType(e, at) {
-    must(e.type?.kind === "ArrayType", "Expected an array", at);
-  }
+  // function mustHaveArrayType(e, at) {
+  //   must(e.type?.kind === "ArrayType", "Expected an array", at);
+  // }
 
   function mustHaveAnOptionalType(e, at) {
     must(e.type?.kind === "OptionalType", "Expected an optional", at);
@@ -181,8 +181,6 @@ export default function analyze(match) {
         return "str";
       case "BoolType":
         return "bool";
-      case "VoidType":
-        return "void";
       case "AnyType":
         return "any";
       case "FunctionType":
@@ -202,6 +200,9 @@ export default function analyze(match) {
     const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(type)}`;
     must(assignable(e.type, type), message, at);
   }
+
+
+// Cannot assign a ()->void to a int
 
   function mustNotBeReadOnly(entity, at) {
     must(!entity.readOnly, `${entity.name} is read only`, at);
@@ -426,13 +427,13 @@ export default function analyze(match) {
       return expList.asIteration().children;
     },
 
-    Conversion(type, _open, exp, _close) {
-      const target = type.rep();
-      const source = exp.rep();
-      // TODO: Add a way to determine whether the type can be converted
-      mustBeAssignable(source, { toType: target }, { at: exp });
-      return core.conversion(target, source);
-    },
+    // Conversion(type, _open, exp, _close) {
+    //   const target = type.rep();
+    //   const source = exp.rep();
+    //   // TODO: Add a way to determine whether the type can be converted
+    //   mustBeAssignable(source, { toType: target }, { at: exp });
+    //   return core.conversion(target, source);
+    // },
 
     // //If
     IfStmt_if(_if, exp, block) {

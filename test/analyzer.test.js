@@ -149,6 +149,7 @@ const semanticErrors = [
   ["improper integer declaration", ` int x = "12";`, /Cannot assign a str to a int/],
 
   ["int foo ", "int foo() { return false; }", /Cannot assign a bool to a int/],
+
   //------------( NOT WORKING )-----------------//
 
 

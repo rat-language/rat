@@ -36,6 +36,7 @@ const syntaxErrors = [
   ["an expression starting with a )", "x = );", /Line 1, col 5/],
   ["a statement starting with a )", "print(5);\n) * 5", /Line 2, col 1/],
   ["an expression starting with a *", "x = * 71;", /Line 1, col 5/],
+  ["void variable", "void x = 5;", /Line 1, col 8/],
 ]
 
 describe("The parser", () => {
