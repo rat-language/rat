@@ -16,12 +16,12 @@ const syntaxChecks = [
   ["dictionary printing", "print({\"AZ\": \"Phoenix\", \"FL\":\"Tallahassee\"});"],
   ["array indexing in place", "print(f(x)[1][5]);"],
   ["underscores in names", "float _grams = 2.01;"],
-  ["type conversion", "str a = str(5 + 2);"],
   ["coalescing operator", "str? boss = some \"Tina\";\nprint (boss ?? \"No boss here\");"],
   ["multiple function calls", "int f(x:anything) {return 12;}\nprint (f(\"dog\") + f(2));"],
   ["short return", "void foo() {\nreturn;\n}\nfoo();"],
   ["try catch", "int foo() {\nreturn 10;\n}\ntry {\nint r = foo();\n} catch(e:str) {\nprint(e);\n}"],
   ["dictionaries", `{str:int} d = {"a": 1, "b": 2};\nprint(d["a"]);`],
+  ["anything type", `anything b = 1;\nprint(b);`],
 ]
 
 // SYNTAX ERRORS NEED TO BE CHANGED EXTENSIVELY

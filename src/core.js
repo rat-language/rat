@@ -112,10 +112,6 @@ export function optionalType(baseType) {
   return { kind: "OptionalType", baseType };
 }
 
-export function promiseType(baseType) {
-  return { kind: "PromiseType", baseType };
-}
-
 export function arrayType(baseType) {
   return { kind: "ArrayType", baseType };
 }

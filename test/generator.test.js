@@ -36,7 +36,6 @@ const fixtures = [
     name: "while false",
     source: `
         int i = 12;
-
         while (false) {
             bool j = true;
             i = i - 1;
@@ -44,13 +43,11 @@ const fixtures = [
               break;
             }
           }
-          
           `,
     expected: dedent`
           let i_1 = 12;
         `
   },
-
   {
     name: "simple while loop",
     source: `

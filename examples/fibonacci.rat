@@ -14,4 +14,3 @@ int fib(n:int){
     }
     return b;
 }
-}

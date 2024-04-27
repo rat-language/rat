@@ -152,6 +152,22 @@ export default function analyze(match) {
     );
   }
 
+  // function assignable(fromType, toType) {
+  //   return (
+  //     toType === ANY ||
+  //     equivalent(fromType, toType) ||
+  //     (fromType?.kind === "FunctionType" &&
+  //       toType?.kind === "FunctionType" &&
+  //       assignable(fromType.returnType, toType.returnType) &&
+  //       fromType.paramTypes.length === toType.paramTypes.length &&
+  //       toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i]))) ||
+  //     (fromType?.kind === "ArrayType" && toType?.kind === "ArrayType" &&
+  //       (fromType.baseType === ANY || assignable(fromType.baseType, toType.baseType))) ||
+  //     (fromType?.kind === "DictionaryType" && toType?.kind === "DictionaryType" &&
+  //       ((fromType.keyBaseType === ANY && fromType.baseType === ANY) || // This is the condition for an empty or any-type dictionary
+  //        (assignable(fromType.keyBaseType, toType.keyBaseType) && assignable(fromType.baseType, toType.baseType))))
+  //   );
+  // }
   function assignable(fromType, toType) {
     return (
       toType === ANY ||
@@ -182,7 +198,7 @@ export default function analyze(match) {
       case "BoolType":
         return "bool";
       case "AnyType":
-        return "any";
+        return "anything";
       case "FunctionType":
         const paramTypes = type.paramTypes.map(typeDescription).join(", ");
         const returnType = typeDescription(type.returnType);

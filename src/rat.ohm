@@ -41,8 +41,7 @@ Rat {
 
     Call        = Primary Args
     Args        = "(" ListOf<Exp, ","> ")"
-    Conversion  = Type "(" Exp ")"
-    // Conversion  = Type "(" Exp ")"                                      --conversion
+    // Conversion  = Type "(" Exp ")"
 
     IfStmt      = if Exp Block else Block                               --else
                 | if Exp Block else IfStmt                              --elseif
@@ -75,19 +74,18 @@ Rat {
                 | Primary
                 | ("#" | "-" | "!" | some ) Primary                           --unary
     // possible assignables to variables
-    Primary= true 
-                | false
-                | floatlit 
-                | intlit 
-                | no Type                                               --emptyoptional
-                | Call
-                | Primary ("[" | "?[") Exp "]"                          --index
-                | Conversion
-                | ArrayLit
-                | DictLit
-                | strlit
-                | id                                                    --id
-                | Parens
+    Primary = true 
+            | false
+            | floatlit 
+            | intlit 
+            | no Type                                               --emptyoptional
+            | Call
+            | Primary ("[" | "?[") Exp "]"                          --index
+            | ArrayLit
+            | DictLit
+            | strlit
+            | id                                                    --id
+            | Parens
 
     ArrayLit    = "[" "]"                                               --emptyarray
                 | "[" NonemptyListOf<Exp, ",">"]"                       --array

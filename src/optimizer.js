@@ -35,23 +35,23 @@ const optimizers = {
     d.initializer = optimize(d.initializer)
     return d
   },
-  TypeDeclaration(d) {
-    d.type = optimize(d.type)
-    return d
-  },
+  // TypeDeclaration(d) {
+  //   d.type = optimize(d.type)
+  //   return d
+  // },
   FunctionDeclaration(d) {
     d.fun = optimize(d.fun)
     if (d.body) d.body = d.body.flatMap(optimize)
     return d
   },
-  Increment(s) {
-    s.variable = optimize(s.variable)
-    return s
-  },
-  Decrement(s) {
-    s.variable = optimize(s.variable)
-    return s
-  },
+  // Increment(s) {
+  //   s.variable = optimize(s.variable)
+  //   return s
+  // },
+  // Decrement(s) {
+  //   s.variable = optimize(s.variable)
+  //   return s
+  // },
   Assignment(s) {
     s.source = optimize(s.source)
     s.target = optimize(s.target)
@@ -100,15 +100,15 @@ const optimizers = {
     s.body = s.body.flatMap(optimize)
     return s
   },
-  RepeatStatement(s) {
-    s.count = optimize(s.count)
-    if (s.count === 0) {
-      // repeat 0 times is a no-op
-      return []
-    }
-    s.body = s.body.flatMap(optimize)
-    return s
-  },
+  // RepeatStatement(s) {
+  //   s.count = optimize(s.count)
+  //   if (s.count === 0) {
+  //     // repeat 0 times is a no-op
+  //     return []
+  //   }
+  //   s.body = s.body.flatMap(optimize)
+  //   return s
+  // },
   ForRangeStatement(s) {
     s.iterator = optimize(s.iterator)
     s.low = optimize(s.low)
@@ -196,8 +196,8 @@ const optimizers = {
     }
     return e
   },
-  SubscriptExpression(e) {
-    e.array = optimize(e.iterable)
+  IndexExpression(e) {
+    e.iterable = optimize(e.iterable)
     e.index = optimize(e.index)
     return e
   },
@@ -205,8 +205,8 @@ const optimizers = {
     e.elements = e.elements.map(optimize)
     return e
   },
-  MemberExpression(e) {
-    e.object = optimize(e.object)
+  DictionaryExpression(e) {
+    e.entries = e.entries.map(optimize)
     return e
   },
   FunctionCall(c) {
@@ -214,9 +214,9 @@ const optimizers = {
     c.args = c.args.map(optimize)
     return c
   },
-  ConstructorCall(c) {
-    c.callee = optimize(c.callee)
-    c.args = c.args.map(optimize)
-    return c
-  },
+  // ConstructorCall(c) {
+  //   c.callee = optimize(c.callee)
+  //   c.args = c.args.map(optimize)
+  //   return c
+  // },
 }
