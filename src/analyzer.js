@@ -343,7 +343,7 @@ export default function analyze(match) {
       const paramTypes = params.map((param) => param.type);
       // I'm using this for now, I didn't want to get rid of the null coalescing until I fully understood what was happening
       let returnType;
-      returnType = type.rep() ?? VOID;
+      returnType = type.rep();
       // try {
       // } catch (e) {
         // !! WHY : was it like this in carlos? why did types need children?

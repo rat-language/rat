@@ -56,10 +56,10 @@ const semanticChecks = [
   ["Logical Ors", " bool a = (true || false);"],
 
   ["Dictionary", `{str:int} ints = {"56": 2, "fakeOnes": 3};`],
- 
-  ["Empty Dictionary", `{str:int} ints = {};`],
-  ["assigning to a function", `int foo(y:float){return 21;}\n(float)->int x = foo;`]
 
+  ["Empty Dictionary", `{str:int} ints = {};`],
+  ["assigning to a function", `int foo(y:float){return 21;}\n(float)->int x = foo;`],
+  ["declarations", `int x = 12;\nfloat y = 3.14;\nstr z = "hello";\nbool a = true;\nanything b = 12;\nint foo(x:int, y:float) { return 12; }\n[int] c = [1, 2, 3];\n{str: int} d = {"hi": 14, "lo": 2};`],
 
   //------------( STILL IN CARLOS )-----------------//
   // // ["shifts", "print(1<<3<<5<<8>>2>>0);"],

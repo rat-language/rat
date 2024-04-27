@@ -347,6 +347,46 @@ const fixtures = [
         console.log(z_3["hi"]);
         `
   },
+// Write tests for the following from the generator.js file:
+// EmptyOptional(e) {
+//   return "undefined";
+// },
+
+  {
+    name: "Empty Optional",
+    source: `
+      str? x = no str;
+      `,
+    expected: dedent`
+      let x_1 = undefined;
+      `
+  },
+  {
+    name: "Declarations",
+    source: `
+      int x = 12;
+      float y = 3.14;
+      str z = "hello";
+      bool a = true;
+      anything b = 12;
+      int foo(x:int, y:float) { return 12; }
+      [int] c = [1, 2, 3];
+      {str: int} d = {"hi": 14, "lo": 2};
+      `,
+    expected: dedent`
+      let x_1 = 12;
+      let y_2 = 3.14;
+      let z_3 = "hello";
+      let a_4 = true;
+      let b_5 = 12;
+      function foo_6(x_7, y_8) {
+        return 12;
+      }
+      let c_9 = [1,2,3];
+      let d_10 = {"hi": 14, "lo": 2};
+      `
+  },
+
 
 ]
 
