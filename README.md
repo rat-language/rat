@@ -3,6 +3,9 @@
 # RAT
 **Authors**: Alex Alvarez, Riley Kehoe, Chris Beaudoin, Sam Prosser, Carter Esparza
 
+## Website
+https://rat-language.github.io/
+
 ## Language Specification
 
 ### 1 Introduction
